@@ -8,15 +8,9 @@
 
 TouchRenderer* touchRenderer ;
 TouchListener* touchListener ;
-tcp_server* server ;
+
 Drawing* drawing ;
 
-
-DWORD WINAPI myThread(LPVOID lpParameter)
-{
-	server->start_listening();
-	return 0 ;
-}
 
 
 void start(){
@@ -25,16 +19,7 @@ void start(){
 	touchListener = new TouchListener(touchRenderer);
 	drawing = new Drawing();
 	drawing->read();
-	server = new tcp_server(8000,drawing) ;
-	//HANDLE myHandle = CreateThread(0, 0, myThread, server, 0,NULL);
-	//WaitForMultipleObjects(1, &myHandle, TRUE, INFINITE);
-	server->start_listening();
 
-	while(server->hasToClose == false){
-		server->ProcessIncomingMessage();
-		drawing->ctxView->Render() ;
-		
-	}
 }
 
 int main()

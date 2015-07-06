@@ -155,7 +155,7 @@ void Drawing::read(){
 	
 	//Start the event loop
 	iren->Initialize();
-	//iren->Start();
+	iren->Start();
 
 	//defineClipping();
 	win->PolygonSmoothingOn();
