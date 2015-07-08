@@ -10,10 +10,15 @@
 #include <OpenGL/gl.h>
  #include <OpenGL/glu.h>
 #include <GLUT/glut.h>
+//#include </System/Library/Frameworks/SDL2.framework/Headers/SDL.h>
+#include <SDL.h>
 #else
 #include <GL/gl.h>
 
 #endif
+
+#define WIDTH 800
+#define HEIGHT 600 
 
 //#define DEBUG
 //#define DEBUGLOWLEVEL
@@ -29,7 +34,7 @@ glm::mat4 rMatrix = glm::mat4();
 float rM[16] ;
 
 glm::vec3 center(200,175,0);
-ArcBall* arcball = new ArcBall(center, 0.75*400);
+ArcBall* arcball = new ArcBall(center, 0.75*WIDTH);
 //Arcball* arcball = new Arcball();
 //ab->init();
 
@@ -184,7 +189,7 @@ int main (int argc, char **argv)
     //double buffering used to avoid flickering problem in animation
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);  
     // window size
-    glutInitWindowSize(400,350);
+    glutInitWindowSize(WIDTH,HEIGHT);
     // create the window 
     glutCreateWindow("Teapot Rotating Animation");
     glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
