@@ -3,6 +3,9 @@
 #include <semaphore.h>
 #include <iostream>
 #include "arc-ball/ArcBall.hpp"
+#include "./arcball3/arcball.h"
+#include "./arcball3/algebra3.h"
+
 #ifdef __APPLE__
 #include <OpenGL/gl.h>
  #include <OpenGL/glu.h>
@@ -22,11 +25,13 @@ GLfloat xRotated, yRotated, zRotated;
 GLdouble size=1;
 bool modifierPressed = false;
 bool mouseClicked = false ;
-
 glm::mat4 rMatrix = glm::mat4();
 float rM[16] ;
 
-CPM_ARC_BALL_NS::ArcBall arcball(glm::vec3(0.0f, 0.0f, 0.0f), 0.75f);
+glm::vec3 center(200,175,0);
+ArcBall* arcball = new ArcBall(center, 0.75*400);
+//Arcball* arcball = new Arcball();
+//ab->init();
 
 void init(void)
 {
@@ -39,18 +44,18 @@ void init(void)
 
 void mouseFunc(int button, int state, int x, int y) {
     if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
-        
+        cout << "X: " << x << " Y:" << y << endl ;
         #ifdef DEBUGLOWLEVEL
         cout << "Click" << endl ;
         #endif
         mouseClicked = true ;
         glm::vec2 mousecoord(x,y);
-        arcball.beginDrag(mousecoord);
-        //arcball.mouse_down(x,y);
+        arcball->beginDrag(mousecoord);
+        //arcball->mouse_down(x,y);
     }
     if(state == GLUT_UP){
     	mouseClicked = false ;
-    	//arcball.mouse_up();
+    	//arcball->mouse_up();
         #ifdef DEBUGLOWLEVEL
         cout << "UP" << endl ;
         #endif
@@ -60,8 +65,8 @@ void mouseFunc(int button, int state, int x, int y) {
 void mouseMovedFunc(int x, int y){
 	glm::vec2 mousecoord(x,y);
     if(mouseClicked){
-    	//arcball.mouse_motion(x,y);
-        arcball.drag(mousecoord);
+    	//arcball->mouse_motion(x,y,0,0,0);
+        arcball->drag(mousecoord);
         #ifdef DEBUGLOWLEVEL
         cout << "Dragged" << endl ;
         #endif   	
@@ -138,7 +143,7 @@ void reshapeFunc(int x, int y)
 
 void idleFunc(void)
 {
-	rMatrix = arcball.getTransformation();
+	glm::mat4 rMatrix = arcball->getTransformation();
 
  
  	rM[0] = rMatrix[0][0];
