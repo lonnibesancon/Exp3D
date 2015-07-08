@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <pthread.h> //for threading , link with lpthread
 #include <semaphore.h>
+#include <iostream>
+#include "arc-ball/ArcBall.hpp"
 #ifdef __APPLE__
 #include <OpenGL/gl.h>
  #include <OpenGL/glu.h>
@@ -10,6 +12,22 @@
 
 #endif
 
+//#define DEBUG
+//#define DEBUGLOWLEVEL
+
+using namespace std ;
+using namespace CPM_ARC_BALL_NS;
+
+GLfloat xRotated, yRotated, zRotated;
+GLdouble size=1;
+bool modifierPressed = false;
+bool mouseClicked = false ;
+
+glm::mat4 rMatrix = glm::mat4();
+float rM[16] ;
+
+CPM_ARC_BALL_NS::ArcBall arcball(glm::vec3(0.0f, 0.0f, 0.0f), 0.75f);
+
 void init(void)
 {
 	glClearColor(0.0, 0.0, 1.0, 0.0);
@@ -17,9 +35,59 @@ void init(void)
 	gluOrtho2D(0.0, 200.0, 0.0, 150.0);
 }
 
-GLfloat xRotated, yRotated, zRotated;
-GLdouble size=1;
 
+
+void mouseFunc(int button, int state, int x, int y) {
+    if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
+        
+        #ifdef DEBUGLOWLEVEL
+        cout << "Click" << endl ;
+        #endif
+        mouseClicked = true ;
+        glm::vec2 mousecoord(x,y);
+        arcball.beginDrag(mousecoord);
+        //arcball.mouse_down(x,y);
+    }
+    if(state == GLUT_UP){
+    	mouseClicked = false ;
+    	//arcball.mouse_up();
+        #ifdef DEBUGLOWLEVEL
+        cout << "UP" << endl ;
+        #endif
+    }
+}
+
+void mouseMovedFunc(int x, int y){
+	glm::vec2 mousecoord(x,y);
+    if(mouseClicked){
+    	//arcball.mouse_motion(x,y);
+        arcball.drag(mousecoord);
+        #ifdef DEBUGLOWLEVEL
+        cout << "Dragged" << endl ;
+        #endif   	
+    }
+}
+
+
+
+void keyboardFunc(unsigned char key, int x, int y) {
+    #ifdef DEBUGLOWLEVEL
+    cout << "Key Pressed" << endl ;
+    #endif
+    if(key == 'a'){
+    	modifierPressed = true ;
+    }
+    #ifdef DEBUG
+    cout << "Modifier: " << modifierPressed << endl ;
+    #endif
+}
+
+void keyboardUpFunc(unsigned char key, int x, int y){
+	modifierPressed = false ;
+    #ifdef DEBUG
+    cout << "Modifier: " << modifierPressed << endl ;
+    #endif
+}
 
 void display(void)
 {
@@ -36,11 +104,12 @@ void display(void)
     glColor3f(0.8, 0.2, 0.1); 
     // changing in transformation matrix.
     // rotation about X axis
-    glRotatef(xRotated,1.0,0.0,0.0);
+    //glRotatef(xRotated,1.0,0.0,0.0);
     // rotation about Y axis
-    glRotatef(yRotated,0.0,1.0,0.0);
+    //glRotatef(yRotated,0.0,1.0,0.0);
     // rotation about Z axis
-    glRotatef(zRotated,0.0,0.0,1.0);
+    //glRotatef(zRotated,0.0,0.0,1.0);
+    glMultMatrixf(rM);
     // scaling transfomation 
     glScalef(1.0,1.0,1.0);
     // built-in (glut library) function , draw you a Teapot.
@@ -69,8 +138,32 @@ void reshapeFunc(int x, int y)
 
 void idleFunc(void)
 {
+	rMatrix = arcball.getTransformation();
+
  
-     yRotated += 0.01;
+ 	rM[0] = rMatrix[0][0];
+	rM[1] = rMatrix[1][0];
+	rM[2] = rMatrix[2][0];
+	rM[3] = rMatrix[3][0];
+	rM[4] = rMatrix[0][1];
+	rM[5] = rMatrix[1][1];
+	rM[6] = rMatrix[2][1];
+	rM[7] = rMatrix[3][1];
+	rM[8] = rMatrix[0][2];
+	rM[9] = rMatrix[1][2];
+	rM[10] = rMatrix[2][2];
+	rM[11] = rMatrix[3][2];
+	rM[12] = rMatrix[0][3];
+	rM[13] = rMatrix[1][3];
+	rM[14] = rMatrix[2][3];
+	rM[15] = rMatrix[3][3];
+
+	/*for (int i = 0 ; i < 16 ; i++){
+		cout << rM[i] ;
+	}
+	cout << endl ;
+	*/
+    yRotated += 0.01;
      
     display();
 }
@@ -78,6 +171,9 @@ void idleFunc(void)
 
 int main (int argc, char **argv)
 {
+	const glm::vec3* center = new glm::vec3(0,0,0);
+	glm::float_t radius = 0.75 ;
+	
     //Initialize GLUT
     glutInit(&argc, argv);
     //double buffering used to avoid flickering problem in animation
@@ -96,6 +192,10 @@ int main (int argc, char **argv)
     glutReshapeFunc(reshapeFunc);
     glutIdleFunc(idleFunc);
     //Let start glut loop
+    glutMouseFunc(mouseFunc);
+    glutKeyboardFunc(keyboardFunc);
+    glutKeyboardUpFunc(keyboardUpFunc);
+    glutMotionFunc(mouseMovedFunc);
     glutMainLoop();
     return 0;
 } 
