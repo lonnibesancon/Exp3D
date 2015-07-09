@@ -214,6 +214,23 @@ void init(char *title)
 
     SDL_ShowCursor(SDL_DISABLE);
 
+    //OpenGL part
+
+    glClearColor(0, 0, 0, 0);
+ 
+    glViewport(0, 0, 640, 480);
+ 
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+ 
+    glOrtho(0, 640, 480, 0, 1, -1);
+ 
+    glMatrixMode(GL_MODELVIEW);
+ 
+    glEnable(GL_TEXTURE_2D);
+ 
+    glLoadIdentity();
+
 }
 
 
@@ -235,7 +252,31 @@ void draw(void)
 
     SDL_Flip(screen);
 
-
+    glMatrixMode(GL_MODELVIEW);
+    // clear the drawing buffer.
+    glClear(GL_COLOR_BUFFER_BIT);
+    // clear the identity matrix.
+    glLoadIdentity();
+    // traslate the draw by z = -4.0
+    // Note this when you decrease z like -8.0 the drawing will looks far , or smaller.
+    glTranslatef(0.0,0.0,-4.5);
+    // Red color used to draw.
+    glColor3f(0.8, 0.2, 0.1); 
+    // changing in transformation matrix.
+    // rotation about X axis
+    //glRotatef(xRotated,1.0,0.0,0.0);
+    // rotation about Y axis
+    //glRotatef(yRotated,0.0,1.0,0.0);
+    // rotation about Z axis
+    //glRotatef(zRotated,0.0,0.0,1.0);
+    glMultMatrixf(rM);
+    // scaling transfomation 
+    glScalef(1.0,1.0,1.0);
+    // built-in (glut library) function , draw you a Teapot.
+    glutSolidTeapot(size);
+    // Flush buffers to screen
+     
+    glFlush();
     /* Delai */
 
     SDL_Delay(1);
