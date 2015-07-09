@@ -5,6 +5,7 @@
 #include "arc-ball/ArcBall.hpp"
 #include "./arcball3/arcball.h"
 #include "./arcball3/algebra3.h"
+#include "defs.h"
 
 #ifdef __APPLE__
 #include <OpenGL/gl.h>
@@ -12,6 +13,7 @@
 #include <GLUT/glut.h>
 //#include </System/Library/Frameworks/SDL2.framework/Headers/SDL.h>
 #include <SDL.h>
+#undef main //Deja defini dans le framework SDL et du coup erreur de compilation
 #else
 #include <GL/gl.h>
 
@@ -32,6 +34,7 @@ bool modifierPressed = false;
 bool mouseClicked = false ;
 glm::mat4 rMatrix = glm::mat4();
 float rM[16] ;
+SDL_Surface* screen ;
 
 glm::vec3 center(200,175,0);
 ArcBall* arcball = new ArcBall(center, 0.75*WIDTH);
@@ -179,9 +182,151 @@ void idleFunc(void)
 }
 
 
+void init(char *title)
+{
+
+    /* Initialise SDL Video. Si la valeur de retour est inférieure à zéro, la SDL n'a pas pu
+     s'initialiser et on quite */
+
+    if (SDL_Init(SDL_INIT_VIDEO ) < 0)
+    {
+        printf("Could not initialize SDL: %s\n", SDL_GetError());
+        exit(1);
+    }
+
+
+     /* On crée la fenêtre, représentée par le pointeur jeu.screen en utilisant la largeur et la
+     hauteur définies dans les defines (defs.h). On utilise aussi la mémoire vidéo
+     (SDL_HWPALETTE) et le double buffer pour éviter que ça scintille
+     (SDL_DOUBLEBUF) */
+
+    screen = SDL_SetVideoMode(WIDTH, HEIGHT, 0, SDL_HWPALETTE|SDL_DOUBLEBUF);
+
+     /* Si on y arrive pas, on quitte */
+
+    if (screen == NULL)
+        {
+            printf("Couldn't set screen mode to %d x %d: %s\n", WIDTH,HEIGHT, SDL_GetError());
+            exit(1);
+        }
+
+    SDL_WM_SetCaption(title, NULL);
+
+    SDL_ShowCursor(SDL_DISABLE);
+
+}
+
+
+
+/* Fonction qui quitte le jeu proprement */
+
+void cleanup()
+{
+
+    /* Quitte la SDL */
+    SDL_Quit();
+
+}
+
+void draw(void)
+{
+
+    /* Affiche l'écran */
+
+    SDL_Flip(screen);
+
+
+    /* Delai */
+
+    SDL_Delay(1);
+
+}
+
+void delay(unsigned int frameLimit)
+{
+
+    /* Gestion des 60 fps (images/stories/seconde) */
+
+    unsigned int ticks = SDL_GetTicks();
+
+    if (frameLimit < ticks)
+    {
+        return;
+    }
+
+    if (frameLimit > ticks + 16)
+    {
+        SDL_Delay(16);
+    }
+
+    else
+    {
+        SDL_Delay(frameLimit - ticks);
+    }
+}
+
+void getInput()
+ {
+    SDL_Event event;
+
+    /* Keymapping : gère les appuis sur les touches et les enregistre
+    dans la structure input */
+
+    while (SDL_PollEvent(&event))
+    {
+        switch (event.type)
+        {
+
+            case SDL_QUIT:
+                exit(0);
+            break;
+
+            case SDL_KEYDOWN:
+                switch (event.key.keysym.sym)
+                {
+                    case SDLK_ESCAPE:
+                        exit(0);
+                    break;
+
+                    case SDLK_LSHIFT:
+                        modifierPressed = true ;
+                    break ;
+
+                    case SDLK_RSHIFT:
+                        modifierPressed = true ;
+                    break ;
+
+                    default:
+                    break;
+                }
+            break;
+
+            case SDL_KEYUP:
+                switch (event.key.keysym.sym)
+                {
+
+                    case SDLK_LSHIFT:
+                        modifierPressed = false ;
+                    break;
+
+                    case SDLK_RSHIFT:
+                        modifierPressed = false ;
+                    break ;
+
+                    default:
+                    break;
+                }
+            break;
+
+        }
+
+    }
+ }
+
+
 int main (int argc, char **argv)
 {
-	const glm::vec3* center = new glm::vec3(0,0,0);
+	/*const glm::vec3* center = new glm::vec3(0,0,0);
 	glm::float_t radius = 0.75 ;
 	
     //Initialize GLUT
@@ -207,5 +352,32 @@ int main (int argc, char **argv)
     glutKeyboardUpFunc(keyboardUpFunc);
     glutMotionFunc(mouseMovedFunc);
     glutMainLoop();
+
+    */
+
+    unsigned int frameLimit = SDL_GetTicks() + 16;
+
+    /* Initialisation de la SDL dans une fonction séparée (voir après) */
+    init("Aron");
+
+    /* Appelle la fonction cleanup à la fin du programme */
+    atexit(cleanup);
+
+
+    /* Boucle infinie, principale, du jeu */
+
+    while (true)
+    {
+
+        /* On vérifie l'état des entrées (clavier puis plus tard joystick */
+        getInput();
+        draw();
+        delay(frameLimit);
+        frameLimit = SDL_GetTicks() + 16;
+
+    }
+
+    /* Exit */
+    exit(0);
     return 0;
 } 

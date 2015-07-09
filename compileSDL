@@ -1,1 +1,1 @@
-g++ main.cpp arc-ball/ArcBall.cpp -o a.out -framework GLUT -framework OpenGL -std=c++98 -I/usr/local/include/SDL2 -D_THREAD_SAFE -L/usr/local/lib -lSDL2
+g++ main.cpp arc-ball/ArcBall.cpp -o a.out -framework GLUT -framework OpenGL -std=c++98 -I/Library/Frameworks/SDL.framework/Headers/ -I/usr/local/include/SDL -D_GNU_SOURCE=1 -D_THREAD_SAFE -L/usr/local/lib -lSDLmain -lSDL -Wl,-framework,Cocoa
