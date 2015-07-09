@@ -43,9 +43,77 @@ ArcBall* arcball = new ArcBall(center, 0.75*WIDTH);
 
 void init(void)
 {
-	glClearColor(0.0, 0.0, 1.0, 0.0);
-	glMatrixMode(GL_PROJECTION);
-	gluOrtho2D(0.0, 200.0, 0.0, 150.0);
+    SDL_Init(SDL_INIT_VIDEO);
+    SDL_WM_SetCaption("Mon premier programme OpenGL !",NULL);
+    screen = SDL_SetVideoMode(WIDTH, HEIGHT, 32, SDL_OPENGL);
+
+    SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 5 );
+    SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, 5 );
+    SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, 5 );
+    SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 16 );
+    SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+
+
+    if( screen == NULL)
+    {
+        cerr<<"error setting SDL Video Mode\n";
+        exit(EXIT_FAILURE);
+    }
+
+    glMatrixMode(GL_PROJECTION);  
+    glLoadIdentity();
+
+
+	//glClearColor(0.0, 0.0, 0.0, 0.0);
+	//glMatrixMode(GL_PROJECTION);
+	//gluOrtho2D(0.0, 200.0, 0.0, 150.0);
+}
+
+void drawCube(){
+    glBegin(GL_QUADS);                // Begin drawing the color cube with 6 quads
+      // Top face (y = 1.0f)
+      // Define vertices in counter-clockwise (CCW) order with normal pointing out
+      glColor3f(0.0f, 1.0f, 0.0f);     // Green
+      glVertex3f( 1.0f, 1.0f, -1.0f);
+      glVertex3f(-1.0f, 1.0f, -1.0f);
+      glVertex3f(-1.0f, 1.0f,  1.0f);
+      glVertex3f( 1.0f, 1.0f,  1.0f);
+ 
+      // Bottom face (y = -1.0f)
+      glColor3f(1.0f, 0.5f, 0.0f);     // Orange
+      glVertex3f( 1.0f, -1.0f,  1.0f);
+      glVertex3f(-1.0f, -1.0f,  1.0f);
+      glVertex3f(-1.0f, -1.0f, -1.0f);
+      glVertex3f( 1.0f, -1.0f, -1.0f);
+ 
+      // Front face  (z = 1.0f)
+      glColor3f(1.0f, 0.0f, 0.0f);     // Red
+      glVertex3f( 1.0f,  1.0f, 1.0f);
+      glVertex3f(-1.0f,  1.0f, 1.0f);
+      glVertex3f(-1.0f, -1.0f, 1.0f);
+      glVertex3f( 1.0f, -1.0f, 1.0f);
+ 
+      // Back face (z = -1.0f)
+      glColor3f(1.0f, 1.0f, 0.0f);     // Yellow
+      glVertex3f( 1.0f, -1.0f, -1.0f);
+      glVertex3f(-1.0f, -1.0f, -1.0f);
+      glVertex3f(-1.0f,  1.0f, -1.0f);
+      glVertex3f( 1.0f,  1.0f, -1.0f);
+ 
+      // Left face (x = -1.0f)
+      glColor3f(0.0f, 0.0f, 1.0f);     // Blue
+      glVertex3f(-1.0f,  1.0f,  1.0f);
+      glVertex3f(-1.0f,  1.0f, -1.0f);
+      glVertex3f(-1.0f, -1.0f, -1.0f);
+      glVertex3f(-1.0f, -1.0f,  1.0f);
+ 
+      // Right face (x = 1.0f)
+      glColor3f(1.0f, 0.0f, 1.0f);     // Magenta
+      glVertex3f(1.0f,  1.0f, -1.0f);
+      glVertex3f(1.0f,  1.0f,  1.0f);
+      glVertex3f(1.0f, -1.0f,  1.0f);
+      glVertex3f(1.0f, -1.0f, -1.0f);
+   glEnd();  // End of drawing color-cube
 }
 
 
@@ -104,8 +172,13 @@ void keyboardUpFunc(unsigned char key, int x, int y){
 
 void display(void)
 {
-
+    
+    //Angle of view:40 degrees
+    //Near clipping plane distance: 0.5
+    //Far clipping plane distance: 20.0
+     
     glMatrixMode(GL_MODELVIEW);
+
     // clear the drawing buffer.
     glClear(GL_COLOR_BUFFER_BIT);
     // clear the identity matrix.
@@ -126,12 +199,13 @@ void display(void)
     // scaling transfomation 
     glScalef(1.0,1.0,1.0);
     // built-in (glut library) function , draw you a Teapot.
+    drawCube();
     glutSolidTeapot(size);
     // Flush buffers to screen
      
     glFlush();        
     // sawp buffers called because we are using double buffering 
-   // glutSwapBuffers();
+    glutSwapBuffers();
 }
 
 void reshapeFunc(int x, int y)
@@ -148,6 +222,7 @@ void reshapeFunc(int x, int y)
  
     glViewport(0,0,x,y);  //Use the whole window for rendering
 }
+
 
 void idleFunc(void)
 {
@@ -179,131 +254,6 @@ void idleFunc(void)
     yRotated += 0.01;
      
     display();
-}
-
-
-void init(char *title)
-{
-
-    /* Initialise SDL Video. Si la valeur de retour est inférieure à zéro, la SDL n'a pas pu
-     s'initialiser et on quite */
-
-    if (SDL_Init(SDL_INIT_VIDEO ) < 0)
-    {
-        printf("Could not initialize SDL: %s\n", SDL_GetError());
-        exit(1);
-    }
-
-
-     /* On crée la fenêtre, représentée par le pointeur jeu.screen en utilisant la largeur et la
-     hauteur définies dans les defines (defs.h). On utilise aussi la mémoire vidéo
-     (SDL_HWPALETTE) et le double buffer pour éviter que ça scintille
-     (SDL_DOUBLEBUF) */
-
-    screen = SDL_SetVideoMode(WIDTH, HEIGHT, 0, SDL_HWPALETTE|SDL_DOUBLEBUF);
-
-     /* Si on y arrive pas, on quitte */
-
-    if (screen == NULL)
-        {
-            printf("Couldn't set screen mode to %d x %d: %s\n", WIDTH,HEIGHT, SDL_GetError());
-            exit(1);
-        }
-
-    SDL_WM_SetCaption(title, NULL);
-
-    SDL_ShowCursor(SDL_DISABLE);
-
-    //OpenGL part
-
-    glClearColor(0, 0, 0, 0);
- 
-    glViewport(0, 0, 640, 480);
- 
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
- 
-    glOrtho(0, 640, 480, 0, 1, -1);
- 
-    glMatrixMode(GL_MODELVIEW);
- 
-    glEnable(GL_TEXTURE_2D);
- 
-    glLoadIdentity();
-
-}
-
-
-
-/* Fonction qui quitte le jeu proprement */
-
-void cleanup()
-{
-
-    /* Quitte la SDL */
-    SDL_Quit();
-
-}
-
-void draw(void)
-{
-
-    /* Affiche l'écran */
-
-    SDL_Flip(screen);
-
-    glMatrixMode(GL_MODELVIEW);
-    // clear the drawing buffer.
-    glClear(GL_COLOR_BUFFER_BIT);
-    // clear the identity matrix.
-    glLoadIdentity();
-    // traslate the draw by z = -4.0
-    // Note this when you decrease z like -8.0 the drawing will looks far , or smaller.
-    glTranslatef(0.0,0.0,-4.5);
-    // Red color used to draw.
-    glColor3f(0.8, 0.2, 0.1); 
-    // changing in transformation matrix.
-    // rotation about X axis
-    //glRotatef(xRotated,1.0,0.0,0.0);
-    // rotation about Y axis
-    //glRotatef(yRotated,0.0,1.0,0.0);
-    // rotation about Z axis
-    //glRotatef(zRotated,0.0,0.0,1.0);
-    glMultMatrixf(rM);
-    // scaling transfomation 
-    glScalef(1.0,1.0,1.0);
-    // built-in (glut library) function , draw you a Teapot.
-    glutSolidTeapot(size);
-    // Flush buffers to screen
-     
-    glFlush();
-    /* Delai */
-
-    SDL_Delay(1);
-
-}
-
-void delay(unsigned int frameLimit)
-{
-
-    /* Gestion des 60 fps (images/stories/seconde) */
-
-    unsigned int ticks = SDL_GetTicks();
-
-    if (frameLimit < ticks)
-    {
-        return;
-    }
-
-    if (frameLimit > ticks + 16)
-    {
-        SDL_Delay(16);
-    }
-
-    else
-    {
-        SDL_Delay(frameLimit - ticks);
-    }
 }
 
 void getInput()
@@ -359,6 +309,32 @@ void getInput()
                 }
             break;
 
+            case SDL_MOUSEBUTTONDOWN:
+                if(event.button.button == SDL_BUTTON_LEFT){
+                    mouseClicked = true ;
+                    glm::vec2 mousecoord(event.motion.x,event.motion.y);
+                    arcball->beginDrag(mousecoord);
+                }
+                else if(event.button.button == SDL_BUTTON_RIGHT){
+
+                }
+                else if(event.button.button == SDL_BUTTON_WHEELUP){
+                    cout << "wheel up" << endl;
+                }        
+                else if(event.button.button == SDL_BUTTON_WHEELDOWN){
+                    cout << "wheel down" << endl ;
+                }
+
+            break;
+
+            case  SDL_MOUSEMOTION:
+                if(mouseClicked==true){
+                    glm::vec2 mousecoord(event.motion.x,event.motion.y);
+                    arcball->drag(mousecoord);
+                }
+
+            break;
+
         }
 
     }
@@ -396,25 +372,31 @@ int main (int argc, char **argv)
 
     */
 
-    unsigned int frameLimit = SDL_GetTicks() + 16;
+    //unsigned int frameLimit = SDL_GetTicks() + 16;
 
     /* Initialisation de la SDL dans une fonction séparée (voir après) */
-    init("Aron");
+    //init("Aron");
 
     /* Appelle la fonction cleanup à la fin du programme */
-    atexit(cleanup);
+    //atexit(cleanup);
 
 
     /* Boucle infinie, principale, du jeu */
+    //init();
+    
 
+    init();
     while (true)
     {
 
         /* On vérifie l'état des entrées (clavier puis plus tard joystick */
         getInput();
-        draw();
-        delay(frameLimit);
-        frameLimit = SDL_GetTicks() + 16;
+        //draw();
+        
+        idleFunc();
+        //delay(frameLimit);
+        //frameLimit = SDL_GetTicks() + 16;
+        SDL_GL_SwapBuffers();
 
     }
 
@@ -422,3 +404,4 @@ int main (int argc, char **argv)
     exit(0);
     return 0;
 } 
+
