@@ -120,8 +120,9 @@ glm::quat ArcBall::quatFromUnitSphere(const glm::vec3& from, const glm::vec3& to
 glm::mat4 ArcBall::getTransformation() const
 {
   //return glm::matrixCompMult(translationMatrix,mMatNow);
-  return glm::matrixCompMult(mMatNow,scaleMatrix);
+  //return glm::matrixCompMult(mMatNow,scaleMatrix);
   //return mMatNow ;
+  return mMatNow * scaleMatrix ;
 }
 
 
