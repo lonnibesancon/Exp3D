@@ -41,6 +41,8 @@ ArcBall* arcball = new ArcBall(center, 0.75*WIDTH);
 //Arcball* arcball = new Arcball();
 //ab->init();
 float scale = 1 ;
+float xWhenClicked = 0 ;
+float yWhenClicked = 0 ;
 
 void init(void)
 {
@@ -327,6 +329,8 @@ void getInput()
                 else if(event.button.button == SDL_BUTTON_RIGHT){
                     cout << "RIGHT" << endl ;
                     rightClicked = true ;
+                    xWhenClicked = event.motion.x ;
+                    yWhenClicked = event.motion.y ;
                 }
                 else if(event.button.button == SDL_BUTTON_WHEELUP){
                     cout << "wheel up" << endl;
@@ -355,7 +359,7 @@ void getInput()
                     arcball->drag(mousecoord);
                 }
                 else if(rightClicked == true){
-                    glm::vec3 vecTranslation(event.motion.x, event.motion.y, 0);
+                    glm::vec3 vecTranslation(0, event.motion.y-yWhenClicked,event.motion.x-xWhenClicked);
                     arcball->translate(vecTranslation);
                 }
 

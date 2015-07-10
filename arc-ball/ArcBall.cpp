@@ -98,7 +98,7 @@ void ArcBall::drag(const glm::vec2& msc)
 }
 
 void ArcBall::translate(glm::vec3 translate){
-  glm::translate(translationMatrix,translate) ;
+  translationMatrix = glm::translate(translationMatrix,translate) ;
 }
 
 void ArcBall::scale(float k){
@@ -122,7 +122,7 @@ glm::mat4 ArcBall::getTransformation() const
   //return glm::matrixCompMult(translationMatrix,mMatNow);
   //return glm::matrixCompMult(mMatNow,scaleMatrix);
   //return mMatNow ;
-  return mMatNow * scaleMatrix ;
+  return translationMatrix * mMatNow * scaleMatrix ;
 }
 
 
