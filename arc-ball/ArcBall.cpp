@@ -19,6 +19,9 @@ ArcBall::ArcBall(const glm::vec3& center, glm::float_t radius, const glm::mat4& 
   mVNow     = vZero;
   mQDown    = qOne;
   mQNow     = qOne;
+  translationMatrix = glm::mat4();
+  scaleMatrix = glm::mat4();
+
 }
 
 //------------------------------------------------------------------------------
@@ -94,6 +97,14 @@ void ArcBall::drag(const glm::vec2& msc)
   mMatNow = glm::mat4_cast(q);
 }
 
+void ArcBall::translate(glm::vec3 translate){
+  glm::translate(translationMatrix,translate) ;
+}
+
+void ArcBall::scale(float k){
+  scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(k));
+}
+
 //------------------------------------------------------------------------------
 glm::quat ArcBall::quatFromUnitSphere(const glm::vec3& from, const glm::vec3& to)
 {
@@ -108,7 +119,9 @@ glm::quat ArcBall::quatFromUnitSphere(const glm::vec3& from, const glm::vec3& to
 //------------------------------------------------------------------------------
 glm::mat4 ArcBall::getTransformation() const
 {
-  return mMatNow;
+  //return glm::matrixCompMult(translationMatrix,mMatNow);
+  return glm::matrixCompMult(mMatNow,scaleMatrix);
+  //return mMatNow ;
 }
 
 

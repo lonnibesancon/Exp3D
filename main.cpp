@@ -11,7 +11,6 @@
 #include <OpenGL/gl.h>
  #include <OpenGL/glu.h>
 #include <GLUT/glut.h>
-//#include </System/Library/Frameworks/SDL2.framework/Headers/SDL.h>
 #include <SDL.h>
 #undef main //Deja defini dans le framework SDL et du coup erreur de compilation
 #else
@@ -31,7 +30,8 @@ using namespace CPM_ARC_BALL_NS;
 GLfloat xRotated, yRotated, zRotated;
 GLdouble size=1;
 bool modifierPressed = false;
-bool mouseClicked = false ;
+bool leftClicked = false ;
+bool rightClicked = false ;
 glm::mat4 rMatrix = glm::mat4();
 float rM[16] ;
 SDL_Surface* screen ;
@@ -40,6 +40,7 @@ glm::vec3 center(200,175,0);
 ArcBall* arcball = new ArcBall(center, 0.75*WIDTH);
 //Arcball* arcball = new Arcball();
 //ab->init();
+float scale = 1 ;
 
 void init(void)
 {
@@ -124,13 +125,13 @@ void mouseFunc(int button, int state, int x, int y) {
         #ifdef DEBUGLOWLEVEL
         cout << "Click" << endl ;
         #endif
-        mouseClicked = true ;
+        leftClicked = true ;
         glm::vec2 mousecoord(x,y);
         arcball->beginDrag(mousecoord);
         //arcball->mouse_down(x,y);
     }
     if(state == GLUT_UP){
-    	mouseClicked = false ;
+    	leftClicked = false ;
     	//arcball->mouse_up();
         #ifdef DEBUGLOWLEVEL
         cout << "UP" << endl ;
@@ -140,7 +141,7 @@ void mouseFunc(int button, int state, int x, int y) {
 
 void mouseMovedFunc(int x, int y){
 	glm::vec2 mousecoord(x,y);
-    if(mouseClicked){
+    if(leftClicked){
     	//arcball->mouse_motion(x,y,0,0,0);
         arcball->drag(mousecoord);
         #ifdef DEBUGLOWLEVEL
@@ -178,16 +179,18 @@ void display(void)
     //Far clipping plane distance: 20.0
      
     glMatrixMode(GL_MODELVIEW);
+    glClear(GL_COLOR_BUFFER_BIT);
+    glLoadIdentity();
 
     // clear the drawing buffer.
     glClear(GL_COLOR_BUFFER_BIT);
     // clear the identity matrix.
-    glLoadIdentity();
+    
     // traslate the draw by z = -4.0
     // Note this when you decrease z like -8.0 the drawing will looks far , or smaller.
-    glTranslatef(0.0,0.0,-4.5);
+    //glTranslatef(0.0,0.0,-4.5);
     // Red color used to draw.
-    glColor3f(0.8, 0.2, 0.1); 
+    //glColor3f(0.8, 0.2, 0.1); 
     // changing in transformation matrix.
     // rotation about X axis
     //glRotatef(xRotated,1.0,0.0,0.0);
@@ -197,15 +200,19 @@ void display(void)
     //glRotatef(zRotated,0.0,0.0,1.0);
     glMultMatrixf(rM);
     // scaling transfomation 
-    glScalef(1.0,1.0,1.0);
-    // built-in (glut library) function , draw you a Teapot.
+    glScalef(0.5,0.5,0.5);
     drawCube();
-    glutSolidTeapot(size);
+    // built-in (glut library) function , draw you a Teapot.
+    //drawCube();
+    //drawCube();
+
+
     // Flush buffers to screen
      
-    glFlush();        
+    glFlush(); 
+    SDL_GL_SwapBuffers();       
     // sawp buffers called because we are using double buffering 
-    glutSwapBuffers();
+
 }
 
 void reshapeFunc(int x, int y)
@@ -263,6 +270,8 @@ void getInput()
     /* Keymapping : gère les appuis sur les touches et les enregistre
     dans la structure input */
 
+
+
     while (SDL_PollEvent(&event))
     {
         switch (event.type)
@@ -311,26 +320,43 @@ void getInput()
 
             case SDL_MOUSEBUTTONDOWN:
                 if(event.button.button == SDL_BUTTON_LEFT){
-                    mouseClicked = true ;
+                    leftClicked = true ;
                     glm::vec2 mousecoord(event.motion.x,event.motion.y);
                     arcball->beginDrag(mousecoord);
                 }
                 else if(event.button.button == SDL_BUTTON_RIGHT){
-
+                    cout << "RIGHT" << endl ;
+                    rightClicked = true ;
                 }
                 else if(event.button.button == SDL_BUTTON_WHEELUP){
                     cout << "wheel up" << endl;
+                    scale += 0.1 ;
+                    arcball->scale(scale);
                 }        
                 else if(event.button.button == SDL_BUTTON_WHEELDOWN){
                     cout << "wheel down" << endl ;
+                    scale -= 0.1 ;
+                    arcball->scale(scale);
                 }
 
             break;
 
+            case SDL_MOUSEBUTTONUP:
+                if(event.button.button == SDL_BUTTON_LEFT){
+                    leftClicked = false ;
+                }
+                else if(event.button.button == SDL_BUTTON_RIGHT){
+                    rightClicked = false ;
+                }
+
             case  SDL_MOUSEMOTION:
-                if(mouseClicked==true){
+                if(leftClicked==true){
                     glm::vec2 mousecoord(event.motion.x,event.motion.y);
                     arcball->drag(mousecoord);
+                }
+                else if(rightClicked == true){
+                    glm::vec3 vecTranslation(event.motion.x, event.motion.y, 0);
+                    arcball->translate(vecTranslation);
                 }
 
             break;
@@ -396,7 +422,7 @@ int main (int argc, char **argv)
         idleFunc();
         //delay(frameLimit);
         //frameLimit = SDL_GetTicks() + 16;
-        SDL_GL_SwapBuffers();
+        
 
     }
 

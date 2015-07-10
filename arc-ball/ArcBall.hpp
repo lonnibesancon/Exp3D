@@ -45,6 +45,10 @@ public:
   /// \param mouseScreenCoords  Mouse screen coordinates.
   void drag(const glm::vec2& mouseScreenCoords);
 
+
+  void translate(glm::vec3);
+  void scale(float k);
+
   /// Retrieves the current transformation in TCS.
   /// Obtains full transformation of object in question. If the arc ball is 
   /// being used to control camera rotation, then this will contain all
@@ -78,6 +82,8 @@ private:
   glm::vec3     mVSphereTo;     ///< vNow mapped to the sphere of 'mRadius' centered at 'mCenter' in TCS.
 
   glm::mat4     mMatNow;        ///< Matrix representing the current rotation.
+  glm::mat4     translationMatrix ; 
+  glm::mat4     scaleMatrix ;
 
   /// Transform from screen coordinates to the target coordinate system.
   glm::mat4     mScreenToTCS;
