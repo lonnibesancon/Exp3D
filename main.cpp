@@ -152,6 +152,26 @@ void mouseMovedFunc(int x, int y){
     }
 }
 
+void printMatrix(float matrix[]){
+    for(int i = 0 ; i < 4 ; i ++){
+        cout << matrix[i]<<"\t ; " ;
+    }
+    cout << endl ;
+    for(int i = 4 ; i < 8 ; i ++){
+        cout << matrix[i]<<"\t ; " ;
+    }
+    cout << endl ;
+    for(int i = 8 ; i < 12 ; i ++){
+        cout << matrix[i]<<"\t ; " ;
+    }
+    cout << endl ;
+    for(int i = 12 ; i < 16 ; i ++){
+        cout << matrix[i]<<"\t ; " ;
+    }
+    cout << endl ;
+    cout << endl ;
+}
+
 
 
 void keyboardFunc(unsigned char key, int x, int y) {
@@ -262,6 +282,7 @@ void idleFunc(void)
 	*/
     yRotated += 0.01;
      
+    printMatrix(rM);
     display();
 }
 
