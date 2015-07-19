@@ -15,6 +15,8 @@ ArcBall::ArcBall(const glm::vec3& center, glm::float_t radius, const glm::mat4& 
   glm::quat qOne(1.0, 0.0, 0.0, 0.0);
   glm::vec3 vZero(0.0, 0.0, 0.0);
 
+  identityMatrix = glm::mat4();
+
   mVDown    = vZero;
   mVNow     = vZero;
   mQDown    = qOne;
@@ -98,7 +100,7 @@ void ArcBall::drag(const glm::vec2& msc)
 }
 
 void ArcBall::translate(glm::vec3 translate){
-  translationMatrix = glm::translate(translationMatrix,translate) ;
+  translationMatrix = glm::translate(identityMatrix,translate) ;
 }
 
 void ArcBall::scale(float k){

@@ -87,6 +87,7 @@ private:
 
   /// Transform from screen coordinates to the target coordinate system.
   glm::mat4     mScreenToTCS;
+  glm::mat4     identityMatrix ;
 };
 
 } // namespace CPM_ARC_BALL_NS 

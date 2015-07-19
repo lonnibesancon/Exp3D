@@ -380,7 +380,7 @@ void getInput()
                     arcball->drag(mousecoord);
                 }
                 else if(rightClicked == true){
-                    glm::vec3 vecTranslation(0, event.motion.y-yWhenClicked,event.motion.x-xWhenClicked);
+                    glm::vec3 vecTranslation(event.motion.x - xWhenClicked, event.motion.y -yWhenClicked,0);
                     arcball->translate(vecTranslation);
                 }
 
