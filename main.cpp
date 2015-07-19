@@ -220,17 +220,14 @@ void display(void)
     //glRotatef(yRotated,0.0,1.0,0.0);
     // rotation about Z axis
     //glRotatef(zRotated,0.0,0.0,1.0);
-    glMultMatrixf(rM);
+    glMultMatrixf(glm::value_ptr(arcball->getTransformation()));
     // scaling transfomation 
     glScalef(0.5,0.5,0.5);
+    glPushMatrix();
     drawCube();
-    // built-in (glut library) function , draw you a Teapot.
-    //drawCube();
-    //drawCube();
-
+    glPopMatrix();
 
     // Flush buffers to screen
-     
     glFlush(); 
     SDL_GL_SwapBuffers();       
     // sawp buffers called because we are using double buffering 
@@ -394,48 +391,7 @@ void getInput()
 
 int main (int argc, char **argv)
 {
-	/*const glm::vec3* center = new glm::vec3(0,0,0);
-	glm::float_t radius = 0.75 ;
-	
-    //Initialize GLUT
-    glutInit(&argc, argv);
-    //double buffering used to avoid flickering problem in animation
-    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);  
-    // window size
-    glutInitWindowSize(WIDTH,HEIGHT);
-    // create the window 
-    glutCreateWindow("Teapot Rotating Animation");
-    glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
-    xRotated = yRotated = zRotated = 30.0;
-     xRotated=33;
-     yRotated=40;
-    glClearColor(0.0,0.0,0.0,0.0);
-    //Assign  the function used in events
-    glutDisplayFunc(display);
-    glutReshapeFunc(reshapeFunc);
-    glutIdleFunc(idleFunc);
-    //Let start glut loop
-    glutMouseFunc(mouseFunc);
-    glutKeyboardFunc(keyboardFunc);
-    glutKeyboardUpFunc(keyboardUpFunc);
-    glutMotionFunc(mouseMovedFunc);
-    glutMainLoop();
-
-    */
-
-    //unsigned int frameLimit = SDL_GetTicks() + 16;
-
-    /* Initialisation de la SDL dans une fonction séparée (voir après) */
-    //init("Aron");
-
-    /* Appelle la fonction cleanup à la fin du programme */
-    //atexit(cleanup);
-
-
-    /* Boucle infinie, principale, du jeu */
-    //init();
     
-
     init();
     while (true)
     {

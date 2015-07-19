@@ -125,6 +125,7 @@ glm::mat4 ArcBall::getTransformation() const
   //return glm::matrixCompMult(mMatNow,scaleMatrix);
   //return mMatNow ;
   return translationMatrix * mMatNow * scaleMatrix ;
+  //return translationMatrix;
 }
 
 
