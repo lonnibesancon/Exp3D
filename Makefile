@@ -7,8 +7,9 @@ SOURCES=main.cpp
 SOURCESARCBALL= arc-ball/Arcball.cpp
 SOURCESOSCPACK= oscpack/ip/IpEndpointName.cpp oscpack/ip/posix/NetworkingUtils.cpp oscpack/ip/posix/UdpSocket.cpp oscpack/osc/OscOutboundPacketStream.cpp oscpack/osc/OscPrintReceivedElements.cpp oscpack/osc/OscReceivedElements.cpp oscpack/osc/OscTypes.cpp
 SOURCESTUIO= TUIO/TuioClient.cpp TUIO/TuioServer.cpp TUIO/TuioTime.cpp
+SOURCETOUCH= 
 
-all: main.o arcball.o oscpack.o
+all: main.o arcball.o oscpack.o 
 	$(CC) $(LDFLAGS) main.o arcball.o -o main
 
 main.o: $(SOURCES)
@@ -22,6 +23,9 @@ oscpack.o: $(SOURCESOSCPACK)
 
 tuio.o: $(SOURCESTUIO)
 	$(CC) $(CXXFLAGS) -c $(SOURCESTUIO)
+
+rm.o:
+	rm *.o
 
 clean:
 	rm *o main
