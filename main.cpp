@@ -63,8 +63,12 @@ void init(void)
         exit(EXIT_FAILURE);
     }
 
-    glMatrixMode(GL_PROJECTION);  
-    glLoadIdentity();
+    glViewport(0, 0, WIDTH, HEIGHT); 
+    glMatrixMode(GL_PROJECTION); 
+    glLoadIdentity(); 
+    glOrtho(0, 0, WIDTH, HEIGHT, -1, 1);
+     glMatrixMode(GL_MODELVIEW); 
+    glLoadIdentity(); 
 
 
 	//glClearColor(0.0, 0.0, 0.0, 0.0);
@@ -195,19 +199,23 @@ void keyboardUpFunc(unsigned char key, int x, int y){
 
 void display(void)
 {
+
+    
+    glMatrixMode(GL_MODELVIEW); 
+    glLoadIdentity();
     
     //Angle of view:40 degrees
     //Near clipping plane distance: 0.5
     //Far clipping plane distance: 20.0
      
-    glMatrixMode(GL_MODELVIEW);
-    glClear(GL_COLOR_BUFFER_BIT);
-    glLoadIdentity();
+      //  glMatrixMode(GL_MODELVIEW);
+        glClear(GL_COLOR_BUFFER_BIT);
+        //glLoadIdentity();
 
     // clear the drawing buffer.
-    glClear(GL_COLOR_BUFFER_BIT);
+        //glClear(GL_COLOR_BUFFER_BIT);
     // clear the identity matrix.
-    
+        //glViewport(0,0, WIDTH, HEIGHT);
     // traslate the draw by z = -4.0
     // Note this when you decrease z like -8.0 the drawing will looks far , or smaller.
     //glTranslatef(0.0,0.0,-4.5);
@@ -223,9 +231,7 @@ void display(void)
     glMultMatrixf(glm::value_ptr(arcball->getTransformation()));
     // scaling transfomation 
     glScalef(0.5,0.5,0.5);
-    glPushMatrix();
     drawCube();
-    glPopMatrix();
 
     // Flush buffers to screen
     glFlush(); 
@@ -377,7 +383,8 @@ void getInput()
                     arcball->drag(mousecoord);
                 }
                 else if(rightClicked == true){
-                    glm::vec3 vecTranslation(event.motion.x - xWhenClicked, event.motion.y -yWhenClicked,0);
+                    cout << "MOUSE X = " << event.motion.x << endl ;
+                    glm::vec3 vecTranslation((event.motion.x-xWhenClicked)/WIDTH, -(event.motion.y - yWhenClicked)/HEIGHT,0);
                     arcball->translate(vecTranslation);
                 }
 
