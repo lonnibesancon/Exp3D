@@ -6,6 +6,8 @@
 #include "./arcball3/arcball.h"
 #include "./arcball3/algebra3.h"
 #include "defs.h"
+#include "TouchRenderer.h"
+#include "TouchListener.h"
 
 #ifdef __APPLE__
 #include <OpenGL/gl.h>
@@ -43,6 +45,9 @@ ArcBall* arcball = new ArcBall(center, 0.75*WIDTH);
 float scale = 1 ;
 float xWhenClicked = 0 ;
 float yWhenClicked = 0 ;
+
+TouchRenderer* touchRenderer ;
+TouchListener* touchListener ;
 
 void init(void)
 {
@@ -395,11 +400,18 @@ void getInput()
     }
  }
 
+ void initTouch(){
+    touchRenderer = new TouchRenderer();
+    touchListener = new TouchListener(touchRenderer);
+ }
+
 
 int main (int argc, char **argv)
 {
     
     init();
+    initTouch();
+    
     while (true)
     {
 
