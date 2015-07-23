@@ -17,7 +17,7 @@ public:
 	void update(long id, double x, double y);
 
 private:
-	//std::vector<std::tuple<int,TouchPoint>> history;
+	std::vector<std::tuple<int,TouchPoint>> history;
 
 };
 #endif
