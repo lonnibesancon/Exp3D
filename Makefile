@@ -68,7 +68,7 @@ SOURCESOSCPACK= oscpack/ip/IpEndpointName.cpp oscpack/ip/posix/NetworkingUtils.c
 SOURCESTUIO= TUIO/TuioClient.cpp TUIO/TuioServer.cpp TUIO/TuioTime.cpp
 SOURCETOUCH= TouchRenderer.cpp TouchPoint.cpp TouchListener.cpp
 all:
-	$(CXX) main.cpp $(SOURCESARCBALL) $(SOURCESOSCPACK) $(SOURCESTUIO) $(SOURCETOUCH) -o main $(CXXFLAGS) $(LDFLAGS)
+	$(CXX) maintouch.cpp $(SOURCESARCBALL) $(SOURCESOSCPACK) $(SOURCESTUIO) $(SOURCETOUCH) -o touchmain $(CXXFLAGS) $(LDFLAGS)
 
 clean: 
 	rm *.o

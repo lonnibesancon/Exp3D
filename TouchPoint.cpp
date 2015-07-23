@@ -16,5 +16,4 @@ void TouchPoint::update(double x, double y){
 	prevY = curY ;
 	curX = x ;
 	curY = y ;
-	
 }
