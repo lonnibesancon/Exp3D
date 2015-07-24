@@ -61,7 +61,8 @@
 
 #else
 
-#error please edit OSCHostEndianness.h to configure endianness
+// #error please edit OSCHostEndianness.h to configure endianness
+#define OSC_HOST_LITTLE_ENDIAN
 
 #endif
 
