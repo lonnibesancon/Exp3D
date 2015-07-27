@@ -81,7 +81,7 @@ void ArcBall::drag(const glm::vec2& msc)
   glm::vec4 tmp4 = (mScreenToTCS * glm::vec4(msc.x, msc.y, 0.0, 1.0));
   glm::vec3 tmp3(tmp4);
   mVNow = tmp3 ;
-  std::cout << "----->tmp4 : " << tmp4[0] << " tmp3 : " << tmp3[0] << " mVDown : " << mVDown[0] << std::endl ;
+      //std::cout << "----->tmp4 : " << tmp4[0] << " tmp3 : " << tmp3[0] << " mVDown : " << mVDown[0] << std::endl ;
   //mVNow       = (mScreenToTCS * glm::vec4(msc.x, msc.y, 0.0, 1.0)).xyz();
   mVSphereFrom= mouseOnSphere(mVDown);
   mVSphereTo  = mouseOnSphere(mVNow);
@@ -121,11 +121,7 @@ glm::quat ArcBall::quatFromUnitSphere(const glm::vec3& from, const glm::vec3& to
 //------------------------------------------------------------------------------
 glm::mat4 ArcBall::getTransformation() const
 {
-  //return glm::matrixCompMult(translationMatrix,mMatNow);
-  //return glm::matrixCompMult(mMatNow,scaleMatrix);
-  //return mMatNow ;
   return translationMatrix * mMatNow * scaleMatrix ;
-  //return translationMatrix;
 }
 
 

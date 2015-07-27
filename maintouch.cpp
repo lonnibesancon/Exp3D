@@ -58,68 +58,6 @@ bool getInput()
             case SDL_QUIT: {
                 return false;
             }
-
-            case SDL_KEYDOWN: {
-                if (event.key.keysym.sym == SDLK_ESCAPE) {
-                    return false;
-                } else if ((event.key.keysym.sym == SDLK_LSHIFT) || (event.key.keysym.sym == SDLK_RSHIFT)) {
-                    modifierPressed = true;
-                }
-                break;
-            }
-
-            case SDL_KEYUP: {
-                if ((event.key.keysym.sym == SDLK_LSHIFT) || (event.key.keysym.sym == SDLK_RSHIFT)) {
-                    modifierPressed = false;
-                }
-                break;
-            }
-
-            case SDL_MOUSEBUTTONDOWN: {
-                startModelMatrix = modelMatrix;
-                startScreenPos = mouseToScreenCoords(event.motion.x, event.motion.y);
-                modifierSet = modifierPressed;
-
-                if (event.button.button == SDL_BUTTON_LEFT) {
-                    leftClicked = true;
-                    arcball.beginDrag(mouseToScreenCoords(event.motion.x, event.motion.y));
-                } else if (event.button.button == SDL_BUTTON_RIGHT) {
-                    rightClicked = true;
-                }
-
-                break;
-            }
-
-            case SDL_MOUSEMOTION: {
-                if (rightClicked || modifierSet) {
-                    glm::vec2 curPos = mouseToScreenCoords(event.motion.x, event.motion.y);
-                    if (!modifierSet) {
-                        const float objZ = viewMatrix[3][2];
-                        glm::vec3 unprojStartPos = unproject(startScreenPos, objZ);
-                        glm::vec3 unprojCurPos = unproject(curPos, objZ);
-                        modelMatrix = glm::translate(startModelMatrix, unprojCurPos - unprojStartPos);
-                    } else {
-                        modelMatrix = glm::translate(startModelMatrix, glm::vec3(0, 0, ZOOM_SPEED * (curPos.y - startScreenPos.y)));
-                    }
-
-                } else if (leftClicked) {
-                    arcball.drag(mouseToScreenCoords(event.motion.x, event.motion.y));
-                }
-
-                break;
-            }
-
-            case SDL_MOUSEBUTTONUP: {
-                modifierSet = false;
-
-                if (event.button.button == SDL_BUTTON_LEFT) {
-                    leftClicked = false;
-                } else if (event.button.button == SDL_BUTTON_RIGHT) {
-                    rightClicked = false;
-                }
-
-                break;
-            }
         }
     }
 
@@ -147,8 +85,7 @@ void render()
 
 int main(int argc, char *argv[])
 {
-    TouchRenderer * touchrenderer = new TouchRenderer();
-    TouchListener * touchlistener = new TouchListener(touchrenderer);
+
     
     glutInit(&argc, argv);
 
@@ -170,6 +107,9 @@ int main(int argc, char *argv[])
     }
 
     glViewport(0, 0, WIDTH, HEIGHT);
+
+    TouchRenderer * touchrenderer = new TouchRenderer(modelMatrix, WIDTH, HEIGHT, viewMatrix[3][2]);
+    TouchListener * touchlistener = new TouchListener(touchrenderer);
 
     while (getInput()) {
         render();
