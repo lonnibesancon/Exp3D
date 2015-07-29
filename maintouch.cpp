@@ -24,17 +24,23 @@
 #include "TouchListener.h"
 #include "TouchPoint.h"
 
+using namespace std;
+
 static const unsigned int WIDTH = 800, HEIGHT = 600;
 static const float ZOOM_SPEED = 2.5f;
 
 static const glm::mat4 projMatrix = glm::perspective(45.0f, float(WIDTH)/HEIGHT, 0.1f, 1000.0f);
 glm::mat4 viewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, -5));
 glm::mat4 modelMatrix = glm::mat4(1.0f);
+glm::mat4 transformationMatrix = glm::mat4(1.0f);
 
 CPM_ARC_BALL_NS::ArcBall arcball(glm::vec3(0,0,100), 1.0f);
-glm::mat4 startModelMatrix;
+glm::mat4 startModelMatrix; 
 glm::vec2 startScreenPos;
 bool leftClicked = false, rightClicked = false, modifierPressed = false, modifierSet = false;
+
+TouchRenderer * touchrenderer ;
+TouchListener * touchlistener ;
 
 glm::vec2 mouseToScreenCoords(int mouseX, int mouseY)
 {
@@ -64,6 +70,17 @@ bool getInput()
     return true;
 }
 
+
+void printMatrix(){
+    const float * matrix = glm::value_ptr(touchrenderer->getModelMatrix());
+    for (int i = 0 ; i < 16 ; i++){
+        cout << matrix[i] << "\t ;" ;
+        if(i%4 == 3){
+            cout << endl ;
+        }
+    }
+}
+
 void render()
 {
     glClearColor(0.0, 0.0, 0.2, 1.0);
@@ -75,13 +92,15 @@ void render()
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    glMultMatrixf(glm::value_ptr(viewMatrix * modelMatrix * arcball.getTransformation()));
+    //printMatrix();
+    glMultMatrixf(glm::value_ptr(touchrenderer->getMultMatrix()));
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
     glutSolidTeapot(1.0);
 }
+
 
 int main(int argc, char *argv[])
 {
@@ -108,8 +127,8 @@ int main(int argc, char *argv[])
 
     glViewport(0, 0, WIDTH, HEIGHT);
 
-    TouchRenderer * touchrenderer = new TouchRenderer(modelMatrix, WIDTH, HEIGHT, viewMatrix[3][2]);
-    TouchListener * touchlistener = new TouchListener(touchrenderer);
+    touchrenderer = new TouchRenderer(transformationMatrix, WIDTH, HEIGHT, projMatrix, viewMatrix);
+    touchlistener = new TouchListener(touchrenderer);
 
     while (getInput()) {
         render();

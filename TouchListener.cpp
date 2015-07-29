@@ -34,16 +34,16 @@ void TouchListener::removeTuioObject(TuioObject *tobj){
 
 void TouchListener::addTuioCursor(TuioCursor *tcur){
 	touchrenderer->add(tcur->getCursorID(), tcur->getX(), tcur->getY());
-	cout << "Added" << tcur->getCursorID() << "SessionID : " << tcur->getSessionID() << endl ;
+	//cout << "Added" << tcur->getCursorID() << "SessionID : " << tcur->getSessionID() << endl ;
 }
 
 void TouchListener::updateTuioCursor(TuioCursor *tcur){
 	touchrenderer->update(tcur->getCursorID(), tcur->getX(), tcur->getY());
-	cout << "Updated" << tcur->getCursorID() << "SessionID : " << tcur->getSessionID() <<endl ;
+	//cout << "Updated" << tcur->getCursorID() << "SessionID : " << tcur->getSessionID() <<endl ;
 }
 void TouchListener::removeTuioCursor(TuioCursor *tcur){
 	touchrenderer->remove(tcur->getCursorID());
-	cout << "Removed" << tcur->getCursorID() << endl ;
+	//cout << "Removed" << tcur->getCursorID() << endl ;
 }
 
 void TouchListener::refresh(TuioTime frameTime){

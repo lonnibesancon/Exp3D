@@ -2,6 +2,8 @@
 #include <iostream>
 #define GLM_SWIZZLE
 
+using namespace std ;
+
 namespace CPM_ARC_BALL_NS {
 
 //------------------------------------------------------------------------------
@@ -97,6 +99,15 @@ void ArcBall::drag(const glm::vec2& msc)
   q.z = -q.z;
   q.w =  q.w;
   mMatNow = glm::mat4_cast(q);
+
+  /*const float * matrix = glm::value_ptr(mMatNow);
+    for (int i = 0 ; i < 16 ; i++){
+        cout << matrix[i] << "\t ;" ;
+        if(i%4 == 3){
+            cout << endl ;
+        }
+    }
+    cout << endl ;*/
 }
 
 void ArcBall::translate(glm::vec3 translate){

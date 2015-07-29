@@ -33,8 +33,8 @@ glm::mat4 viewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, -5));
 glm::mat4 modelMatrix = glm::mat4(1.0f);
 glm::quat rotation = glm::quat();
 
-// #define ROT_SHOEMAKE_VT
-#define ROT_BELL_VT
+ #define ROT_SHOEMAKE_VT
+//#define ROT_BELL_VT
 // #define ROT_BLENDER
 
 CPM_ARC_BALL_NS::ArcBall arcball(glm::vec3(0,0,100), TRACKBALLSIZE);
