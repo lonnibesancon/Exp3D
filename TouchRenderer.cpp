@@ -50,15 +50,10 @@ void TouchRenderer::update(long id, double x, double y){
 	if (nbOfFingers == 1){
 		startModelMatrix = modelMatrix;
 		startScreenPos = mouseToScreenCoords(x, y);
-		//glm::vec2 curPos = mouseToScreenCoords(x, y);
-		//glm::vec3 unprojStartPos = unproject(startScreenPos, objZ);
-        //glm::vec3 unprojCurPos = unproject(curPos, objZ);
-        //modelMatrix = glm::translate(startModelMatrix, unprojCurPos - unprojStartPos);
         cout << curPos[0] << " , " << curPos[1] << " X: " << x << " ; Y: " << y <<endl ;
         arcball->drag(curPos);
-        //modelMatrix = arcball->getTransformation() ;
-        //printMatrix();
 	}
+
 	else if (nbOfFingers == 2){
 		cout << "RST case" << endl ;
 		const float objZ = viewMatrix[3][2];
@@ -68,7 +63,9 @@ void TouchRenderer::update(long id, double x, double y){
         distance = computeDistanceBtwnFingers();
         float scale = distance/firstDistance ;
         cout << "Scale : " << scale << endl ;
-        modelMatrix = glm::translate(startModelMatrix, glm::vec3(0, 0, 2.5f * scale ));
+        modelMatrix = glm::scale(startModelMatrix, glm::vec3(scale,scale,scale));
+        //modelMatrix = glm::translate(startModelMatrix, glm::vec3(0, 0, 2.5f * scale ));
+        modelMatrix = glm::translate(modelMatrix, unprojCurPos - unprojStartPos);
 
 	}
 }
@@ -111,7 +108,7 @@ glm::vec2 TouchRenderer::mouseToScreenCoords(float X, float Y)
 	cout << " HEIGHT: " << HEIGHT ;
 	cout << " (X/float(WIDTH)-0.5f)*2: " << (X/float(WIDTH)-0.5f)*2 ;
 	cout << endl ;*/
-    return glm::vec2((X/float(WIDTH)-0.5f)*2, -(Y/float(HEIGHT)-0.5f)*2);
+    return glm::vec2((X/float(1)-0.5f)*2, -(Y/float(1)-0.5f)*2);
 }
 
 void TouchRenderer::printMatrix(){
