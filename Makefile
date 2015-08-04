@@ -55,7 +55,7 @@ else
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
 CXXFLAGS += -ggdb
-LDFLAGS := -lGL -lGLU -lglut -lSDL
+LDFLAGS := -lGL -lGLU -lglut -lSDL -lpthread
 endif
 ifeq ($(UNAME_S),Darwin)
 CXXFLAGS += -D_GNU_SOURCE=1 -D_THREAD_SAFE -I/Library/Frameworks/SDL.framework/Headers/
@@ -67,8 +67,11 @@ SOURCESARCBALL= arc-ball/ArcBall.cpp
 SOURCESOSCPACK= oscpack/ip/IpEndpointName.cpp oscpack/ip/posix/NetworkingUtils.cpp oscpack/ip/posix/UdpSocket.cpp oscpack/osc/OscTypes.cpp oscpack/osc/OscOutboundPacketStream.cpp oscpack/osc/OscPrintReceivedElements.cpp oscpack/osc/OscReceivedElements.cpp 
 SOURCESTUIO= TUIO/TuioClient.cpp TUIO/TuioServer.cpp TUIO/TuioTime.cpp
 SOURCETOUCH= TouchRenderer.cpp TouchPoint.cpp TouchListener.cpp
-all:
-	$(CXX) maintouch.cpp $(SOURCESARCBALL) $(SOURCESOSCPACK) $(SOURCESTUIO) $(SOURCETOUCH) -o touchmain $(CXXFLAGS) $(LDFLAGS)
+all: $(SOURCESARCBALL:%.cpp=%.o) $(SOURCESOSCPACK:%.cpp=%.o) $(SOURCESTUIO:%.cpp=%.o) $(SOURCETOUCH:%.cpp=%.o) maintouch.o
+	$(CXX) $^ -o touchmain $(CXXFLAGS) $(LDFLAGS)
+
+%.o: %.cpp
+	$(CXX) -c $< -o $@ $(CXXFLAGS)
 
 clean: 
 	rm *.o

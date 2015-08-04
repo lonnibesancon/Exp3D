@@ -177,7 +177,7 @@ bool getInput()
 						const float objZ = viewMatrix[3][2];
 						glm::vec3 unprojStartPos = unproject(startScreenPos, objZ);
 						glm::vec3 unprojCurPos = unproject(curPos, objZ);
-						modelMatrix = glm::translate(startModelMatrix, unprojCurPos - unprojStartPos);
+						modelMatrix = glm::translate(startModelMatrix, glm::mat3(glm::transpose(modelMatrix)) * (unprojCurPos - unprojStartPos));
 					} else {
 						modelMatrix = glm::translate(startModelMatrix, glm::vec3(0, 0, ZOOM_SPEED * (curPos.y - startScreenPos.y)));
 					}

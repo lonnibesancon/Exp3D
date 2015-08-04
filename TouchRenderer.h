@@ -50,9 +50,12 @@ private:
 	glm::mat4 modelMatrix ;
 	glm::mat4 startModelMatrix ;
 	glm::vec2 startScreenPos;
-	glm::vec2 test;
+	glm::vec2 prevScreenPos;
 	glm::mat4 projMatrix ;
 	glm::mat4 viewMatrix ;
+	glm::quat startRotation;
+	glm::vec3 startObjectPos;
+	glm::vec2 startOffset;
 	float firstDistance ;
 	float distance ;
 

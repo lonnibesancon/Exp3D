@@ -26,7 +26,8 @@
 
 using namespace std;
 
-static const unsigned int WIDTH = 800, HEIGHT = 600;
+// static const unsigned int WIDTH = 800, HEIGHT = 600;
+static const unsigned int WIDTH = 1920, HEIGHT = 1080;
 static const float ZOOM_SPEED = 2.5f;
 
 glm::mat4 targetModel ;
@@ -66,6 +67,13 @@ bool getInput()
             case SDL_QUIT: {
                 return false;
             }
+
+            case SDL_KEYDOWN: {
+                if (event.key.keysym.sym == SDLK_ESCAPE) {
+                    return false;
+                }
+                break;
+            }
         }
     }
 
@@ -104,10 +112,10 @@ void render()
     glutSolidTeapot(1.0);
     glPopMatrix();
 
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
-    glutWireTeapot(1.0);
+    // glEnable(GL_DEPTH_TEST);
+    // glEnable(GL_LIGHTING);
+    // glEnable(GL_LIGHT0);
+    // glutWireTeapot(1.0);
 }
 
 glm::mat4 generateRandomModelMatrix(){
@@ -153,8 +161,9 @@ int main(int argc, char *argv[])
 
     SDL_WM_SetCaption("Mon premier programme OpenGL !", nullptr);
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    SDL_ShowCursor(SDL_DISABLE);
 
-    if (!(screen = SDL_SetVideoMode(WIDTH, HEIGHT, 32, SDL_OPENGL /*| SDL_FULLSCREEN*/))) {
+    if (!(screen = SDL_SetVideoMode(WIDTH, HEIGHT, 32, SDL_OPENGL | SDL_FULLSCREEN))) {
         std::cerr << "SDL_SetVideoMode() failed: " << SDL_GetError() << '\n';
         return EXIT_FAILURE;
     }
