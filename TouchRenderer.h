@@ -7,13 +7,17 @@
 #include "glm/gtc/type_ptr.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtx/string_cast.hpp"
+#include "glm/gtx/vector_angle.hpp"
 #include <math.h>
+#include <tgmath.h>
 
 #include "arc-ball/ArcBall.hpp"
 
 #include <vector>
 #include <tuple>
 #include <iostream>
+
+const float Pi = 3.141592654f;
 
 
 class TouchRenderer
@@ -23,6 +27,11 @@ public:
 	~TouchRenderer();
 
 	std::vector<TouchPoint> touchpoints ;
+	glm::vec2 originalVector ;
+	glm::vec2 newVector ;
+	glm::vec3 objectPos ;
+	float objectAngle ;
+
 
 	void add(long id, double x, double y);
 	void remove(long id);
@@ -41,6 +50,7 @@ private:
 	glm::mat4 modelMatrix ;
 	glm::mat4 startModelMatrix ;
 	glm::vec2 startScreenPos;
+	glm::vec2 test;
 	glm::mat4 projMatrix ;
 	glm::mat4 viewMatrix ;
 	float firstDistance ;
@@ -57,6 +67,11 @@ private:
 	void printMatrix();
 	glm::vec3 unproject(const glm::vec2& pos, float dist);
 	float computeDistanceBtwnFingers();
+	glm::vec2 getMidPoint();
+	glm::vec2 getVector(float px, float py, float qx, float qy);
+	float getAngleBetweenTwoVecs (glm::vec2 v, glm::vec2 w);
+
+	void update();
 
 
 };

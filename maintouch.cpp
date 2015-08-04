@@ -29,6 +29,8 @@ using namespace std;
 static const unsigned int WIDTH = 800, HEIGHT = 600;
 static const float ZOOM_SPEED = 2.5f;
 
+glm::mat4 targetModel ;
+
 static const glm::mat4 projMatrix = glm::perspective(45.0f, float(WIDTH)/HEIGHT, 0.1f, 1000.0f);
 glm::mat4 viewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, -5));
 glm::mat4 modelMatrix = glm::mat4(1.0f);
@@ -71,8 +73,8 @@ bool getInput()
 }
 
 
-void printMatrix(){
-    const float * matrix = glm::value_ptr(touchrenderer->getModelMatrix());
+void printMatrix(glm::mat4 mat){
+    const float * matrix = glm::value_ptr(mat);
     for (int i = 0 ; i < 16 ; i++){
         cout << matrix[i] << "\t ;" ;
         if(i%4 == 3){
@@ -92,20 +94,52 @@ void render()
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    //printMatrix();
-    glMultMatrixf(glm::value_ptr(touchrenderer->getMultMatrix()));
 
+    //printMatrix();
+    glPushMatrix();
+    glMultMatrixf(glm::value_ptr(touchrenderer->getMultMatrix()));
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
     glutSolidTeapot(1.0);
+    glPopMatrix();
+
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    glutWireTeapot(1.0);
+}
+
+glm::mat4 generateRandomModelMatrix(){
+    float maxRotation = 1  ;
+    float maxTranslation = 20 ;
+    float minRotation = - 1 ;
+    float minTranslation = - 20 ;
+    float t1 = minTranslation + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(maxTranslation-minTranslation)));
+    float t2 = minTranslation + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(maxTranslation-minTranslation)));
+    float t3 = minTranslation + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(maxTranslation-minTranslation)));
+    float r1 = minRotation + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(maxRotation-minRotation)));
+    float r2 = minRotation + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(maxRotation-minRotation)));
+    float r3 = minRotation + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(maxRotation-minRotation)));
+    glm::mat4 targetModel = glm::translate(glm::vec3(t1,t2,t3));
+    targetModel = glm::rotate(targetModel, r1, glm::vec3(1,0,0));
+    targetModel = glm::rotate(targetModel, r1, glm::vec3(0,1,0));
+    targetModel = glm::rotate(targetModel, r1, glm::vec3(0,0,1));
+    printMatrix(targetModel);
+
+    printMatrix(glm::mat4(0.993176,-0.0755228,0.0888655,0,0.0823232,0.99374,-0.0755228,0,-0.0826055,0.0823232,0.993176,0,-19.9997,-14.7385,10.2242,1));
+    return targetModel ;
+
+
+    
+
 }
 
 
 int main(int argc, char *argv[])
 {
 
-    
+    generateRandomModelMatrix();
     glutInit(&argc, argv);
 
     SDL_Surface* screen;
