@@ -27,7 +27,11 @@
 using namespace std;
 
 // static const unsigned int WIDTH = 800, HEIGHT = 600;
+#ifdef __APPLE__
 static const unsigned int WIDTH = 1440, HEIGHT = 900;
+#else
+static const unsigned int WIDTH = 1920, HEIGHT = 1080;
+#endif
 static const float ZOOM_SPEED = 2.5f;
 
 glm::mat4 targetModel ;
