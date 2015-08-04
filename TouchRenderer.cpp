@@ -136,9 +136,9 @@ void TouchRenderer::update(long id, double x, double y){
         objectPos = unprojCurPos - unprojStartPos ;
         
         distance = computeDistanceBtwnFingers();
-        //modelMatrix = glm::translate(startModelMatrix, glm::vec3(0, 0, 1/firstDistance * (1-firstDistance/distance))) * glm::rotate(startModelMatrix,angle, glm::vec3(0,0,1));
+        modelMatrix = glm::translate(startModelMatrix, glm::vec3(0, 0, 1/firstDistance * (1-firstDistance/distance))) * glm::rotate(startModelMatrix,objectAngle, glm::vec3(0,0,1));
         objectPos.z = 1/firstDistance * (1-firstDistance/distance);
-        update();
+        //update();
 
 	}
 }
