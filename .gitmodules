@@ -1,0 +1,3 @@
+[submodule "mtdev2tuio"]
+	path = mtdev2tuio
+	url = https://github.com/olivopaolo/mtdev2tuio.git
