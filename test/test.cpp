@@ -1,4 +1,7 @@
 #include <iostream>
+#include <vector>
+#include <string>
+#include <sstream>
 
 #ifdef __APPLE__
   #include <OpenGL/gl.h>
@@ -29,6 +32,9 @@ static const glm::mat4 projMatrix = glm::perspective(45.0f, float(WIDTH)/HEIGHT,
 glm::mat4 viewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, -5));
 glm::mat4 modelMatrix = glm::mat4(1.0f);
 glm::quat rotation = glm::quat();
+
+glm::vec3 trackingPos;
+glm::quat trackingRot;
 
 // #define ROT_SHOEMAKE_VT
 #define ROT_BELL_VT
@@ -123,6 +129,25 @@ void trackball(const glm::vec2& pt1, const glm::vec2& pt2)
 #endif
 }
 #endif
+
+std::vector<std::string> split(const std::string& str, char sep)
+{
+	std::vector<std::string> result;
+	std::istringstream iss(str);
+	std::string sub;
+	while (std::getline(iss, sub, sep))
+		result.push_back(sub);
+	return result;
+}
+
+template <typename T>
+T fromString(const std::string& str)
+{
+	std::istringstream iss(str);
+	T result;
+	iss >> result;
+	return result;
+}
 
 bool getInput()
 {
@@ -270,8 +295,18 @@ int main(int argc, char *argv[])
 
 	glViewport(0, 0, WIDTH, HEIGHT);
 
+	std::string str;
 	while (getInput()) {
 		render();
+		if (std::getline(std::cin, str)) {
+			// if (str.find("----") == 0) continue; // for "adb logcat"
+			std::vector<std::string> values = split(split(str, '|')[1], ',');
+			trackingPos = glm::vec3(fromString<float>(values[0])/10, -fromString<float>(values[1])/10, -fromString<float>(values[2])/10);
+			trackingRot = glm::quat(fromString<float>(values[6]), fromString<float>(values[3]), -fromString<float>(values[4]), -fromString<float>(values[5]));
+			trackingRot = glm::normalize(trackingRot);
+			modelMatrix = glm::translate(glm::mat4(), trackingPos) * glm::mat4_cast(trackingRot);
+			std::cout << glm::to_string(trackingPos) << '\n';
+		}
 		SDL_GL_SwapBuffers();
 	}
 }
