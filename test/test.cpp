@@ -17,6 +17,7 @@
 #include "glm/gtc/type_ptr.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtx/string_cast.hpp"
+#include "glm/gtx/vector_angle.hpp"
 
 #include "arc-ball/ArcBall.hpp"
 
@@ -36,7 +37,7 @@ glm::quat rotation = glm::quat();
 CPM_ARC_BALL_NS::ArcBall arcball(glm::vec3(0,0,100), TRACKBALLSIZE);
 glm::vec2 trackballPrevPos;
 glm::mat4 startModelMatrix;
-glm::vec2 startScreenPos;
+glm::vec2 startScreenPos, lastScreenPos;
 bool leftClicked = false, rightClicked = false, modifierPressed = false, modifierSet = false;
 
 glm::vec2 mouseToScreenCoords(int mouseX, int mouseY)
@@ -154,6 +155,7 @@ bool getInput()
 
 				startModelMatrix = modelMatrix;
 				startScreenPos = mouseToScreenCoords(event.motion.x, event.motion.y);
+				lastScreenPos = startScreenPos;
 				modifierSet = modifierPressed;
 
 				if (event.button.button == SDL_BUTTON_LEFT) {
@@ -172,24 +174,34 @@ bool getInput()
 
 			case SDL_MOUSEMOTION: {
 				glm::vec2 curPos = mouseToScreenCoords(event.motion.x, event.motion.y);
-				if (rightClicked || modifierSet) {
+				if (rightClicked) {
 					if (!modifierSet) {
-						const float objZ = viewMatrix[3][2];
+						const float objZ = (viewMatrix * modelMatrix)[3][2];
 						glm::vec3 unprojStartPos = unproject(startScreenPos, objZ);
 						glm::vec3 unprojCurPos = unproject(curPos, objZ);
 						modelMatrix = glm::translate(startModelMatrix, glm::mat3(glm::transpose(modelMatrix)) * (unprojCurPos - unprojStartPos));
 					} else {
-						modelMatrix = glm::translate(startModelMatrix, glm::vec3(0, 0, ZOOM_SPEED * (curPos.y - startScreenPos.y)));
+						// From: vtkInteractorStyleTrackballCamera.cxx
+						glm::vec3 center = glm::project(glm::vec3(0,0,0), viewMatrix*modelMatrix, projMatrix, glm::vec4(-1, -1, 2, 2));
+						float newAngle = std::atan2(curPos.y-center.y, curPos.x-center.x);
+						float oldAngle = std::atan2(lastScreenPos.y-center.y, lastScreenPos.x-center.x);
+						modelMatrix = glm::rotate(modelMatrix, newAngle-oldAngle, glm::mat3(modelMatrix)*glm::vec3(0,0,1));
 					}
 
 				} else if (leftClicked) {
+					if (!modifierSet) {
 #ifdef ROT_SHOEMAKE_VT
-					arcball.drag(-curPos);
+						arcball.drag(-curPos);
 #else
-					trackball(curPos, trackballPrevPos);
-					trackballPrevPos = curPos;
+						trackball(curPos, trackballPrevPos);
+						trackballPrevPos = curPos;
 #endif
+					} else {
+						modelMatrix = glm::translate(startModelMatrix, glm::vec3(0, 0, ZOOM_SPEED * -(curPos.y - startScreenPos.y)));
+					}
 				}
+
+				lastScreenPos = curPos;
 
 				break;
 			}
