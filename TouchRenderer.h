@@ -1,8 +1,6 @@
 #ifndef TOUCH_RENDERER
 #define TOUCH_RENDERER
 #include "TouchPoint.h"
-#define GLM_SWIZZLE
-#define GLM_FORCE_RADIANS
 #include "glm/glm.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include "glm/gtc/matrix_transform.hpp"
@@ -16,11 +14,7 @@
 #include <vector>
 #include <tuple>
 #include <iostream>
-#include <cstdio>
-#include <ctime>
 #include "globalDefs.hpp"
-
-const float Pi = 3.141592654f;
 
 
 class TouchRenderer
@@ -76,8 +70,6 @@ private:
 	unsigned int WIDTH;
 	unsigned int HEIGHT;
 	int nbOfFingers ;
-
-	clock_t start;
 
 
 	int getIndexOfFingerById(long id);

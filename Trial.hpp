@@ -6,17 +6,34 @@
 #include <cstdio>
 #include <ctime>
 
+
+#include "glm/glm.hpp"
+#include "glm/gtc/type_ptr.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtx/string_cast.hpp"
+
+
+
+
 class Trial{
 public:
-	Trial(glm4::mat4 t, int trialI);
+	Trial(glm::mat4 t, int trialI);
 	~Trial();
+
+	std::vector<glm::mat4> historyMatrix ;
+
+	void measureTime(int c);
+	std::vector<std::string> getTimeHistory();
+
+	clock_t start;
+	
 
 
 private:
-	glm4::mat4 target ;
+	glm::mat4 target ;
 	int trialInd ;
 	time_t totalTime ;
+	int currentMode ;
 
-	vector<tuple<int,double>> historyClicks ;
-    vector<glm::mat4> historyMatrix ;
+	std::vector<std::tuple<int,double>> historyTime ;
 };

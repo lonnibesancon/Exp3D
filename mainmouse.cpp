@@ -11,8 +11,6 @@
   #include <SDL/SDL.h>
 #endif
 
-#define GLM_SWIZZLE
-#define GLM_FORCE_RADIANS
 #include "glm/glm.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include "glm/gtc/matrix_transform.hpp"
@@ -23,6 +21,8 @@
 #include "TouchRenderer.h"
 #include "TouchListener.h"
 #include "TouchPoint.h"
+#include "Trial.hpp"
+#include "globalDefs.hpp"
 
 using namespace std ;
 
@@ -48,6 +48,8 @@ namespace mainmouse{
     glm::mat4 viewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, -5));
     glm::mat4 modelMatrix = glm::mat4(1.0f);
     glm::quat rotation = glm::quat();
+
+    Trial *t ;
 
      #define ROT_SHOEMAKE_VT
     //#define ROT_BELL_VT
@@ -159,6 +161,12 @@ namespace mainmouse{
                         return false;
                     } else if ((event.key.keysym.sym == SDLK_LSHIFT) || (event.key.keysym.sym == SDLK_RSHIFT)) {
                         modifierPressed = true;
+                        if(leftClicked == true){        //For Logging only
+                            t->measureTime(LEFTANDSHIFT);
+                        }
+                        else if(rightClicked == true){
+                            t->measureTime(RIGHTANDSHIFT);
+                        }
                     }
                     break;
                 }
@@ -179,6 +187,12 @@ namespace mainmouse{
 
                     if (event.button.button == SDL_BUTTON_LEFT) {
                         leftClicked = true;
+                        if(modifierPressed == true){        //FOr Logging
+                            t->measureTime(LEFTANDSHIFT);
+                        }
+                        else{
+                            t->measureTime(LEFT);
+                        }
     #ifdef ROT_SHOEMAKE_VT
                         arcball.beginDrag(-mouseToScreenCoords(event.motion.x, event.motion.y));
     #else
@@ -186,6 +200,12 @@ namespace mainmouse{
     #endif
                     } else if (event.button.button == SDL_BUTTON_RIGHT) {
                         rightClicked = true;
+                        if(modifierPressed == true){        //FOr Logging
+                            t->measureTime(RIGHTANDSHIFT);
+                        }
+                        else{
+                            t->measureTime(RIGHT);
+                        }
                     }
 
                     break;
@@ -221,8 +241,10 @@ namespace mainmouse{
 
                     if (event.button.button == SDL_BUTTON_LEFT) {
                         leftClicked = false;
+                        t->measureTime(IDLE);
                     } else if (event.button.button == SDL_BUTTON_RIGHT) {
                         rightClicked = false;
+                        t->measureTime(IDLE);
                     }
 
                     break;
@@ -265,6 +287,8 @@ namespace mainmouse{
 
         SDL_Surface* screen;
 
+        t = new Trial(glm::mat4(),1);
+
         if (SDL_Init(SDL_INIT_VIDEO) < 0) {
             std::cerr << "SDL_Init() failed: " << SDL_GetError() << '\n';
             return EXIT_FAILURE;
@@ -286,5 +310,14 @@ namespace mainmouse{
             render();
             SDL_GL_SwapBuffers();
         }
+
+            vector<string> v = t->getTimeHistory();
+            for(std::vector<tuple<int, double>>::size_type i = 0; i!=v.size(); i++) {
+                cout << v.at(i);
+            }
+            vector<glm::mat4> w = t->historyMatrix;
+            for(std::vector<tuple<glm::mat4>>::size_type i = 0; i!=w.size(); i++) {
+                cout << to_string(w.at(i)) << endl ;
+            }
     }
 }
