@@ -19,7 +19,11 @@
   #include <GL/gl.h>
   #include <GL/glut.h>
   #include <SDL/SDL.h>
+#ifdef WIN32
   #include <direct.h>
+#else
+  #include <sys/stat.h>
+#endif
 #endif
 
 #define GLM_SWIZZLE

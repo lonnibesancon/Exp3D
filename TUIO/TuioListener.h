@@ -101,5 +101,5 @@ namespace TUIO {
 		 */
 		virtual void refresh(TuioTime ftime)=0;
 	};
-};
+}
 #endif /* INCLUDED_TUIOLISTENER_H */

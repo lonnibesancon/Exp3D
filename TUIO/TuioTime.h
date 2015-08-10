@@ -240,5 +240,5 @@ namespace TUIO {
 		 */	
 		static TuioTime getSystemTime();
 	};
-};
+}
 #endif /* INCLUDED_TUIOTIME_H */

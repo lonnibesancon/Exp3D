@@ -14,8 +14,8 @@ public:
 
 	void update(double x, double Y);
 
+	double curX, prevX, curY, prevY, contactX, contactY ;
 	long id;
-	double curX, curY, prevX, prevY, contactX, contactY ;
 	double duration ;
 };
 

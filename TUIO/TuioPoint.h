@@ -267,5 +267,5 @@ namespace TUIO {
 			return startTime;
 		};
 	};
-};
+}
 #endif

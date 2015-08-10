@@ -256,5 +256,5 @@ namespace TUIO {
 			else return false;
 		};
 	};
-};
+}
 #endif
