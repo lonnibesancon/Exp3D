@@ -99,7 +99,7 @@ void TouchRenderer::add(long id, double x, double y){
 		//start = std::clock();
 		//measureTime(ONETOTWO);
 		startRotation = rotation;
-		startObjectPos = glm::vec3 (modelMatrix * glm::vec4(0,0,0,1));
+		startObjectPos = glm::vec3 (modelMatrix * glm::vec4(0,0,0,1));		// Changes made here cause .xyz() not working
 		float xavg = (touchpoints.at(0).curX + touchpoints.at(1).curX) / 2.0f;
 		float yavg = (touchpoints.at(0).curY + touchpoints.at(1).curY) / 2.0f;
 		startOffset = mouseToScreenCoords(xavg, yavg) - startScreenPos;
