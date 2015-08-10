@@ -8,11 +8,11 @@ else
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
 CXXFLAGS += -ggdb
-LDFLAGS := -lGL -lGLU -lglut -lSDL -lpthread
+LDFLAGS := -lGL -lGLU -lglut -lSDL -lpthread -lboost_system -lboost_filesystem
 endif
 ifeq ($(UNAME_S),Darwin)
-CXXFLAGS += -D_GNU_SOURCE=1 -D_THREAD_SAFE -I/Library/Frameworks/SDL.framework/Headers/
-LDFLAGS := -framework GLUT -framework OpenGL -L/usr/local/lib -lSDLmain -lSDL -Wl,-framework,Cocoa -L/usr/local/lib
+CXXFLAGS += -D_GNU_SOURCE=1 -D_THREAD_SAFE -I/Library/Frameworks/SDL.framework/Headers/ -I /usr/local/include
+LDFLAGS := -framework GLUT -framework OpenGL -L/usr/local/lib -lSDLmain -lSDL -Wl,-framework,Cocoa -L/usr/local/lib -lboost_system -lboost_filesystem
 endif
 endif
 
@@ -20,8 +20,8 @@ SOURCESARCBALL= arc-ball/ArcBall.cpp
 SOURCESOSCPACK= oscpack/ip/IpEndpointName.cpp oscpack/ip/posix/NetworkingUtils.cpp oscpack/ip/posix/UdpSocket.cpp oscpack/osc/OscTypes.cpp oscpack/osc/OscOutboundPacketStream.cpp oscpack/osc/OscPrintReceivedElements.cpp oscpack/osc/OscReceivedElements.cpp 
 SOURCESTUIO= TUIO/TuioClient.cpp TUIO/TuioServer.cpp TUIO/TuioTime.cpp
 SOURCETOUCH= TouchRenderer.cpp TouchPoint.cpp TouchListener.cpp
-all: $(SOURCESARCBALL:%.cpp=%.o) $(SOURCESOSCPACK:%.cpp=%.o) $(SOURCESTUIO:%.cpp=%.o) $(SOURCETOUCH:%.cpp=%.o) maintouch.o
-	$(CXX) $^ -o touchmain $(CXXFLAGS) $(LDFLAGS)
+all: $(SOURCESARCBALL:%.cpp=%.o) $(SOURCESOSCPACK:%.cpp=%.o) $(SOURCESTUIO:%.cpp=%.o) $(SOURCETOUCH:%.cpp=%.o) main.o
+	$(CXX) $^ -o main $(CXXFLAGS) $(LDFLAGS)
 
 %.o: %.cpp
 	$(CXX) -c $< -o $@ $(CXXFLAGS)
