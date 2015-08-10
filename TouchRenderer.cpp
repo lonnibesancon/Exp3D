@@ -18,7 +18,7 @@ TouchRenderer::TouchRenderer(glm::mat4 model, unsigned int W, unsigned int H, gl
 	distance = 0;
 	objectAngle = 0 ;
 	resetTouchInfo();
-	start = std::clock();
+	//start = std::clock();
 }
 
 void TouchRenderer::resetTouchInfo(){
@@ -72,11 +72,11 @@ void trackball(const glm::vec2& pt1, const glm::vec2& pt2)
     rotation = q * rotation;
 }
 
-void TouchRenderer::measureTime(int c){
+/*void TouchRenderer::measureTime(int c){
 	double time = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
 	historyFingers.push_back(tuple<int,double>(c,time));
 	start = std::clock();
-}
+}*/
 
 
 void TouchRenderer::add(long id, double x, double y){
@@ -87,7 +87,7 @@ void TouchRenderer::add(long id, double x, double y){
 		//tWithoutTouch = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
 		//historyFingers.push_back(tuple<int,double>(0,tWithoutTouch));
 		//start = std::clock();
-		measureTime(ZEROTOONE);
+		//measureTime(ZEROTOONE);
 		startScreenPos = mouseToScreenCoords(x,y);
 		prevScreenPos = startScreenPos;
 		// arcball->beginDrag(startScreenPos);
@@ -97,9 +97,9 @@ void TouchRenderer::add(long id, double x, double y){
 		//tCurrentSingle = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
 		//historyFingers.push_back(tuple<int,double>(1,tCurrentSingle));
 		//start = std::clock();
-		measureTime(ONETOTWO);
+		//measureTime(ONETOTWO);
 		startRotation = rotation;
-		startObjectPos = (modelMatrix * glm::vec4(0,0,0,1)).xyz();
+		startObjectPos = glm::vec3 (modelMatrix * glm::vec4(0,0,0,1));
 		float xavg = (touchpoints.at(0).curX + touchpoints.at(1).curX) / 2.0f;
 		float yavg = (touchpoints.at(0).curY + touchpoints.at(1).curY) / 2.0f;
 		startOffset = mouseToScreenCoords(xavg, yavg) - startScreenPos;
@@ -113,7 +113,7 @@ void TouchRenderer::add(long id, double x, double y){
 		//tCurrentDouble = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
 		//historyFingers.push_back(tuple<int,double>(2,tCurrentDouble));
 		//start = std::clock();
-		measureTime(TWOTOMORE);
+		//measureTime(TWOTOMORE);
 	}
 	nbOfTouches ++ ;
 }
@@ -125,13 +125,13 @@ void TouchRenderer::remove(long id){
 		//tMoreThanTwo = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
 		//historyFingers.push_back(tuple<int,double>(3,tCurrentDouble));
 		//start = std::clock();
-		measureTime(BACKTOTWO);
+		//measureTime(BACKTOTWO);
 	}
 	else if(nbOfFingers == 1){
 		//tCurrentDouble = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
 		//historyFingers.push_back(tuple<int,double>(2,tCurrentDouble));
 		//start = std::clock();
-		measureTime(TWOTOONE);
+		//measureTime(TWOTOONE);
 		cout << "Reset mouseToScreenCoords with the last finger remaining" << endl ;
 		startScreenPos = mouseToScreenCoords(touchpoints.at(0).curX, touchpoints.at(0).curY);
 		prevScreenPos = startScreenPos;
@@ -140,7 +140,7 @@ void TouchRenderer::remove(long id){
 		//tCurrentSingle = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
 		//historyFingers.push_back(tuple<int,double>(1,tCurrentSingle));
 		//start = std::clock();
-		measureTime(ONETOZERO);
+		//measureTime(ONETOZERO);
 	}
 }
 void TouchRenderer::update(long id, double x, double y){
@@ -223,7 +223,7 @@ float TouchRenderer::getAngleBetweenTwoVecs (glm::vec2 v, glm::vec2 w){
 	float dotProduct = v[0]*w[0] + v[1]*w[1] ;
 	float det = v[0]*w[1] - v[1]*w[0];
 	float angle =  atan2(dotProduct, det);
-	angle = angle / Pi ;
+	angle = angle / PI ;
 	return angle ;
 }
 
