@@ -92,5 +92,5 @@ namespace TUIO {
 			return cursor_id;
 		};
 	};
-};
+}
 #endif

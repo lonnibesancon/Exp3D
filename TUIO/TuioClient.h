@@ -214,5 +214,5 @@ namespace TUIO {
 		bool locked;
 		bool connected;
 	};
-};
+}
 #endif /* INCLUDED_TUIOCLIENT_H */
