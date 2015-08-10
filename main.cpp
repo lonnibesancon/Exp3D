@@ -3,6 +3,7 @@
 #include <fstream>
 #include <algorithm>  // for std::sort, std::next_permutation
 #include <boost/filesystem.hpp>
+#include "globalDefs.hpp"
 
 #ifdef __APPLE__
   #include <OpenGL/gl.h>

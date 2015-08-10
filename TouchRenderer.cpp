@@ -1,12 +1,5 @@
 #include "TouchRenderer.h"
 
-#define ZEROTOONE 0
-#define ONETOTWO 1
-#define ONETOZERO 1
-#define TWOTOMORE 2
-#define TWOTOONE 2
-#define BACKTOTWO 3
-
 
 using namespace std ;
 

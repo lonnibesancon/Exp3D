@@ -18,6 +18,7 @@
 #include <iostream>
 #include <cstdio>
 #include <ctime>
+#include "globalDefs.hpp"
 
 const float Pi = 3.141592654f;
 

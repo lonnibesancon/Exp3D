@@ -26,11 +26,7 @@
 
 using namespace std ;
 
-#define LEFT            0
-#define RIGHTCLICK      1
-#define LEFTANDSHIFT    2
-#define RIGHTANDSHIFT   3
-#define IDLE            4
+
 
 
 
