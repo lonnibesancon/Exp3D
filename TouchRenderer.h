@@ -32,6 +32,15 @@ public:
 	glm::vec3 objectPos ;
 	float objectAngle ;
 
+	/*
+	 *Logging information on touch data
+	 */
+	 int nbOfTouches ;
+	 time_t tSingleFingerTotal ;
+	 time_t tDoubleFingersTotal ;
+	 time_t tCurrentSingle ;
+	 time_t tCurrentDouble ;
+
 
 	void add(long id, double x, double y);
 	void remove(long id);
@@ -44,9 +53,9 @@ public:
 	glm::mat4 getMultMatrix();
 
 private:
-	CPM_ARC_BALL_NS::ArcBall * arcball ;
 	std::vector<std::tuple<int,TouchPoint>> history;
-	
+
+	CPM_ARC_BALL_NS::ArcBall * arcball ;	
 	glm::mat4 modelMatrix ;
 	glm::mat4 startModelMatrix ;
 	glm::vec2 startScreenPos;
@@ -62,7 +71,6 @@ private:
 	unsigned int WIDTH;
 	unsigned int HEIGHT;
 	int nbOfFingers ;
-	float objZ ;
 
 
 	int getIndexOfFingerById(long id);
@@ -71,7 +79,7 @@ private:
 	glm::vec3 unproject(const glm::vec2& pos, float dist);
 	float computeDistanceBtwnFingers();
 	glm::vec2 getMidPoint();
-	glm::vec2 getVector(float px, float py, float qx, float qy);
+	glm::vec2 getVector(TouchPoint t, TouchPoint u);
 	float getAngleBetweenTwoVecs (glm::vec2 v, glm::vec2 w);
 
 	void update();

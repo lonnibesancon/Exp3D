@@ -24,6 +24,8 @@
 #include "TouchListener.h"
 #include "TouchPoint.h"
 
+#include <string>
+
 using namespace std;
 
 // static const unsigned int WIDTH = 800, HEIGHT = 600;
@@ -33,6 +35,8 @@ static const unsigned int WIDTH = 1440, HEIGHT = 900;
 static const unsigned int WIDTH = 1920, HEIGHT = 1080;
 #endif
 static const float ZOOM_SPEED = 2.5f;
+
+std::vector<glm::mat4> targetMatrices;
 
 glm::mat4 targetModel ;
 
@@ -119,40 +123,64 @@ void render()
     // glEnable(GL_DEPTH_TEST);
     // glEnable(GL_LIGHTING);
     // glEnable(GL_LIGHT0);
-    // glutWireTeapot(1.0);
+    glTranslatef(0,0,-5);
+    glMultMatrixf(glm::value_ptr(targetMatrices[0]));
+    glutWireTeapot(1.0);
 }
 
-glm::mat4 generateRandomModelMatrix(){
-    float maxRotation = 1  ;
-    float maxTranslation = 20 ;
-    float minRotation = - 1 ;
-    float minTranslation = - 20 ;
-    float t1 = minTranslation + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(maxTranslation-minTranslation)));
-    float t2 = minTranslation + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(maxTranslation-minTranslation)));
-    float t3 = minTranslation + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(maxTranslation-minTranslation)));
-    float r1 = minRotation + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(maxRotation-minRotation)));
-    float r2 = minRotation + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(maxRotation-minRotation)));
-    float r3 = minRotation + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(maxRotation-minRotation)));
-    glm::mat4 targetModel = glm::translate(glm::vec3(t1,t2,t3));
-    targetModel = glm::rotate(targetModel, r1, glm::vec3(1,0,0));
-    targetModel = glm::rotate(targetModel, r1, glm::vec3(0,1,0));
-    targetModel = glm::rotate(targetModel, r1, glm::vec3(0,0,1));
-    printMatrix(targetModel);
-
-    printMatrix(glm::mat4(0.993176,-0.0755228,0.0888655,0,0.0823232,0.99374,-0.0755228,0,-0.0826055,0.0823232,0.993176,0,-19.9997,-14.7385,10.2242,1));
-    return targetModel ;
-
-
-    
-
+void loadTargets(){
+    targetMatrices.push_back(glm::mat4(0.993176, -0.075523, 0.088865, 0.000000, 0.082323, 0.993740, -0.075523, 0.000000, -0.082605, 0.082323, 0.993176, 0.000000, -0.999984, -0.736924, 0.511211, 1.000000));
+    targetMatrices.push_back(glm::mat4(0.416407, 0.869553, 0.265486, 0.000000, -0.492963, -0.029419, 0.869553, 0.000000, 0.763933, -0.492963, 0.416407, 0.000000, -0.905911, 0.357729, 0.358593, 1.));
+    targetMatrices.push_back(glm::mat4(0.996476, 0.062779, -0.055632, 0.000000, -0.059261, 0.996266, 0.062779, 0.000000, 0.059366, -0.059261, 0.996476, 0.000000, 0.661931, -0.930856, -0.893077, 1.000000));
+    targetMatrices.push_back(glm::mat4(0.866834, 0.463736, -0.183158, 0.000000, -0.339754, 0.818240, 0.463736, 0.000000, 0.364919, -0.339754, 0.866834, 0.000000, -0.233169, -0.866316, -0.165028, 1.000000));   
 }
+
+void writeSequence(char* argv[]){
+    int testID = atoi(argv[1]);//TODO
+    string testerID = argv[1];
+    string sequence ;
+    switch(testID%6){
+        case 0:
+            sequence = "Sequence of conditions : {1, 2, 3}";
+            cout << sequence << '\n';
+            break;
+        case 1:
+            sequence = "Sequence of conditions : {1, 3, 2}";
+            cout << sequence << '\n';
+            break ;
+        case 2:
+            sequence = "Sequence of conditions : {2, 1, 3}";
+            cout << sequence << '\n';
+            break;
+        case 3:
+            sequence = "Sequence of conditions : {2, 3, 1}";
+            cout << sequence << '\n';
+            break ;
+        case 4:
+            sequence = "Sequence of conditions : {3, 2, 1}";
+            cout << sequence << '\n';
+            break;
+        case 5:
+            sequence = "Sequence of conditions : {3, 1, 2}";
+            cout << sequence << '\n';
+            break ;
+        default:
+            cerr << "Problem in generating order sequence\n";
+    }
+}
+
 
 
 int main(int argc, char *argv[])
 {
+    if(argc < 2){
+        cerr << "Please enter subject ID!!\n" ;
+        return -1 ;
+    }
 
-    generateRandomModelMatrix();
+    writeSequence(argv);
     glutInit(&argc, argv);
+    loadTargets();
 
     SDL_Surface* screen;
 
