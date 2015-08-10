@@ -1,14 +1,19 @@
 #include <iostream>
+#include <string>
+#include <fstream>
+#include <algorithm>  // for std::sort, std::next_permutation
 
 #ifdef __APPLE__
   #include <OpenGL/gl.h>
   #include <GLUT/glut.h>
   #include <SDL.h>
+  #include <sys/stat.h>
   #undef main
 #else
   #include <GL/gl.h>
   #include <GL/glut.h>
   #include <SDL/SDL.h>
+  #include <direct.h>
 #endif
 
 #define GLM_SWIZZLE
@@ -24,7 +29,6 @@
 #include "TouchListener.h"
 #include "TouchPoint.h"
 
-#include <string>
 
 using namespace std;
 
@@ -53,6 +57,8 @@ bool leftClicked = false, rightClicked = false, modifierPressed = false, modifie
 TouchRenderer * touchrenderer ;
 TouchListener * touchlistener ;
 
+vector<int> sequenceOrder ;
+
 glm::vec2 mouseToScreenCoords(int mouseX, int mouseY)
 {
     return glm::vec2((mouseX/float(WIDTH)-0.5f)*2, -(mouseY/float(HEIGHT)-0.5f)*2);
@@ -78,6 +84,14 @@ bool getInput()
 
             case SDL_KEYDOWN: {
                 if (event.key.keysym.sym == SDLK_ESCAPE) {
+                    std::vector<string> v = touchrenderer->GetHistory();
+                    for(std::vector<tuple<int, double>>::size_type i = 0; i!=v.size(); i++) {
+                        cout << v.at(i);
+                    }
+                    vector<glm::mat4> w = touchrenderer->historyMatrix;
+                    for(std::vector<tuple<glm::mat4>>::size_type i = 0; i!=w.size(); i++) {
+                        cout << to_string(w.at(i)) << endl ;
+                    }
                     return false;
                 }
                 break;
@@ -135,40 +149,79 @@ void loadTargets(){
     targetMatrices.push_back(glm::mat4(0.866834, 0.463736, -0.183158, 0.000000, -0.339754, 0.818240, 0.463736, 0.000000, 0.364919, -0.339754, 0.866834, 0.000000, -0.233169, -0.866316, -0.165028, 1.000000));   
 }
 
-void writeSequence(char* argv[]){
-    int testID = atoi(argv[1]);//TODO
-    string testerID = argv[1];
-    string sequence ;
-    switch(testID%6){
-        case 0:
-            sequence = "Sequence of conditions : {1, 2, 3}";
-            cout << sequence << '\n';
-            break;
-        case 1:
-            sequence = "Sequence of conditions : {1, 3, 2}";
-            cout << sequence << '\n';
-            break ;
-        case 2:
-            sequence = "Sequence of conditions : {2, 1, 3}";
-            cout << sequence << '\n';
-            break;
-        case 3:
-            sequence = "Sequence of conditions : {2, 3, 1}";
-            cout << sequence << '\n';
-            break ;
-        case 4:
-            sequence = "Sequence of conditions : {3, 2, 1}";
-            cout << sequence << '\n';
-            break;
-        case 5:
-            sequence = "Sequence of conditions : {3, 1, 2}";
-            cout << sequence << '\n';
-            break ;
-        default:
-            cerr << "Problem in generating order sequence\n";
+vector<int> getPermutation(char* argv[]){
+    int subjectID = atoi(argv[1]);//TODO
+    std::vector<int> cond = {1,2,3};
+
+    std::sort(cond.begin(), cond.end()); // "cond" est déjà trié, mais au cas où
+
+    //do {
+    //    std::cout << cond[0] << " " << cond[1] << " " << cond[2] << '\n';
+    //}   while (std::next_permutation(cond.begin(), cond.end()));
+
+    for(int i=0;i<subjectID;i++){
+        std::cout << cond[0] << " " << cond[1] << " " << cond[2] << '\n';
+        std::next_permutation(cond.begin(), cond.end());
     }
+
+    std::cout << cond[0] << " " << cond[1] << " " << cond[2] << '\n';
+
+    return cond ;
 }
 
+
+bool isDirExist(const std::string& path)
+{
+#if defined(_WIN32)
+    struct _stat info;
+    if (_stat(path.c_str(), &info) != 0)
+    {
+        return false;
+    }
+    return (info.st_mode & _S_IFDIR) != 0;
+#else 
+    struct stat info;
+    if (stat(path.c_str(), &info) != 0)
+    {
+        return false;
+    }
+    return (info.st_mode & S_IFDIR) != 0;
+#endif
+}
+
+bool createDirectory(string path){
+    char *pathChar = new char[path.length() + 1];
+    strcpy(pathChar, path.c_str());
+    if(isDirExist(path) == true){
+        cerr << "DIRECTORY ALREADY EXIST\n";
+        return false ;
+    }
+
+    //Creating main directory for current subject
+    mkdir(pathChar,S_IRWXU);
+    //Creating subDirs
+    string tmpDirPath = path +"/Mouse";
+    char* pathMouse = new char[tmpDirPath.length() + 1];
+    strcpy(pathMouse, tmpDirPath.c_str());
+    mkdir(pathMouse,S_IRWXU);
+
+    tmpDirPath=path+"/Touch";
+    char* pathTouch = new char[tmpDirPath.length() + 1];
+    strcpy(pathTouch, tmpDirPath.c_str());
+    mkdir(pathTouch, S_IRWXU);
+
+    tmpDirPath=path+"/Tangible";
+    char* pathTangible = new char[tmpDirPath.length() + 1];
+    strcpy(pathTangible, tmpDirPath.c_str());
+    mkdir(pathTangible, S_IRWXU);
+    return true ;
+}
+
+void createSubjectFileInfo(string path, char* subID, std::vector<int> order){
+    std::ofstream outfile (path+"/info.txt");
+    outfile << "Subject ID: " << subID << endl ;
+    outfile << "Order: " << order[0] << " - " << order[1] << " - " << order[2] << std::endl ;
+}
 
 
 int main(int argc, char *argv[])
@@ -177,8 +230,14 @@ int main(int argc, char *argv[])
         cerr << "Please enter subject ID!!\n" ;
         return -1 ;
     }
+    string path = "./results/"+string(argv[1]) ;
+//    char * pathChar = path.c_str() ;
+    sequenceOrder = getPermutation(argv);
+    //sequenceOrder = writeSequence(argv);
+    
+    createDirectory(path);
+    createSubjectFileInfo(path, argv[1], sequenceOrder);
 
-    writeSequence(argv);
     glutInit(&argc, argv);
     loadTargets();
 

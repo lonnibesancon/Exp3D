@@ -1,5 +1,9 @@
 #ifndef TOUCHPOINT
 #define TOUCHPOINT
+
+#include <cstdio>
+#include <ctime>
+
 class TouchPoint
 {
 
@@ -12,6 +16,7 @@ public:
 
 	long id;
 	double curX, curY, prevX, prevY, contactX, contactY ;
+	double duration ;
 };
 
 #endif

@@ -16,6 +16,8 @@
 #include <vector>
 #include <tuple>
 #include <iostream>
+#include <cstdio>
+#include <ctime>
 
 const float Pi = 3.141592654f;
 
@@ -35,11 +37,13 @@ public:
 	/*
 	 *Logging information on touch data
 	 */
-	 int nbOfTouches ;
-	 time_t tSingleFingerTotal ;
-	 time_t tDoubleFingersTotal ;
-	 time_t tCurrentSingle ;
-	 time_t tCurrentDouble ;
+	int nbOfTouches ;
+	std::vector<std::tuple<int,double> > historyFingers;	//NbOfFinger // duration of touch
+	std::vector<glm::mat4> historyMatrix ;
+
+	std::vector <std::string> GetHistory();
+	void measureTime(int c);
+
 
 
 	void add(long id, double x, double y);
@@ -53,7 +57,7 @@ public:
 	glm::mat4 getMultMatrix();
 
 private:
-	std::vector<std::tuple<int,TouchPoint>> history;
+
 
 	CPM_ARC_BALL_NS::ArcBall * arcball ;	
 	glm::mat4 modelMatrix ;
@@ -72,6 +76,8 @@ private:
 	unsigned int HEIGHT;
 	int nbOfFingers ;
 
+	clock_t start;
+
 
 	int getIndexOfFingerById(long id);
 	glm::vec2 mouseToScreenCoords(float X, float Y);
@@ -81,8 +87,10 @@ private:
 	glm::vec2 getMidPoint();
 	glm::vec2 getVector(TouchPoint t, TouchPoint u);
 	float getAngleBetweenTwoVecs (glm::vec2 v, glm::vec2 w);
+	void resetTouchInfo();
 
 	void update();
+
 
 
 };
