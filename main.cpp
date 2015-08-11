@@ -38,44 +38,34 @@
 std::vector<int> sequenceOrder ;
 std::vector<glm::mat4> targetMatrices ;
 std::vector <std::tuple<int,glm::mat4>> trialTargets ;
+string path ;
 
 using namespace std;
 
 
-int createDirectory(string path){
+int createDirectory(){
     char *pathChar = new char[path.length() + 1];
     strcpy(pathChar, path.c_str());
     if(boost::filesystem::exists(path)){
         cerr << "DIRECTORY ALREADY EXIST, please check the tester ID\n";
-        return false ;
+        return -1 ;
     }
     boost::filesystem::create_directory(boost::filesystem::path(path));
     //Creating main directory for current subject
     //mkdir(pathChar,S_IRWXU);
-    
-    //Creating subDirs
-    string tmpDirPath = path +"/Mouse";
-    char* pathMouse = new char[tmpDirPath.length() + 1];
-    strcpy(pathMouse, tmpDirPath.c_str());
-    mkdir(pathMouse,S_IRWXU);
-
-    tmpDirPath=path+"/Touch";
-    char* pathTouch = new char[tmpDirPath.length() + 1];
-    strcpy(pathTouch, tmpDirPath.c_str());
-    mkdir(pathTouch, S_IRWXU);
-
-    tmpDirPath=path+"/Tangible";
-    char* pathTangible = new char[tmpDirPath.length() + 1];
-    strcpy(pathTangible, tmpDirPath.c_str());
-    mkdir(pathTangible, S_IRWXU);
-
-
-    boost::filesystem::create_directory(boost::filesystem::path(path));
 
     return 0;
 }
 
-void createSubjectFileInfo(string path, char* subID, std::vector<int> order){
+int createConditionDirectory(string dirToCreate){
+    if(boost::filesystem::exists(dirToCreate)){
+        cerr << "SUB-DIRECTORY ALREADY EXIST, please check the tester ID\n";
+        return -1 ;
+    }
+    boost::filesystem::create_directory(boost::filesystem::path(dirToCreate));
+}
+
+void createSubjectFileInfo(char* subID, std::vector<int> order){
     ofstream outfile (path+"/info.txt");
     outfile << "Subject ID: " << subID << endl ;
     outfile << "Order: " << order[0] << " - " << order[1] << " - " << order[2] << std::endl ;
@@ -112,13 +102,16 @@ void loadTargets(){
 void launchCondition(int ind, int argc, char * argv[]){
 	switch(ind){
 		case 1:
-			mainmouse::launchMouseExp(argc, argv, trialTargets);
+            createConditionDirectory(path+MOUSE);
+			mainmouse::launchMouseExp(argc, argv, trialTargets, path+MOUSE);
 			break;
 		case 2:
-			maintouch::launchTouchExp(argc, argv);
+            createConditionDirectory(path+TOUCH);
+			maintouch::launchTouchExp(argc, argv, trialTargets, path+TOUCH);
 			break ;
 		case 3:
-			//
+			createConditionDirectory(path+TANGIBLE);
+            //
 			break ;
 		default:
 			cerr << "Error, not a valid condition number" << std::endl ;
@@ -136,11 +129,11 @@ int main(int argc, char *argv[])
         cerr << "Please enter subject ID!!\n" ;
         return -1 ;
     }
-    string path = "./results/"+string(argv[1]) ;
+    path = "./results/"+string(argv[1]) ;
     sequenceOrder = getPermutation(argv);
     
-    if(createDirectory(path)!=-1){
-    	createSubjectFileInfo(path, argv[1], sequenceOrder);
+    if(createDirectory()!=-1){
+    	createSubjectFileInfo(argv[1], sequenceOrder);
         loadTargets();
         launchCondition(sequenceOrder[0], argc, argv);
         cout << "********************************************************************************************************************************" << endl 

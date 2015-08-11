@@ -157,7 +157,7 @@ namespace maintouch{
 
 
 
-    int launchTouchExp(int argc, char *argv[])
+    int launchTouchExp(int argc, char *argv[], vector<tuple<int,glm::mat4>> targets, string path, int restartAfterBug = 0)
     {
         
 

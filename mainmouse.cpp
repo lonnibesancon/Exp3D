@@ -51,10 +51,10 @@ namespace mainmouse{
     vector <tuple<int,glm::mat4>> trialTargets ;
 
      #define ROT_SHOEMAKE_VT
-    //#define ROT_BELL_VT
+    // #define ROT_BELL_VT
     // #define ROT_BLENDER
 
-    CPM_ARC_BALL_NS::ArcBall arcball(glm::vec3(0,0,100), TRACKBALLSIZE);
+    CPM_ARC_BALL_NS::ArcBall* arcball = new CPM_ARC_BALL_NS::ArcBall(glm::vec3(0,0,100), TRACKBALLSIZE);
     glm::vec2 trackballPrevPos;
     glm::mat4 startTranslationMatrix;
     glm::vec2 startScreenPos;
@@ -201,7 +201,7 @@ namespace mainmouse{
                             t->measureTime(LEFT);
                         }
 #ifdef ROT_SHOEMAKE_VT
-                        arcball.beginDrag(-mouseToScreenCoords(event.motion.x, event.motion.y));
+                        arcball->beginDrag(-mouseToScreenCoords(event.motion.x, event.motion.y));
 #else
                         trackballPrevPos = mouseToScreenCoords(event.motion.x, event.motion.y);
 #endif
@@ -234,7 +234,7 @@ namespace mainmouse{
                     } else if (leftClicked) {
                         somethingWasDone = true ;
 #ifdef ROT_SHOEMAKE_VT
-                        arcball.drag(-curPos);
+                        arcball->drag(-curPos);
 #else
                         trackball(curPos, trackballPrevPos);
                         trackballPrevPos = curPos;
@@ -263,7 +263,7 @@ namespace mainmouse{
         }
 
 #ifdef ROT_SHOEMAKE_VT
-        modelMatrix = translationMatrix * arcball.getTransformation();
+        modelMatrix = translationMatrix * arcball->getTransformation();
 #else
         modelMatrix = translationMatrix * glm::mat4_cast(rotation);
 #endif
@@ -287,11 +287,11 @@ namespace mainmouse{
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
         glPushMatrix();
-    #ifdef ROT_SHOEMAKE_VT
+#ifdef ROT_SHOEMAKE_VT
         glMultMatrixf(glm::value_ptr(viewMatrix * modelMatrix));
-    #else
+#else
         glMultMatrixf(glm::value_ptr(viewMatrix * modelMatrix));
-    #endif
+#endif
 
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_LIGHTING);
@@ -312,11 +312,24 @@ namespace mainmouse{
         modelMatrix = glm::mat4(1.0f);
         translationMatrix = glm::mat4(1.0f);
         rotation = glm::quat();
+        trackballPrevPos = glm::vec2();
+        startTranslationMatrix = glm::mat4();
+        startScreenPos = glm::vec2();
+#ifdef ROT_SHOEMAKE_VT
+        delete(arcball);
+        arcball = new CPM_ARC_BALL_NS::ArcBall (glm::vec3(0,0,100), TRACKBALLSIZE);
+#endif
+
+        leftClicked = false; 
+        rightClicked = false; 
+        modifierPressed = false; 
+        modifierSet = false;
+
         delete(t);
     }
 
 
-    int launchMouseExp(int argc, char *argv[], vector<tuple<int,glm::mat4>> targets, int restartAfterBug = 0)
+    int launchMouseExp(int argc, char *argv[], vector<tuple<int,glm::mat4>> targets, string path, int restartAfterBug = 0)
     {
         trialTargets = targets ;
         int nbOfTrialsDone = restartAfterBug ;
@@ -344,8 +357,9 @@ namespace mainmouse{
 
 
         while(nbOfTrialsDone != NBOFTRIALS){            //Loop through trials 
-            t = new Trial(get<1>(targets[nbOfTrialsDone]),nbOfTrialsDone);
+            t = new Trial(get<1>(targets[nbOfTrialsDone]),get<0>(targets[nbOfTrialsDone]), path);
             t->logMatrix(modelMatrix); 
+            cout << "Path :" << path << endl ;
             while (getInput()) {
                 render();
                 SDL_GL_SwapBuffers();
