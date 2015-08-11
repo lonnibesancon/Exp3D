@@ -43,6 +43,7 @@ namespace mainmouse{
 
     static const glm::mat4 projMatrix = glm::perspective(45.0f, float(WIDTH)/HEIGHT, 0.1f, 1000.0f);
     glm::mat4 viewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, -5));
+    glm::mat4 translationMatrix = glm::mat4(1.0f);
     glm::mat4 modelMatrix = glm::mat4(1.0f);
     glm::quat rotation = glm::quat();
 
@@ -55,7 +56,7 @@ namespace mainmouse{
 
     CPM_ARC_BALL_NS::ArcBall arcball(glm::vec3(0,0,100), TRACKBALLSIZE);
     glm::vec2 trackballPrevPos;
-    glm::mat4 startModelMatrix;
+    glm::mat4 startTranslationMatrix;
     glm::vec2 startScreenPos;
     bool leftClicked = false, rightClicked = false, modifierPressed = false, modifierSet = false;
 
@@ -170,7 +171,7 @@ namespace mainmouse{
                         }
                     }
                     if(event.key.keysym.sym == SDLK_KP_ENTER){      //L'utilisateur valide son placement
-                        //TODO
+                        return false ;
                     }
                     break;
                 }
@@ -187,7 +188,7 @@ namespace mainmouse{
                     somethingWasDone = true ;
                     SDL_WM_GrabInput(SDL_GRAB_ON);
 
-                    startModelMatrix = modelMatrix;
+                    startTranslationMatrix = translationMatrix;
                     startScreenPos = mouseToScreenCoords(event.motion.x, event.motion.y);
                     modifierSet = modifierPressed;
 
@@ -225,9 +226,9 @@ namespace mainmouse{
                             const float objZ = viewMatrix[3][2];
                             glm::vec3 unprojStartPos = unproject(startScreenPos, objZ);
                             glm::vec3 unprojCurPos = unproject(curPos, objZ);
-                            modelMatrix = glm::translate(startModelMatrix, unprojCurPos - unprojStartPos);
+                            translationMatrix = glm::translate(startTranslationMatrix, unprojCurPos - unprojStartPos);
                         } else {
-                            modelMatrix = glm::translate(startModelMatrix, glm::vec3(0, 0, ZOOM_SPEED * (curPos.y - startScreenPos.y)));
+                            translationMatrix = glm::translate(startTranslationMatrix, glm::vec3(0, 0, ZOOM_SPEED * (curPos.y - startScreenPos.y)));
                         }
 
                     } else if (leftClicked) {
@@ -260,6 +261,13 @@ namespace mainmouse{
                 }
             }
         }
+
+#ifdef ROT_SHOEMAKE_VT
+        modelMatrix = translationMatrix * arcball.getTransformation();
+#else
+        modelMatrix = translationMatrix * glm::mat4_cast(rotation);
+#endif
+
         if(somethingWasDone){       //Logging Only if something was done by the user, otherwise it's not helpful at all
             t->logMatrix(modelMatrix); 
             cout << "Logging" << endl ;
@@ -280,9 +288,9 @@ namespace mainmouse{
         glLoadIdentity();
         glPushMatrix();
     #ifdef ROT_SHOEMAKE_VT
-        glMultMatrixf(glm::value_ptr(viewMatrix * modelMatrix * arcball.getTransformation()));
+        glMultMatrixf(glm::value_ptr(viewMatrix * modelMatrix));
     #else
-        glMultMatrixf(glm::value_ptr(viewMatrix * modelMatrix * glm::mat4_cast(rotation)));
+        glMultMatrixf(glm::value_ptr(viewMatrix * modelMatrix));
     #endif
 
         glEnable(GL_DEPTH_TEST);
@@ -296,18 +304,26 @@ namespace mainmouse{
         glutWireTeapot(1.0);
     }
 
+    void LogAndReset(){
+        //First Log everything
+        t->logMatrix(modelMatrix);
+        t->writeLog();
+
+        modelMatrix = glm::mat4(1.0f);
+        translationMatrix = glm::mat4(1.0f);
+        rotation = glm::quat();
+        delete(t);
+    }
+
 
     int launchMouseExp(int argc, char *argv[], vector<tuple<int,glm::mat4>> targets, int restartAfterBug = 0)
     {
-        // TouchRenderer * touchrenderer = new TouchRenderer();
-        // TouchListener * touchlistener = new TouchListener(touchrenderer);
         trialTargets = targets ;
+        int nbOfTrialsDone = restartAfterBug ;
 
         glutInit(&argc, argv);
 
         SDL_Surface* screen;
-
-        t = new Trial(glm::mat4(),1);
 
         if (SDL_Init(SDL_INIT_VIDEO) < 0) {
             std::cerr << "SDL_Init() failed: " << SDL_GetError() << '\n';
@@ -326,19 +342,31 @@ namespace mainmouse{
 
         glViewport(0, 0, WIDTH, HEIGHT);
 
-        while (getInput()) {
-            render();
-            SDL_GL_SwapBuffers();
+
+        while(nbOfTrialsDone != NBOFTRIALS){            //Loop through trials 
+            t = new Trial(get<1>(targets[nbOfTrialsDone]),nbOfTrialsDone);
+            t->logMatrix(modelMatrix); 
+            while (getInput()) {
+                render();
+                SDL_GL_SwapBuffers();
+            }
+            nbOfTrialsDone ++ ;
+            LogAndReset();
+            
+            /*vector<string> v = t->getTimeHistory();
+            for(std::vector<string>::size_type i = 0; i!=v.size(); i++) {
+                cout << v.at(i);
+            }*/
+            vector<string> w = t->getMatrixHistory();
+            for(std::vector<string>::size_type i = 0; i!=w.size(); i++) {
+                cout << w.at(i) << endl ;
+            }
         }
 
-        /*vector<string> v = t->getTimeHistory();
-        for(std::vector<string>::size_type i = 0; i!=v.size(); i++) {
-            cout << v.at(i);
-        }*/
-        vector<string> w = t->getMatrixHistory();
-        for(std::vector<string>::size_type i = 0; i!=w.size(); i++) {
-            cout << w.at(i) << endl ;
-        }
+        
+
+       
+        
 
  
 

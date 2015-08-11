@@ -14,6 +14,10 @@ Trial::~Trial(){
 
 }
 
+void Trial::writeLog(){
+
+}
+
 
 void Trial::measureTime(int c){
 	double duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;

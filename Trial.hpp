@@ -20,7 +20,7 @@ public:
 	Trial(glm::mat4 t, int trialI);
 	~Trial();
 
-	void endTrial(glm::mat4 mat);
+	void writeLog();
 	
 	void logMatrix(glm::mat4 mat);
 	void measureTime(int c);
