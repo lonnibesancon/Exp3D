@@ -27,9 +27,6 @@
 using namespace std ;
 
 
-
-
-
 namespace mainmouse{
 
     /*
@@ -50,6 +47,7 @@ namespace mainmouse{
     glm::quat rotation = glm::quat();
 
     Trial *t ;
+    vector <tuple<int,glm::mat4>> trialTargets ;
 
      #define ROT_SHOEMAKE_VT
     //#define ROT_BELL_VT
@@ -149,14 +147,17 @@ namespace mainmouse{
     bool getInput()
     {
         SDL_Event event;
+        bool somethingWasDone = false ;
 
-        while (SDL_PollEvent(&event)) {
+        while (SDL_PollEvent(&event)) {            
             switch (event.type) {
                 case SDL_QUIT: {
+                    somethingWasDone = true ;
                     return false;
                 }
 
                 case SDL_KEYDOWN: {
+                    somethingWasDone = true ;
                     if (event.key.keysym.sym == SDLK_ESCAPE) {
                         return false;
                     } else if ((event.key.keysym.sym == SDLK_LSHIFT) || (event.key.keysym.sym == SDLK_RSHIFT)) {
@@ -168,10 +169,14 @@ namespace mainmouse{
                             t->measureTime(RIGHTANDSHIFT);
                         }
                     }
+                    if(event.key.keysym.sym == SDLK_KP_ENTER){      //L'utilisateur valide son placement
+                        //TODO
+                    }
                     break;
                 }
 
                 case SDL_KEYUP: {
+                    somethingWasDone = true ;
                     if ((event.key.keysym.sym == SDLK_LSHIFT) || (event.key.keysym.sym == SDLK_RSHIFT)) {
                         modifierPressed = false;
                     }
@@ -179,6 +184,7 @@ namespace mainmouse{
                 }
 
                 case SDL_MOUSEBUTTONDOWN: {
+                    somethingWasDone = true ;
                     SDL_WM_GrabInput(SDL_GRAB_ON);
 
                     startModelMatrix = modelMatrix;
@@ -193,11 +199,11 @@ namespace mainmouse{
                         else{
                             t->measureTime(LEFT);
                         }
-    #ifdef ROT_SHOEMAKE_VT
+#ifdef ROT_SHOEMAKE_VT
                         arcball.beginDrag(-mouseToScreenCoords(event.motion.x, event.motion.y));
-    #else
+#else
                         trackballPrevPos = mouseToScreenCoords(event.motion.x, event.motion.y);
-    #endif
+#endif
                     } else if (event.button.button == SDL_BUTTON_RIGHT) {
                         rightClicked = true;
                         if(modifierPressed == true){        //FOr Logging
@@ -214,6 +220,7 @@ namespace mainmouse{
                 case SDL_MOUSEMOTION: {
                     glm::vec2 curPos = mouseToScreenCoords(event.motion.x, event.motion.y);
                     if (rightClicked || modifierSet) {
+                        somethingWasDone = true ;
                         if (!modifierSet) {
                             const float objZ = viewMatrix[3][2];
                             glm::vec3 unprojStartPos = unproject(startScreenPos, objZ);
@@ -224,18 +231,20 @@ namespace mainmouse{
                         }
 
                     } else if (leftClicked) {
-    #ifdef ROT_SHOEMAKE_VT
+                        somethingWasDone = true ;
+#ifdef ROT_SHOEMAKE_VT
                         arcball.drag(-curPos);
-    #else
+#else
                         trackball(curPos, trackballPrevPos);
                         trackballPrevPos = curPos;
-    #endif
+#endif
                     }
 
                     break;
                 }
 
                 case SDL_MOUSEBUTTONUP: {
+                    somethingWasDone = true ;
                     modifierSet = false;
                     SDL_WM_GrabInput(SDL_GRAB_OFF);
 
@@ -251,7 +260,10 @@ namespace mainmouse{
                 }
             }
         }
-
+        if(somethingWasDone){       //Logging Only if something was done by the user, otherwise it's not helpful at all
+            t->logMatrix(modelMatrix); 
+            cout << "Logging" << endl ;
+        } 
         return true;
     }
 
@@ -266,6 +278,7 @@ namespace mainmouse{
 
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
+        glPushMatrix();
     #ifdef ROT_SHOEMAKE_VT
         glMultMatrixf(glm::value_ptr(viewMatrix * modelMatrix * arcball.getTransformation()));
     #else
@@ -276,12 +289,19 @@ namespace mainmouse{
         glEnable(GL_LIGHTING);
         glEnable(GL_LIGHT0);
         glutSolidTeapot(1.0);
+        glPopMatrix();
+
+        //glTranslatef(0,0,-5);
+        glMultMatrixf(glm::value_ptr(std::get<1>(trialTargets[0])));
+        glutWireTeapot(1.0);
     }
 
-    int launchMouseExp(int argc, char *argv[])
+
+    int launchMouseExp(int argc, char *argv[], vector<tuple<int,glm::mat4>> targets, int restartAfterBug = 0)
     {
         // TouchRenderer * touchrenderer = new TouchRenderer();
         // TouchListener * touchlistener = new TouchListener(touchrenderer);
+        trialTargets = targets ;
 
         glutInit(&argc, argv);
 
@@ -296,7 +316,7 @@ namespace mainmouse{
 
         std::atexit(SDL_Quit);
 
-        SDL_WM_SetCaption("Mon premier programme OpenGL !", nullptr);
+        SDL_WM_SetCaption("Mouse Interaction!", nullptr);
         SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
         if (!(screen = SDL_SetVideoMode(WIDTH, HEIGHT, 32, SDL_OPENGL /*| SDL_FULLSCREEN*/))) {
@@ -311,13 +331,18 @@ namespace mainmouse{
             SDL_GL_SwapBuffers();
         }
 
-            vector<string> v = t->getTimeHistory();
-            for(std::vector<tuple<int, double>>::size_type i = 0; i!=v.size(); i++) {
-                cout << v.at(i);
-            }
-            vector<glm::mat4> w = t->historyMatrix;
-            for(std::vector<tuple<glm::mat4>>::size_type i = 0; i!=w.size(); i++) {
-                cout << to_string(w.at(i)) << endl ;
-            }
+        /*vector<string> v = t->getTimeHistory();
+        for(std::vector<string>::size_type i = 0; i!=v.size(); i++) {
+            cout << v.at(i);
+        }*/
+        vector<string> w = t->getMatrixHistory();
+        for(std::vector<string>::size_type i = 0; i!=w.size(); i++) {
+            cout << w.at(i) << endl ;
+        }
+
+ 
+
+        return 0 ;
     }
+
 }
