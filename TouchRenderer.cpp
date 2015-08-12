@@ -3,7 +3,7 @@
 
 using namespace std ;
 
-glm::quat rotation = glm::quat();
+
 
 TouchRenderer::TouchRenderer(glm::mat4 model, unsigned int W, unsigned int H, glm::mat4 projM, glm::mat4 viewM, Trial* t)
 {
@@ -18,6 +18,7 @@ TouchRenderer::TouchRenderer(glm::mat4 model, unsigned int W, unsigned int H, gl
 	distance = 0;
 	objectAngle = 0 ;
 	nbOfTouches = 0 ;
+	rotation = glm::quat();
 	trial = t ;
 	//start = std::clock();
 }
@@ -26,6 +27,7 @@ void TouchRenderer::logAndResetTouchInfo(){
 	trial->writeLog();
 	trial->writeNumberOfTouch(nbOfTouches);
 	nbOfTouches = 0 ;
+	nbOfFingers = 0 ;
 
 	//Reset position 
 	modelMatrix = glm::mat4(1.0f);
@@ -38,7 +40,10 @@ void TouchRenderer::logAndResetTouchInfo(){
 	originalVector = glm::vec2();
 	newVector = glm::vec2();
 	objectPos = glm::vec3();
+	rotation = glm::quat();
 	objectAngle = 0 ;
+	firstDistance = 0 ;
+	distance = 0;
 
 	//Clear vectors
 	touchpoints.clear() ;
@@ -70,7 +75,7 @@ glm::vec3 projectToSphere(float r, float x, float y)
     return glm::vec3(x, y, z);
 }
 
-void trackball(const glm::vec2& pt1, const glm::vec2& pt2)
+void TouchRenderer::trackball(const glm::vec2& pt1, const glm::vec2& pt2)
 {
     if (pt1 == pt2)
         return; // zero rotation

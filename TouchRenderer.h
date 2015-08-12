@@ -65,6 +65,7 @@ private:
 	glm::mat4 projMatrix ;
 	glm::mat4 viewMatrix ;
 	glm::quat startRotation;
+	glm::quat rotation ;
 	glm::vec3 startObjectPos;
 	glm::vec2 startOffset;
 	float firstDistance ;
@@ -82,7 +83,8 @@ private:
 	float computeDistanceBtwnFingers();
 	glm::vec2 getMidPoint();
 	glm::vec2 getVector(TouchPoint t, TouchPoint u);
-	float getAngleBetweenTwoVecs (glm::vec2 v, glm::vec2 w);	
+	float getAngleBetweenTwoVecs (glm::vec2 v, glm::vec2 w);
+	void trackball(const glm::vec2& pt1, const glm::vec2& pt2);
 
 	void update();
 
