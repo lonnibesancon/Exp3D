@@ -13,7 +13,7 @@ Trial::Trial(glm::mat4 t, int trialI, string Path){
 }
 
 Trial::~Trial(){
-
+	historyMatrix.clear();	
 }
 
 void Trial::writeLog(){
@@ -58,7 +58,8 @@ void Trial::logMatrix(glm::mat4 mat){
 			totalDiff += difference[i][j];	
 		}
 	}
-	historyMatrix.push_back(tuple<double, glm::mat4, double, glm::mat4>(timestamp, mat, totalDiff, difference));
+	historyMatrix.push_back(tuple<double, glm::mat4, double, glm::mat4>(0, glm::mat4(1.0f), 0, glm::mat4(1.0f)));
+	//historyMatrix.push_back(tuple<double, glm::mat4, double, glm::mat4>(timestamp, mat, totalDiff, difference));
 }
 
 vector<string> Trial::getTimeHistory(){

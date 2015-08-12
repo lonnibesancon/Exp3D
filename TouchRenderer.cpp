@@ -26,6 +26,8 @@ void TouchRenderer::logAndResetTouchInfo(){
 	trial->writeLog();
 	trial->writeNumberOfTouch(nbOfTouches);
 	nbOfTouches = 0 ;
+
+	//Reset position 
 	modelMatrix = glm::mat4(1.0f);
 	startModelMatrix = glm::mat4(1.0f);;
 	startScreenPos = glm::vec2();
@@ -33,6 +35,14 @@ void TouchRenderer::logAndResetTouchInfo(){
 	startRotation = glm::quat();
 	startObjectPos = glm::vec3();
 	startOffset = glm::vec2();
+	originalVector = glm::vec2();
+	newVector = glm::vec2();
+	objectPos = glm::vec3();
+	objectAngle = 0 ;
+
+	//Clear vectors
+	touchpoints.clear() ;
+
 #ifdef ROT_SHOEMAKE_VT
         delete(arcball);
         arcball = new CPM_ARC_BALL_NS::ArcBall (glm::vec3(0,0,100), TRACKBALLSIZE);

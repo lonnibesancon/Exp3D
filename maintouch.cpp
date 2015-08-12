@@ -166,7 +166,6 @@ namespace maintouch{
 #endif
         t = new Trial(get<1>(trialTargets[nextTrialTodo]),get<0>(trialTargets[nextTrialTodo]), path);
         touchrenderer->trial = t ;
-        touchrenderer->logAndResetTouchInfo();
 
     }
 
@@ -194,7 +193,7 @@ namespace maintouch{
         SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
         SDL_ShowCursor(SDL_DISABLE);
 
-        if (!(screen = SDL_SetVideoMode(WIDTH, HEIGHT, 32, SDL_OPENGL | SDL_FULLSCREEN))) {
+        if (!(screen = SDL_SetVideoMode(WIDTH, HEIGHT, 32, SDL_OPENGL /*| SDL_FULLSCREEN*/))) {
             std::cerr << "SDL_SetVideoMode() failed: " << SDL_GetError() << '\n';
             return EXIT_FAILURE;
         }
