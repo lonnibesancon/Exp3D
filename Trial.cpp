@@ -8,7 +8,8 @@ Trial::Trial(glm::mat4 t, int trialI, string Path){
 	start = std::clock();
 	currentMode = 0 ;
 	trialStart = start ;
-	path = Path+"/T"+to_string(trialI)+".csv" ;
+	path = Path+"/"+to_string(trialI)+".csv" ;
+	outfile = new ofstream(path);
 }
 
 Trial::~Trial(){
@@ -18,21 +19,24 @@ Trial::~Trial(){
 void Trial::writeLog(){
 	cout << path << endl ;
 	double trialDuration = (std::clock() - trialStart) / (double) CLOCKS_PER_SEC ;
-	ofstream outfile (path);
-    outfile << "Trial index ; " << trialInd << endl ;
-    outfile << "Start Time ; " << trialStart / (double) CLOCKS_PER_SEC << endl << "Total DUration ;" << trialDuration << endl ;
-    outfile << "Timestamp ;" << "Action ID" << "Duration" << endl ;
+    *outfile << "Trial index ; " << trialInd << endl ;
+    *outfile << "Start Time ; " << trialStart / (double) CLOCKS_PER_SEC << endl << "Total DUration ;" << trialDuration << endl ;
+    *outfile << "Timestamp ;" << "Action ID" << "Duration" << endl ;
     vector<string> v = getTimeHistory();
     for(std::vector<string>::size_type i = 0; i!=v.size(); i++) {
-        outfile << v.at(i);
+        *outfile << v.at(i);
     }
 
-    outfile << "Timestamp" << "Current Model" << "Difference Matrix" << "Total Difference" << endl ;
+    *outfile << "Timestamp" << "Current Model" << "Difference Matrix" << "Total Difference" << endl ;
     vector<string> w = getMatrixHistory();
     for(std::vector<string>::size_type i = 0; i!=w.size(); i++) {
-        outfile << w.at(i) << endl ;
+        *outfile << w.at(i) << endl ;
     }
     
+}
+
+void Trial::writeNumberOfTouch(int nbOfTouch){
+	*outfile << "Nb Of Touch Points ;" << nbOfTouch << endl ;
 }
 
 

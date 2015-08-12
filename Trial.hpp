@@ -1,3 +1,5 @@
+#ifndef TRIAL 
+#define TRIAL
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -21,6 +23,7 @@ public:
 	~Trial();
 
 	void writeLog();
+	void writeNumberOfTouch(int nbOfTouch);
 	
 	void logMatrix(glm::mat4 mat);
 	void measureTime(int c);
@@ -38,7 +41,9 @@ private:
 	time_t totalTime ;
 	int currentMode ;
 	std::string path ;
+	std::ofstream *outfile;
 
 	std::vector<std::tuple<double,int,double>> historyTime ;								//int for the action type, double for the timestamp of the starting time of the action, double for the duration of the action
 	std::vector<std::tuple<double,glm::mat4,double,glm::mat4>> historyMatrix ;				//double for the timestamp, mat4 for the current model matrix, double for the total difference, mat4 for the difference matrix
 };
+#endif

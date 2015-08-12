@@ -5,7 +5,7 @@ using namespace std ;
 
 glm::quat rotation = glm::quat();
 
-TouchRenderer::TouchRenderer(glm::mat4 model, unsigned int W, unsigned int H, glm::mat4 projM, glm::mat4 viewM)
+TouchRenderer::TouchRenderer(glm::mat4 model, unsigned int W, unsigned int H, glm::mat4 projM, glm::mat4 viewM, Trial* t)
 {
 	modelMatrix = model ;
 	projMatrix = projM ;
@@ -17,12 +17,28 @@ TouchRenderer::TouchRenderer(glm::mat4 model, unsigned int W, unsigned int H, gl
 	firstDistance = 0 ;
 	distance = 0;
 	objectAngle = 0 ;
-	resetTouchInfo();
+	resetTouchInfo(t);
 	//start = std::clock();
 }
 
-void TouchRenderer::resetTouchInfo(){
+void TouchRenderer::resetTouchInfo(Trial* t){
+	t->writeLog();
+	t->writeNumberOfTouch(nbOfTouches);
 	nbOfTouches = 0 ;
+	modelMatrix = glm::mat4(1.0f);
+	startModelMatrix = glm::mat4(1.0f);;
+	startScreenPos = glm::vec2();
+	prevScreenPos = glm::vec2();
+	startRotation = glm::quat();
+	startObjectPos = glm::vec3();
+	startOffset = glm::vec2();
+#ifdef ROT_SHOEMAKE_VT
+        delete(arcball);
+        arcball = new CPM_ARC_BALL_NS::ArcBall (glm::vec3(0,0,100), TRACKBALLSIZE);
+#endif
+	delete(trial);
+	trial = t ;
+
 }
 
 

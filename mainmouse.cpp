@@ -39,7 +39,6 @@ namespace mainmouse{
      */
     static const unsigned int WIDTH = 800, HEIGHT = 600;
     static const float ZOOM_SPEED = 2.5f;
-    static const float TRACKBALLSIZE = 1.1f; // FIXME: value?
 
     static const glm::mat4 projMatrix = glm::perspective(45.0f, float(WIDTH)/HEIGHT, 0.1f, 1000.0f);
     glm::mat4 viewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, -5));
@@ -49,10 +48,6 @@ namespace mainmouse{
 
     Trial *t ;
     vector <tuple<int,glm::mat4>> trialTargets ;
-
-     #define ROT_SHOEMAKE_VT
-    // #define ROT_BELL_VT
-    // #define ROT_BLENDER
 
     CPM_ARC_BALL_NS::ArcBall* arcball = new CPM_ARC_BALL_NS::ArcBall(glm::vec3(0,0,100), TRACKBALLSIZE);
     glm::vec2 trackballPrevPos;

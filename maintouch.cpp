@@ -54,9 +54,6 @@ namespace maintouch{
     static const float ZOOM_SPEED = 2.5f;
 
 
-
-    glm::mat4 targetModel ;
-
     static const glm::mat4 projMatrix = glm::perspective(45.0f, float(WIDTH)/HEIGHT, 0.1f, 1000.0f);
     glm::mat4 viewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, -5));
     glm::mat4 modelMatrix = glm::mat4(1.0f);
@@ -69,6 +66,8 @@ namespace maintouch{
 
     TouchRenderer * touchrenderer ;
     TouchListener * touchlistener ;
+    Trial *t ;
+    vector <tuple<int,glm::mat4>> trialTargets ;
 
 
 
@@ -155,11 +154,31 @@ namespace maintouch{
         glutWireTeapot(1.0);
     }
 
+    void LogAndReset(){
+        //First Log everything
+        t->logMatrix(modelMatrix);
+        t->writeLog();
+
+#ifdef ROT_SHOEMAKE_VT
+        //delete(arcball);
+        //arcball = new CPM_ARC_BALL_NS::ArcBall (glm::vec3(0,0,100), TRACKBALLSIZE);
+#endif
+
+        leftClicked = false; 
+        rightClicked = false; 
+        modifierPressed = false; 
+        modifierSet = false;
+
+        delete(t);
+    }
+
 
 
     int launchTouchExp(int argc, char *argv[], vector<tuple<int,glm::mat4>> targets, string path, int restartAfterBug = 0)
     {
         
+        trialTargets = targets ;
+        int nbOfTrialsDone = restartAfterBug ;
 
         glutInit(&argc, argv);
 
@@ -183,12 +202,30 @@ namespace maintouch{
 
         glViewport(0, 0, WIDTH, HEIGHT);
 
-        touchrenderer = new TouchRenderer(transformationMatrix, WIDTH, HEIGHT, projMatrix, viewMatrix);
+        t = new Trial(get<1>(targets[0]),get<0>(targets[0]), path);
+        touchrenderer = new TouchRenderer(transformationMatrix, WIDTH, HEIGHT, projMatrix, viewMatrix, t);
         touchlistener = new TouchListener(touchrenderer);
 
-        while (getInput()) {
-            render();
-            SDL_GL_SwapBuffers();
+        while(nbOfTrialsDone != NBOFTRIALS){ 
+            cout << "Path :" << path << endl ;
+            while (getInput()) {
+                render();
+                SDL_GL_SwapBuffers();
+            }
+            nbOfTrialsDone ++ ;
+            LogAndReset();
+            
+            /*vector<string> v = t->getTimeHistory();
+            for(std::vector<string>::size_type i = 0; i!=v.size(); i++) {
+                cout << v.at(i);
+            }*/
+            vector<string> w = t->getMatrixHistory();
+            for(std::vector<string>::size_type i = 0; i!=w.size(); i++) {
+                cout << w.at(i) << endl ;
+            }
+            //Get Next Trial
+            t = new Trial(get<1>(targets[nbOfTrialsDone]),get<0>(targets[nbOfTrialsDone]), path);
+            t->logMatrix(modelMatrix); 
         }
     }
 
