@@ -45,7 +45,7 @@ public:
 	void add(long id, double x, double y);
 	void remove(long id);
 	void update(long id, double x, double y);
-	void resetTouchInfo(Trial* t);
+	void logAndResetTouchInfo();
 
 	glm::mat4 getModelMatrix();
 	glm::mat4 getViewMatrix();

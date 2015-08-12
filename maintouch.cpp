@@ -45,12 +45,12 @@ namespace maintouch{
 
 
 
-    // static const unsigned int WIDTH = 800, HEIGHT = 600;
-    #ifdef __APPLE__
-    static const unsigned int WIDTH = 1440, HEIGHT = 900;
-    #else
-    static const unsigned int WIDTH = 1920, HEIGHT = 1080;
-    #endif
+     static const unsigned int WIDTH = 800, HEIGHT = 600;
+    //#ifdef __APPLE__
+    //static const unsigned int WIDTH = 1440, HEIGHT = 900;
+    //#else
+    //static const unsigned int WIDTH = 1920, HEIGHT = 1080;
+    //#endif
     static const float ZOOM_SPEED = 2.5f;
 
 
@@ -68,7 +68,8 @@ namespace maintouch{
     TouchListener * touchlistener ;
     Trial *t ;
     vector <tuple<int,glm::mat4>> trialTargets ;
-
+    int nextTrialTodo ;
+    string path ;
 
 
     glm::vec2 mouseToScreenCoords(int mouseX, int mouseY)
@@ -157,28 +158,26 @@ namespace maintouch{
     void LogAndReset(){
         //First Log everything
         t->logMatrix(modelMatrix);
-        t->writeLog();
+        touchrenderer->logAndResetTouchInfo();      // Free and delete trial there
 
 #ifdef ROT_SHOEMAKE_VT
         //delete(arcball);
         //arcball = new CPM_ARC_BALL_NS::ArcBall (glm::vec3(0,0,100), TRACKBALLSIZE);
 #endif
+        t = new Trial(get<1>(trialTargets[nextTrialTodo]),get<0>(trialTargets[nextTrialTodo]), path);
+        touchrenderer->trial = t ;
+        touchrenderer->logAndResetTouchInfo();
 
-        leftClicked = false; 
-        rightClicked = false; 
-        modifierPressed = false; 
-        modifierSet = false;
-
-        delete(t);
     }
 
 
 
-    int launchTouchExp(int argc, char *argv[], vector<tuple<int,glm::mat4>> targets, string path, int restartAfterBug = 0)
+    int launchTouchExp(int argc, char *argv[], vector<tuple<int,glm::mat4>> targets, string p, int nbOfTrialsDone = 0)
     {
         
         trialTargets = targets ;
-        int nbOfTrialsDone = restartAfterBug ;
+        nextTrialTodo = nbOfTrialsDone+1;
+        path = p;
 
         glutInit(&argc, argv);
 
@@ -202,19 +201,18 @@ namespace maintouch{
 
         glViewport(0, 0, WIDTH, HEIGHT);
 
-        t = new Trial(get<1>(targets[0]),get<0>(targets[0]), path);
+        t = new Trial(get<1>(trialTargets[0]),get<0>(trialTargets[0]), path);
         touchrenderer = new TouchRenderer(transformationMatrix, WIDTH, HEIGHT, projMatrix, viewMatrix, t);
         touchlistener = new TouchListener(touchrenderer);
 
-        while(nbOfTrialsDone != NBOFTRIALS){ 
+        while(nextTrialTodo != NBOFTRIALS){ 
             cout << "Path :" << path << endl ;
             while (getInput()) {
                 render();
                 SDL_GL_SwapBuffers();
             }
-            nbOfTrialsDone ++ ;
+            nextTrialTodo ++ ;
             LogAndReset();
-            
             /*vector<string> v = t->getTimeHistory();
             for(std::vector<string>::size_type i = 0; i!=v.size(); i++) {
                 cout << v.at(i);
@@ -224,8 +222,6 @@ namespace maintouch{
                 cout << w.at(i) << endl ;
             }
             //Get Next Trial
-            t = new Trial(get<1>(targets[nbOfTrialsDone]),get<0>(targets[nbOfTrialsDone]), path);
-            t->logMatrix(modelMatrix); 
         }
     }
 

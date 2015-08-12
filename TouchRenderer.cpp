@@ -17,13 +17,14 @@ TouchRenderer::TouchRenderer(glm::mat4 model, unsigned int W, unsigned int H, gl
 	firstDistance = 0 ;
 	distance = 0;
 	objectAngle = 0 ;
-	resetTouchInfo(t);
+	nbOfTouches = 0 ;
+	trial = t ;
 	//start = std::clock();
 }
 
-void TouchRenderer::resetTouchInfo(Trial* t){
-	t->writeLog();
-	t->writeNumberOfTouch(nbOfTouches);
+void TouchRenderer::logAndResetTouchInfo(){
+	trial->writeLog();
+	trial->writeNumberOfTouch(nbOfTouches);
 	nbOfTouches = 0 ;
 	modelMatrix = glm::mat4(1.0f);
 	startModelMatrix = glm::mat4(1.0f);;
@@ -37,8 +38,6 @@ void TouchRenderer::resetTouchInfo(Trial* t){
         arcball = new CPM_ARC_BALL_NS::ArcBall (glm::vec3(0,0,100), TRACKBALLSIZE);
 #endif
 	delete(trial);
-	trial = t ;
-
 }
 
 

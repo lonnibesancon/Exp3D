@@ -319,15 +319,14 @@ namespace mainmouse{
         rightClicked = false; 
         modifierPressed = false; 
         modifierSet = false;
-
         delete(t);
     }
 
 
-    int launchMouseExp(int argc, char *argv[], vector<tuple<int,glm::mat4>> targets, string path, int restartAfterBug = 0)
+    int launchMouseExp(int argc, char *argv[], vector<tuple<int,glm::mat4>> targets, string path, int nbOfTrialsDone = 0)
     {
         trialTargets = targets ;
-        int nbOfTrialsDone = restartAfterBug ;
+        int nextTrialTodo = nbOfTrialsDone+1;
 
         glutInit(&argc, argv);
 
@@ -343,23 +342,24 @@ namespace mainmouse{
         SDL_WM_SetCaption("Mouse Interaction!", nullptr);
         SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-        if (!(screen = SDL_SetVideoMode(WIDTH, HEIGHT, 32, SDL_OPENGL /*| SDL_FULLSCREEN*/))) {
+        if (!(screen = SDL_SetVideoMode(WIDTH, HEIGHT, 32, SDL_OPENGL))) {
             std::cerr << "SDL_SetVideoMode() failed: " << SDL_GetError() << '\n';
             return EXIT_FAILURE;
         }
 
         glViewport(0, 0, WIDTH, HEIGHT);
 
+        cout << "Launching trial " << nbOfTrialsDone << "out of " << trialTargets.size() << endl ;
 
-        while(nbOfTrialsDone != NBOFTRIALS){            //Loop through trials 
-            t = new Trial(get<1>(targets[nbOfTrialsDone]),get<0>(targets[nbOfTrialsDone]), path);
+        while(nextTrialTodo != NBOFTRIALS){            //Loop through trials 
+            t = new Trial(get<1>(targets[nextTrialTodo]),get<0>(targets[nextTrialTodo]), path);
             t->logMatrix(modelMatrix); 
             cout << "Path :" << path << endl ;
             while (getInput()) {
                 render();
                 SDL_GL_SwapBuffers();
             }
-            nbOfTrialsDone ++ ;
+            nextTrialTodo ++ ;
             LogAndReset();
             
             /*vector<string> v = t->getTimeHistory();
