@@ -326,7 +326,10 @@ namespace mainmouse{
     int launchMouseExp(int argc, char *argv[], vector<tuple<int,glm::mat4>> targets, string path, int nbOfTrialsDone = 0)
     {
         trialTargets = targets ;
-        int nextTrialTodo = nbOfTrialsDone+1;
+        int nextTrialTodo = nbOfTrialsDone;
+        if(nextTrialTodo!=0){
+            nextTrialTodo++ ;
+        }
 
         glutInit(&argc, argv);
 
@@ -372,11 +375,7 @@ namespace mainmouse{
             }
         }
 
-        
-
-       
-        
-
+        delete(arcball);
  
 
         return 0 ;

@@ -14,6 +14,10 @@
 #define TWOTOONE 		2
 #define BACKTOTWO 		3
 
+#define ONEFINGER		1
+#define TWOFINGERS		2
+#define MOREFINGERS		3	
+
 #define MOUSE 			"/Mouse"
 #define TOUCH			"/Touch"
 #define TANGIBLE		"/Tangible"

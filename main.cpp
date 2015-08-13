@@ -180,6 +180,7 @@ void launchCondition(int ind, int argc, char * argv[]){
 int getNextTrialToDo(string path){
     int nbOfFiles = 0 ;
     vector<int> trialsDone ;
+    cout << "Checking for files in : " << path << endl ;
     for(boost::filesystem::directory_iterator it(path); it != boost::filesystem::directory_iterator(); ++it){
         if(boost::filesystem::is_regular_file(it->status())){
             cout << it->path().stem() << endl ;
@@ -187,15 +188,18 @@ int getNextTrialToDo(string path){
             nbOfFiles++ ;
         }
     }
+    cout << "Found " << nbOfFiles << "files" << endl ;
     for(std::vector<string>::size_type i = 0 ; i!=trialsDone.size(); i++){
         cout << "File = " << trialsDone[i] << endl ;
     }
+    return nbOfFiles ;
     if(NBOFTRIALS == nbOfFiles){
         return -1 ;
     }
     else{
         return nbOfFiles ;
     }
+
 }
 
 
@@ -291,6 +295,9 @@ int main(int argc, char *argv[])
             }
             i--;
             nbOfConditionsDone ++ ;
+        }
+        if(hasFoundFailurePoint == false){
+            cout << "This ID has been previously used without any bug, change ID" << endl ;
         }
         /*for(int i = 0 ; i < 3 ; i++){       //Do the remaining conditions
             launchCondition(sequenceOrder[i], argc, argv);

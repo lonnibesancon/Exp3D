@@ -164,8 +164,10 @@ namespace maintouch{
         //delete(arcball);
         //arcball = new CPM_ARC_BALL_NS::ArcBall (glm::vec3(0,0,100), TRACKBALLSIZE);
 #endif
-        t = new Trial(get<1>(trialTargets[nextTrialTodo]),get<0>(trialTargets[nextTrialTodo]), path);
-        touchrenderer->trial = t ;
+        if(nextTrialTodo < NBOFTRIALS){
+            t = new Trial(get<1>(trialTargets[nextTrialTodo]),get<0>(trialTargets[nextTrialTodo]), path);
+            touchrenderer->trial = t ;
+        }
 
     }
 
@@ -175,8 +177,12 @@ namespace maintouch{
     {
         
         trialTargets = targets ;
-        nextTrialTodo = nbOfTrialsDone+1;
+        nextTrialTodo = nbOfTrialsDone;
+        if(nextTrialTodo != 0){
+            nextTrialTodo++ ;
+        }
         path = p;
+        
 
         glutInit(&argc, argv);
 
@@ -200,7 +206,7 @@ namespace maintouch{
 
         glViewport(0, 0, WIDTH, HEIGHT);
 
-        t = new Trial(get<1>(trialTargets[0]),get<0>(trialTargets[0]), path);
+        t = new Trial(get<1>(trialTargets[nextTrialTodo]),get<0>(trialTargets[nextTrialTodo]), path);
         touchrenderer = new TouchRenderer(transformationMatrix, WIDTH, HEIGHT, projMatrix, viewMatrix, t);
         touchlistener = new TouchListener(touchrenderer);
 
@@ -220,8 +226,11 @@ namespace maintouch{
             for(std::vector<string>::size_type i = 0; i!=w.size(); i++) {
                 cout << w.at(i) << endl ;
             }
-            //Get Next Trial
         }
+
+        delete(touchlistener);
+        delete(touchrenderer);
+        trialTargets.clear();
     }
 
 }

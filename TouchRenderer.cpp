@@ -48,16 +48,19 @@ void TouchRenderer::logAndResetTouchInfo(){
 	//Clear vectors
 	touchpoints.clear() ;
 
+	delete(trial);
+
 #ifdef ROT_SHOEMAKE_VT
         delete(arcball);
         arcball = new CPM_ARC_BALL_NS::ArcBall (glm::vec3(0,0,100), TRACKBALLSIZE);
 #endif
-	delete(trial);
 }
 
 
 TouchRenderer::~TouchRenderer(void)
 {
+	delete(arcball);
+
 }
 
 glm::vec3 projectToSphere(float r, float x, float y)
@@ -118,6 +121,7 @@ void TouchRenderer::add(long id, double x, double y){
 		//historyFingers.push_back(tuple<int,double>(0,tWithoutTouch));
 		//start = std::clock();
 		//measureTime(ZEROTOONE);
+		trial->measureTime(ONEFINGER);
 		startScreenPos = mouseToScreenCoords(x,y);
 		prevScreenPos = startScreenPos;
 		// arcball->beginDrag(startScreenPos);
@@ -128,6 +132,7 @@ void TouchRenderer::add(long id, double x, double y){
 		//historyFingers.push_back(tuple<int,double>(1,tCurrentSingle));
 		//start = std::clock();
 		//measureTime(ONETOTWO);
+		trial->measureTime(TWOFINGERS);
 		startRotation = rotation;
 		startObjectPos = glm::vec3 (modelMatrix * glm::vec4(0,0,0,1));		// Changes made here cause .xyz() not working
 		float xavg = (touchpoints.at(0).curX + touchpoints.at(1).curX) / 2.0f;
@@ -144,6 +149,7 @@ void TouchRenderer::add(long id, double x, double y){
 		//historyFingers.push_back(tuple<int,double>(2,tCurrentDouble));
 		//start = std::clock();
 		//measureTime(TWOTOMORE);
+		trial->measureTime(MOREFINGERS);
 	}
 	nbOfTouches ++ ;
 }
@@ -156,12 +162,14 @@ void TouchRenderer::remove(long id){
 		//historyFingers.push_back(tuple<int,double>(3,tCurrentDouble));
 		//start = std::clock();
 		//measureTime(BACKTOTWO);
+		trial->measureTime(TWOFINGERS);
 	}
 	else if(nbOfFingers == 1){
 		//tCurrentDouble = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
 		//historyFingers.push_back(tuple<int,double>(2,tCurrentDouble));
 		//start = std::clock();
 		//measureTime(TWOTOONE);
+		trial->measureTime(ONEFINGER);
 		cout << "Reset mouseToScreenCoords with the last finger remaining" << endl ;
 		startScreenPos = mouseToScreenCoords(touchpoints.at(0).curX, touchpoints.at(0).curY);
 		prevScreenPos = startScreenPos;
@@ -171,6 +179,7 @@ void TouchRenderer::remove(long id){
 		//historyFingers.push_back(tuple<int,double>(1,tCurrentSingle));
 		//start = std::clock();
 		//measureTime(ONETOZERO);
+		trial->measureTime(IDLE);
 	}
 }
 void TouchRenderer::update(long id, double x, double y){
