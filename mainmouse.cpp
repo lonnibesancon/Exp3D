@@ -29,14 +29,7 @@ using namespace std ;
 
 namespace mainmouse{
 
-    /*
-     *Logging functions and variables
-     */
 
-
-    /*
-     *Rendering functions and variables
-     */
     static const unsigned int WIDTH = 800, HEIGHT = 600;
     static const float ZOOM_SPEED = 2.5f;
 
@@ -54,6 +47,7 @@ namespace mainmouse{
     glm::mat4 startTranslationMatrix;
     glm::vec2 startScreenPos;
     bool leftClicked = false, rightClicked = false, modifierPressed = false, modifierSet = false;
+    int nextTrialTodo ;
 
 
     glm::vec2 mouseToScreenCoords(int mouseX, int mouseY)
@@ -280,22 +274,22 @@ namespace mainmouse{
         glMultMatrixf(glm::value_ptr(projMatrix));
 
         glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
-        glPushMatrix();
+            glLoadIdentity();
+            glPushMatrix();
 #ifdef ROT_SHOEMAKE_VT
-        glMultMatrixf(glm::value_ptr(viewMatrix * modelMatrix));
+            glMultMatrixf(glm::value_ptr(viewMatrix * modelMatrix));
 #else
-        glMultMatrixf(glm::value_ptr(viewMatrix * modelMatrix));
+            glMultMatrixf(glm::value_ptr(viewMatrix * modelMatrix));
 #endif
 
-        glEnable(GL_DEPTH_TEST);
-        glEnable(GL_LIGHTING);
-        glEnable(GL_LIGHT0);
-        glutSolidTeapot(1.0);
+            glEnable(GL_DEPTH_TEST);
+            glEnable(GL_LIGHTING);
+            glEnable(GL_LIGHT0);
+            glutSolidTeapot(1.0);
         glPopMatrix();
 
         //glTranslatef(0,0,-5);
-        glMultMatrixf(glm::value_ptr(std::get<1>(trialTargets[0])));
+        glMultMatrixf(glm::value_ptr(std::get<1>(trialTargets[nextTrialTodo])));
         glutWireTeapot(1.0);
     }
 
@@ -326,7 +320,7 @@ namespace mainmouse{
     int launchMouseExp(int argc, char *argv[], vector<tuple<int,glm::mat4>> targets, string path, int nbOfTrialsDone = 0)
     {
         trialTargets = targets ;
-        int nextTrialTodo = nbOfTrialsDone;
+        nextTrialTodo = nbOfTrialsDone;
         if(nextTrialTodo!=0){
             nextTrialTodo++ ;
         }

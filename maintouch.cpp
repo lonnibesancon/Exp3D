@@ -45,7 +45,7 @@ namespace maintouch{
 
 
 
-     static const unsigned int WIDTH = 800, HEIGHT = 600;
+    static const unsigned int WIDTH = 800, HEIGHT = 600;
     //#ifdef __APPLE__
     //static const unsigned int WIDTH = 1440, HEIGHT = 900;
     //#else
@@ -140,18 +140,18 @@ namespace maintouch{
 
         //printMatrix();
         glPushMatrix();
-        glMultMatrixf(glm::value_ptr(touchrenderer->getMultMatrix()));
-        glEnable(GL_DEPTH_TEST);
-        glEnable(GL_LIGHTING);
-        glEnable(GL_LIGHT0);
-        glutSolidTeapot(1.0);
+            glMultMatrixf(glm::value_ptr(touchrenderer->getMultMatrix()));
+            glEnable(GL_DEPTH_TEST);
+            glEnable(GL_LIGHTING);
+            glEnable(GL_LIGHT0);
+            glutSolidTeapot(1.0);
+            glEnable(GL_DEPTH_TEST);
+            glEnable(GL_LIGHTING);
+            glEnable(GL_LIGHT0);
         glPopMatrix();
-
-        // glEnable(GL_DEPTH_TEST);
-        // glEnable(GL_LIGHTING);
-        // glEnable(GL_LIGHT0);
+         
         glTranslatef(0,0,-5);
-        //glMultMatrixf(glm::value_ptr(targetMatrices[0]));
+        glMultMatrixf(glm::value_ptr(std::get<1>(trialTargets[nextTrialTodo])));
         glutWireTeapot(1.0);
     }
 
