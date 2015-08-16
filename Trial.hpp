@@ -22,7 +22,7 @@
 #include "glm/gtx/string_cast.hpp"
 
 
-
+//GLM IS COLUMN MAJOR
 
 class Trial{
 public:
@@ -52,6 +52,8 @@ private:
 	std::ofstream *outfileMatrix;
 	std::ofstream *outfileEvents;
 	std::ofstream *outfileMeta;
+
+	std::string tostring(glm::mat4 mat);
 
 	std::vector<std::tuple<double,int,double>> historyTime ;								//int for the action type, double for the timestamp of the starting time of the action, double for the duration of the action
 	std::vector<std::tuple<double,glm::mat4,double,glm::mat4>> historyMatrix ;				//double for the timestamp, mat4 for the current model matrix, double for the total difference, mat4 for the difference matrix

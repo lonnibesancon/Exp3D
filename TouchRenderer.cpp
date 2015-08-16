@@ -186,7 +186,6 @@ void TouchRenderer::update(long id, double x, double y){
 
 	int index = getIndexOfFingerById(id);
 	touchpoints.at(index).update(x,y);
-
 	glm::vec2 curPos;
 
 	if (nbOfFingers == 1){
@@ -219,7 +218,6 @@ void TouchRenderer::update(long id, double x, double y){
         distance = computeDistanceBtwnFingers();
 
         objectPos.z = 1/firstDistance * (1-firstDistance/distance);
-
         update();
 	}
 }

@@ -210,7 +210,7 @@ namespace mainmouse{
 
                 case SDL_MOUSEMOTION: {
                     glm::vec2 curPos = mouseToScreenCoords(event.motion.x, event.motion.y);
-                    if (rightClicked || modifierSet) {
+                    if (rightClicked) {
                         somethingWasDone = true ;
                         if (!modifierSet) {
                             const float objZ = viewMatrix[3][2];
@@ -222,13 +222,25 @@ namespace mainmouse{
                         }
 
                     } else if (leftClicked) {
-                        somethingWasDone = true ;
+                        if(!modifierSet){
+                            somethingWasDone = true ;
 #ifdef ROT_SHOEMAKE_VT
-                        arcball->drag(-curPos);
+                            arcball->drag(-curPos);
 #else
-                        trackball(curPos, trackballPrevPos);
-                        trackballPrevPos = curPos;
+                            trackball(curPos, trackballPrevPos);
+                            trackballPrevPos = curPos;
 #endif
+                        }
+                        else{
+                            glm::vec2 difference = curPos - startScreenPos ;
+                            float test = difference[0] + difference[1];
+                            cout << "Difference = " << test << endl ;
+                            glm::quat q = glm::quat(test, glm::vec3(0,0,1));
+                            q = glm::slerp(glm::quat(), glm::normalize(q), test); // additional normalization step
+                            rotation = q * rotation;
+                            rotation = glm::normalize(rotation); // avoid precision loss over time
+                            cout << "Rotation = " << rotation[0] << " ; " << rotation[1] << " ; " << rotation[2] << " ; " << rotation[2] << " ; " << endl; 
+                        }
                     }
 
                     break;
@@ -260,7 +272,7 @@ namespace mainmouse{
 
         if(somethingWasDone){       //Logging Only if something was done by the user, otherwise it's not helpful at all
             t->logMatrix(modelMatrix); 
-            cout << "Logging" << endl ;
+            //écout << "Logging" << endl ;
         } 
         return true;
     }
