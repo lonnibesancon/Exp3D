@@ -2,14 +2,17 @@
 
 using namespace std ;
 
-Trial::Trial(glm::mat4 t, int trialI, string Path){
+Trial::Trial(glm::mat4 t, int trialI, string Path, int timeOfStart, int subId){
 	trialInd = trialI ;
 	target = t ;
-	start = std::clock();
 	currentMode = 0 ;
-	trialStart = start ;
-	path = Path+"/"+to_string(trialI)+".csv" ;
-	outfile = new ofstream(path);
+	trialStart = timeOfStart ;
+	start = timeOfStart ;
+	path = Path+"/" ;
+	outfileMatrix = new ofstream(path+to_string(trialI)+".csv");
+	outfileEvents = new ofstream(path+to_string(trialI)+"events.csv");
+	outfileMeta = new ofstream(path+to_string(trialI)+"meta.csv");
+	subjectID = subId ;
 }
 
 Trial::~Trial(){
@@ -18,39 +21,41 @@ Trial::~Trial(){
 
 void Trial::writeLog(){
 	cout << path << endl ;
-	double trialDuration = (std::clock() - trialStart) / (double) CLOCKS_PER_SEC ;
-    *outfile << "Trial index ; " << trialInd << endl ;
-    *outfile << "Start Time ; " << trialStart / (double) CLOCKS_PER_SEC << endl << "Total Duration ;" << trialDuration << endl ;
-    *outfile << "Timestamp ;" << "Action ID" << "Duration" << endl ;
+	double trialDuration = (SDL_GetTicks() - trialStart) ;
+    *outfileMeta << "Start Time ; " << trialStart / (double) CLOCKS_PER_SEC << endl << "Total Duration ;" << trialDuration << endl ;
+
+    *outfileEvents << "Subject ID ; " << "TrialIndex ; " << "Timestamp ;" << "Action ID ; " << "Duration" << endl ;
     vector<string> v = getTimeHistory();
+    cout << "SIZE OF TIME HISTORY " << v.size();
     for(std::vector<string>::size_type i = 0; i!=v.size(); i++) {
-        *outfile << v.at(i);
+        *outfileEvents << to_string(subjectID) << " ; " << to_string(trialInd) << " ; " << v.at(i);
+        cout << subjectID << " ; " << v.at(i);
     }
 
-    *outfile << "Timestamp; " << "Current Model; " << "Difference Matrix; " << "Total Difference; " << endl ;
+    *outfileMatrix << "subjectID" << "TrialIndex" << "Timestamp; " << "Current Model; " << "Difference Matrix; " << "Total Difference; " << endl ;
     vector<string> w = getMatrixHistory();
     for(std::vector<string>::size_type i = 0; i!=w.size(); i++) {
-        *outfile << w.at(i) << endl ;
+        *outfileMatrix << subjectID << " ; " << trialInd << " ; " << w.at(i) << endl ;
     }
     
 }
 
 void Trial::writeNumberOfTouch(int nbOfTouch){
-	*outfile << "Nb Of Touch Points ;" << nbOfTouch << endl ;
+	*outfileMeta << "Nb Of Touch Points ;" << nbOfTouch << endl ;
 }
 
 
 void Trial::measureTime(int c){
-	double duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
-	double startingTime = (start-trialStart) / (double) CLOCKS_PER_SEC ;
-	historyTime.push_back(tuple<double,int,double>(startingTime,currentMode,duration));
+	double duration = ( SDL_GetTicks() - start ) ;
+	double timestamp = (start-trialStart) ;
+	historyTime.push_back(tuple<double,int,double>(timestamp,currentMode,duration));
 	currentMode = c ;
-	start = std::clock();
+	start = SDL_GetTicks();
 
 }
 
 void Trial::logMatrix(glm::mat4 mat){
-	double timestamp = ( std::clock() - trialStart ) / (double) CLOCKS_PER_SEC;
+	double timestamp = ( SDL_GetTicks() - trialStart ) ;
 	glm::mat4 difference = target - mat ;
 	//cout << "Logging Matrix" << endl ;
 	//cout << "Target = " << to_string(target) <<endl ;

@@ -47,7 +47,6 @@ ofstream* outfile ;
 
 using namespace std;
 
-
 struct compareFirstTupleMember {
     bool operator()(const tuple<int, glm::mat4>& a, const tuple<int, glm::mat4>& b) const {
         return get<0>(a) < get<0>(b);
@@ -77,7 +76,7 @@ int createConditionDirectory(string dirToCreate){
 }
 
 void createSubjectFileInfo(char* subID, std::vector<int> order){
-    outfile = new ofstream(path+"info.txt");
+    outfile = new ofstream(path+"/info.txt");
     *outfile << "Subject ID: " << subID << endl ;
     *outfile << "Order: " << order[0] << " - " << order[1] << " - " << order[2] << std::endl ;
 }
@@ -159,7 +158,7 @@ void launchCondition(int ind, int argc, char * argv[]){
 		case 3:
             *outfile << "Tangible condition order of trials:" ;
 			createConditionDirectory(path+TANGIBLE);
-            maintangible::launchTangibleExp(argc, argv, trialTargets, path+TANGIBLE);
+            //maintangible::launchTangibleExp(argc, argv, trialTargets, path+TANGIBLE);
 			break ;
 		default:
 			cerr << "Error, not a valid condition number" << std::endl ;

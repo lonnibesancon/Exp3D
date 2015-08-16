@@ -53,8 +53,7 @@ namespace maintangible{
 	Trial *t ;
 	vector <tuple<int,glm::mat4>> trialTargets ;
 	int nextTrialTodo ;
-
-
+	int subjectID ;
 
 
 	glm::vec2 mouseToScreenCoords(int mouseX, int mouseY)
@@ -235,6 +234,7 @@ namespace maintangible{
 	int launchTangibleExp(int argc, char *argv[], vector<tuple<int,glm::mat4>> targets, string path, int nbOfTrialsDone = 0)
 	{
 		trialTargets = targets ;
+		subjectID = atoi(argv[1]);
 
 		int nextTrialTodo = nbOfTrialsDone;
         if(nextTrialTodo!=0){
@@ -264,7 +264,7 @@ namespace maintangible{
 
 		std::string str;
 		while(nextTrialTodo != NBOFTRIALS){            //Loop through trials 
-            t = new Trial(get<1>(targets[nextTrialTodo]),get<0>(targets[nextTrialTodo]), path);
+            t = new Trial(get<1>(targets[nextTrialTodo]),get<0>(targets[nextTrialTodo]), path,SDL_GetTicks(),subjectID);
             t->logMatrix(modelMatrix); 
 
 			while (getInput()) {

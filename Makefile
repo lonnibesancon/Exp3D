@@ -22,7 +22,8 @@ SOURCESTUIO= TUIO/TuioClient.cpp TUIO/TuioServer.cpp TUIO/TuioTime.cpp
 SOURCETOUCH= TouchRenderer.cpp TouchPoint.cpp TouchListener.cpp
 SOURCETANGIBLE= mainTangible.cpp
 OTHERSOURCES= Trial.cpp
-all: $(SOURCESARCBALL:%.cpp=%.o) $(SOURCESOSCPACK:%.cpp=%.o) $(SOURCESTUIO:%.cpp=%.o) $(SOURCETOUCH:%.cpp=%.o) $(SOURCETANGIBLE:%.cpp=%.o) $(OTHERSOURCES:%.cpp=%.o) main.o
+#$(SOURCETANGIBLE:%.cpp=%.o)#
+all: $(SOURCESARCBALL:%.cpp=%.o) $(SOURCESOSCPACK:%.cpp=%.o) $(SOURCESTUIO:%.cpp=%.o) $(SOURCETOUCH:%.cpp=%.o) $(OTHERSOURCES:%.cpp=%.o) main.o
 	$(CXX) $^ -o main $(CXXFLAGS) $(LDFLAGS)
 
 %.o: %.cpp

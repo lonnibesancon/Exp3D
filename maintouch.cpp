@@ -70,6 +70,7 @@ namespace maintouch{
     vector <tuple<int,glm::mat4>> trialTargets ;
     int nextTrialTodo ;
     string path ;
+    int subjectID ;
 
 
     glm::vec2 mouseToScreenCoords(int mouseX, int mouseY)
@@ -168,7 +169,7 @@ namespace maintouch{
             delete(touchlistener);
             touchlistener = new TouchListener(touchrenderer);
             cout << "Test" << endl ;
-            t = new Trial(get<1>(trialTargets[nextTrialTodo]),get<0>(trialTargets[nextTrialTodo]), path);
+            t = new Trial(get<1>(trialTargets[nextTrialTodo]),get<0>(trialTargets[nextTrialTodo]), path,SDL_GetTicks(), subjectID);
             cout << "Test 2"<< endl ;
             touchrenderer->trial = t ;
             cout << "Test 3"<< endl ;
@@ -182,6 +183,7 @@ namespace maintouch{
     {
         
         trialTargets = targets ;
+        subjectID = atoi(argv[1]);
         nextTrialTodo = nbOfTrialsDone;
         if(nextTrialTodo != 0){
             nextTrialTodo++ ;
@@ -211,7 +213,7 @@ namespace maintouch{
 
         glViewport(0, 0, WIDTH, HEIGHT);
 
-        t = new Trial(get<1>(trialTargets[nextTrialTodo]),get<0>(trialTargets[nextTrialTodo]), path);
+        t = new Trial(get<1>(trialTargets[nextTrialTodo]),get<0>(trialTargets[nextTrialTodo]), path,SDL_GetTicks(),subjectID);
         touchrenderer = new TouchRenderer(transformationMatrix, WIDTH, HEIGHT, projMatrix, viewMatrix, t);
         touchlistener = new TouchListener(touchrenderer);
 

@@ -48,6 +48,7 @@ namespace mainmouse{
     glm::vec2 startScreenPos;
     bool leftClicked = false, rightClicked = false, modifierPressed = false, modifierSet = false;
     int nextTrialTodo ;
+    int subjectID ;
 
 
     glm::vec2 mouseToScreenCoords(int mouseX, int mouseY)
@@ -320,6 +321,7 @@ namespace mainmouse{
     int launchMouseExp(int argc, char *argv[], vector<tuple<int,glm::mat4>> targets, string path, int nbOfTrialsDone = 0)
     {
         trialTargets = targets ;
+        subjectID = atoi(argv[1]);
         nextTrialTodo = nbOfTrialsDone;
         if(nextTrialTodo!=0){
             nextTrialTodo++ ;
@@ -349,7 +351,7 @@ namespace mainmouse{
         cout << "Launching trial " << nbOfTrialsDone << "out of " << trialTargets.size() << endl ;
 
         while(nextTrialTodo != NBOFTRIALS){            //Loop through trials 
-            t = new Trial(get<1>(targets[nextTrialTodo]),get<0>(targets[nextTrialTodo]), path);
+            t = new Trial(get<1>(targets[nextTrialTodo]),get<0>(targets[nextTrialTodo]), path, SDL_GetTicks(), subjectID);
             t->logMatrix(modelMatrix); 
             cout << "Path :" << path << endl ;
             while (getInput()) {
