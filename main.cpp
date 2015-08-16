@@ -36,14 +36,17 @@
 
 #include "mainmouse.cpp"
 #include "maintouch.cpp"
+#include "maintangible.cpp"
 
 
 std::vector<int> sequenceOrder ;
 std::vector<glm::mat4> targetMatrices ;
 std::vector <std::tuple<int,glm::mat4>> trialTargets ;
 string path ;
+ofstream* outfile ;
 
 using namespace std;
+
 
 struct compareFirstTupleMember {
     bool operator()(const tuple<int, glm::mat4>& a, const tuple<int, glm::mat4>& b) const {
@@ -61,8 +64,6 @@ int createDirectory(){
         return -1 ;
     }
     boost::filesystem::create_directory(boost::filesystem::path(path));
-    //Creating main directory for current subject
-    //mkdir(pathChar,S_IRWXU);
 
     return 0;
 }
@@ -76,9 +77,9 @@ int createConditionDirectory(string dirToCreate){
 }
 
 void createSubjectFileInfo(char* subID, std::vector<int> order){
-    ofstream outfile (path+"/info.txt");
-    outfile << "Subject ID: " << subID << endl ;
-    outfile << "Order: " << order[0] << " - " << order[1] << " - " << order[2] << std::endl ;
+    outfile = new ofstream(path+"info.txt");
+    *outfile << "Subject ID: " << subID << endl ;
+    *outfile << "Order: " << order[0] << " - " << order[1] << " - " << order[2] << std::endl ;
 }
 
 vector<int> getPermutation(char* argv[]){
@@ -102,36 +103,23 @@ vector<int> getPermutation(char* argv[]){
 }
 
 void getPermutation(char* argv[], int condition){
-    /*int subjectID = atoi(argv[1]);
+    int subjectID = atoi(argv[1]);
+    int seed = subjectID * condition ;
+    srand(seed);
 
-    sort(trialTargets.begin(), trialTargets.end(), compareFirstTupleMember());
-
-    for(int i=0;i<subjectID*condition;i++){
-        //std::cout << cond[0] << " " << cond[1] << " " << cond[2] << '\n';
-        std::next_permutation(begin(trialTargets), end(trialTargets), compareFirstTupleMember());
+    for (int i=0; i<(NBOFTRIALS); i++) {
+            int r = i + (rand() % (NBOFTRIALS-i)); // Random remaining position.
+            tuple<int,glm::mat4> temp = trialTargets[i]; 
+            trialTargets[i] = trialTargets[r]; 
+            trialTargets[r] = temp;
     }
-    
-    for(int i=0;i<NBOFTRIALS;i++){
-        std::cout << get<0>(trialTargets[i]) << " ; " ;
-    }
-    cout << endl ;*/
-    tuple<int,glm::mat4> tmp ;
-    tmp = trialTargets[0];
-    trialTargets[0] = trialTargets[NBOFTRIALS-1];
-    trialTargets[NBOFTRIALS-1] = tmp ;
-
-    tmp = trialTargets[3];
-    trialTargets[3] = trialTargets[NBOFTRIALS-3];
-    trialTargets[NBOFTRIALS-3] = tmp ;
-
-    tmp = trialTargets[5];
-    trialTargets[5] = trialTargets[NBOFTRIALS-5];
-    trialTargets[NBOFTRIALS-5] = tmp ;
 
     for(int i=0;i<NBOFTRIALS;i++){
         std::cout << get<0>(trialTargets[i]) << " ; " ;
+        *outfile << get<0>(trialTargets[i]) << " ; " ;
     }
     cout << endl ;
+    *outfile << endl ;
 
 }
 
@@ -158,18 +146,20 @@ void launchCondition(int ind, int argc, char * argv[]){
 	switch(ind){
 		case 1:
             createConditionDirectory(path+MOUSE);
-            getPermutation(argv,2);
+            *outfile << "Mouse condition order of trials:" ;
+            getPermutation(argv,100);
 			mainmouse::launchMouseExp(argc, argv, trialTargets, path+MOUSE);
 			break;
 		case 2:
             createConditionDirectory(path+TOUCH);
-            getPermutation(argv,2);
+            *outfile << "Touch condition order of trials:" ;
+            getPermutation(argv,200);
 			maintouch::launchTouchExp(argc, argv, trialTargets, path+TOUCH);
 			break ;
 		case 3:
-            cout << "TANGIBLE CONDITION" << endl ;
+            *outfile << "Tangible condition order of trials:" ;
 			createConditionDirectory(path+TANGIBLE);
-            //
+            maintangible::launchTangibleExp(argc, argv, trialTargets, path+TANGIBLE);
 			break ;
 		default:
 			cerr << "Error, not a valid condition number" << std::endl ;
@@ -207,6 +197,8 @@ int main(int argc, char *argv[])
 {
 
     short a ;
+
+    glutInit(&argc, argv);
 
 	if(argc < 2){
         cerr << "Please enter subject ID!!\n" ;

@@ -165,8 +165,13 @@ namespace maintouch{
         //arcball = new CPM_ARC_BALL_NS::ArcBall (glm::vec3(0,0,100), TRACKBALLSIZE);
 #endif
         if(nextTrialTodo < NBOFTRIALS){
+            delete(touchlistener);
+            touchlistener = new TouchListener(touchrenderer);
+            cout << "Test" << endl ;
             t = new Trial(get<1>(trialTargets[nextTrialTodo]),get<0>(trialTargets[nextTrialTodo]), path);
+            cout << "Test 2"<< endl ;
             touchrenderer->trial = t ;
+            cout << "Test 3"<< endl ;
         }
 
     }
@@ -182,9 +187,9 @@ namespace maintouch{
             nextTrialTodo++ ;
         }
         path = p;
-        
 
-        glutInit(&argc, argv);
+        cout << "Size of trial targets = " << trialTargets.size() << endl ;
+        
 
         SDL_Surface* screen;
 
@@ -212,6 +217,7 @@ namespace maintouch{
 
         while(nextTrialTodo != NBOFTRIALS){ 
             cout << "Path :" << path << endl ;
+            cout << "Next Trial To Do = " << nextTrialTodo << endl ;
             while (getInput()) {
                 render();
                 SDL_GL_SwapBuffers();
@@ -221,11 +227,11 @@ namespace maintouch{
             /*vector<string> v = t->getTimeHistory();
             for(std::vector<string>::size_type i = 0; i!=v.size(); i++) {
                 cout << v.at(i);
-            }*/
+            }
             vector<string> w = t->getMatrixHistory();
             for(std::vector<string>::size_type i = 0; i!=w.size(); i++) {
                 cout << w.at(i) << endl ;
-            }
+            }*/
         }
 
         delete(touchlistener);

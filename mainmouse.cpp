@@ -362,11 +362,11 @@ namespace mainmouse{
             /*vector<string> v = t->getTimeHistory();
             for(std::vector<string>::size_type i = 0; i!=v.size(); i++) {
                 cout << v.at(i);
-            }*/
+            }
             vector<string> w = t->getMatrixHistory();
             for(std::vector<string>::size_type i = 0; i!=w.size(); i++) {
                 cout << w.at(i) << endl ;
-            }
+            }*/
         }
 
         delete(arcball);

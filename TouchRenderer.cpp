@@ -228,7 +228,8 @@ void TouchRenderer::update(){
 	// modelMatrix = glm::translate(startModelMatrix, objectPos) * glm::rotate(startModelMatrix,objectAngle, glm::vec3(0,0,1));
 	// modelMatrix = glm::translate(startModelMatrix, objectPos) * glm::mat4_cast(rotation);
 	modelMatrix = glm::translate(glm::mat4(), startObjectPos+objectPos) * glm::mat4_cast(rotation);
-	historyMatrix.push_back(modelMatrix);
+	//historyMatrix.push_back(modelMatrix);
+	trial->logMatrix(modelMatrix);
 }
 
 

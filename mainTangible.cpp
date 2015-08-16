@@ -178,7 +178,7 @@ namespace maintangible{
     }
 
 
-    
+
 
 
 	bool getInput()
@@ -232,7 +232,7 @@ namespace maintangible{
         glutWireTeapot(1.0);
 	}
 
-	int main(int argc, char *argv[], vector<tuple<int,glm::mat4>> targets, string path, int nbOfTrialsDone = 0)
+	int launchTangibleExp(int argc, char *argv[], vector<tuple<int,glm::mat4>> targets, string path, int nbOfTrialsDone = 0)
 	{
 		trialTargets = targets ;
 
@@ -241,7 +241,7 @@ namespace maintangible{
             nextTrialTodo++ ;
         }
 
-		glutInit(&argc, argv);
+		//glutInit(&argc, argv);
 
 		SDL_Surface* screen;
 
@@ -252,7 +252,7 @@ namespace maintangible{
 
 		std::atexit(SDL_Quit);
 
-		SDL_WM_SetCaption("Mon premier programme OpenGL !", nullptr);
+		SDL_WM_SetCaption("Tangible !", nullptr);
 		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
 		if (!(screen = SDL_SetVideoMode(WIDTH, HEIGHT, 32, SDL_OPENGL /*| SDL_FULLSCREEN*/))) {
@@ -263,18 +263,28 @@ namespace maintangible{
 		glViewport(0, 0, WIDTH, HEIGHT);
 
 		std::string str;
-		while (getInput()) {
-			render();
-			if (std::getline(std::cin, str)) {
-				// if (str.find("----") == 0) continue; // for "adb logcat"
-				std::vector<std::string> values = split(split(str, '|')[1], ',');
-				trackingPos = glm::vec3(fromString<float>(values[0])/10, -fromString<float>(values[1])/10, -fromString<float>(values[2])/10);
-				trackingRot = glm::quat(fromString<float>(values[6]), fromString<float>(values[3]), -fromString<float>(values[4]), -fromString<float>(values[5]));
-				trackingRot = glm::normalize(trackingRot);
-				modelMatrix = glm::translate(glm::mat4(), trackingPos) * glm::mat4_cast(trackingRot);
-				std::cout << glm::to_string(trackingPos) << '\n';
+		while(nextTrialTodo != NBOFTRIALS){            //Loop through trials 
+            t = new Trial(get<1>(targets[nextTrialTodo]),get<0>(targets[nextTrialTodo]), path);
+            t->logMatrix(modelMatrix); 
+
+			while (getInput()) {
+				render();
+				if (std::getline(std::cin, str)) {
+					// if (str.find("----") == 0) continue; // for "adb logcat"
+					std::vector<std::string> values = split(split(str, '|')[1], ',');
+					trackingPos = glm::vec3(fromString<float>(values[0])/10, -fromString<float>(values[1])/10, -fromString<float>(values[2])/10);
+					trackingRot = glm::quat(fromString<float>(values[6]), fromString<float>(values[3]), -fromString<float>(values[4]), -fromString<float>(values[5]));
+					trackingRot = glm::normalize(trackingRot);
+					modelMatrix = glm::translate(glm::mat4(), trackingPos) * glm::mat4_cast(trackingRot);
+					std::cout << glm::to_string(trackingPos) << '\n';
+					t->logMatrix(modelMatrix);
+				}
+				SDL_GL_SwapBuffers();
 			}
-			SDL_GL_SwapBuffers();
+
+			logAndReset();
 		}
+
+		return 0 ;	
 	}
 }

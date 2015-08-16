@@ -20,14 +20,14 @@ void Trial::writeLog(){
 	cout << path << endl ;
 	double trialDuration = (std::clock() - trialStart) / (double) CLOCKS_PER_SEC ;
     *outfile << "Trial index ; " << trialInd << endl ;
-    *outfile << "Start Time ; " << trialStart / (double) CLOCKS_PER_SEC << endl << "Total DUration ;" << trialDuration << endl ;
+    *outfile << "Start Time ; " << trialStart / (double) CLOCKS_PER_SEC << endl << "Total Duration ;" << trialDuration << endl ;
     *outfile << "Timestamp ;" << "Action ID" << "Duration" << endl ;
     vector<string> v = getTimeHistory();
     for(std::vector<string>::size_type i = 0; i!=v.size(); i++) {
         *outfile << v.at(i);
     }
 
-    *outfile << "Timestamp" << "Current Model" << "Difference Matrix" << "Total Difference" << endl ;
+    *outfile << "Timestamp; " << "Current Model; " << "Difference Matrix; " << "Total Difference; " << endl ;
     vector<string> w = getMatrixHistory();
     for(std::vector<string>::size_type i = 0; i!=w.size(); i++) {
         *outfile << w.at(i) << endl ;
@@ -52,14 +52,18 @@ void Trial::measureTime(int c){
 void Trial::logMatrix(glm::mat4 mat){
 	double timestamp = ( std::clock() - trialStart ) / (double) CLOCKS_PER_SEC;
 	glm::mat4 difference = target - mat ;
-	double totalDiff = 0 ;
+	//cout << "Logging Matrix" << endl ;
+	//cout << "Target = " << to_string(target) <<endl ;
+	//cout << "Current = " << to_string(mat) << endl ;
+	//cout << "Difference = " << to_string(difference) << endl ;
+ 	double totalDiff = 0 ;
 	for(int i = 0 ; i < 4 ; i ++){
 		for(int j = 0 ; j < 4 ; j++){
 			totalDiff += difference[i][j];	
 		}
 	}
-	historyMatrix.push_back(tuple<double, glm::mat4, double, glm::mat4>(0, glm::mat4(1.0f), 0, glm::mat4(1.0f)));
-	//historyMatrix.push_back(tuple<double, glm::mat4, double, glm::mat4>(timestamp, mat, totalDiff, difference));
+	//historyMatrix.push_back(tuple<double, glm::mat4, double, glm::mat4>(0, glm::mat4(1.0f), 0, glm::mat4(1.0f)));
+	historyMatrix.push_back(tuple<double, glm::mat4, double, glm::mat4>(timestamp, mat, totalDiff, difference));
 }
 
 vector<string> Trial::getTimeHistory(){
@@ -99,6 +103,7 @@ vector<string> Trial::getMatrixHistory(){
     	s.append(to_string(get<3>(t))) ;
 		s.append("\n") ;
 		v.push_back(s);
+		//cout << "Test : " << s << endl ;
 		s="";
 	}
 	return v;
