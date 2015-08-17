@@ -29,7 +29,6 @@ void Trial::writeLog(){
     vector<string> v = getTimeHistory();
     cout << "SIZE OF TIME HISTORY " << v.size() << endl ;
     *outfileEvents << "Subject ID ; " << "TrialIndex ; " << "Timestamp ;" << "Action ID ; " << "Duration ;" << endl ;
-    *outfileEvents << "COUCOU BATARD" << endl ;
     for(std::vector<string>::size_type i = 0; i!=v.size(); i++) {
         *outfileEvents << subjectID << " ; " << trialInd << " ; " << v.at(i) << endl ;
         cout << subjectID << " ; " << v.at(i) << endl ;
