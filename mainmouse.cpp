@@ -238,12 +238,12 @@ namespace mainmouse{
                             glm::vec2 difference = curPos - previousScreenPosForRotation ;
                             if(difference[0] != 0){
                                 float test = difference[0] ;
-                                cout << "Difference = " << test << "     ABS " << test/abs(test) << endl ;
+                                //cout << "Difference = " << test << "     ABS " << test/abs(test) << endl ;
                                 glm::quat q = glm::quat(test, glm::vec3(0,0,test/abs(test)));
                                 q = glm::slerp(glm::quat(), glm::normalize(q), test); // additional normalization step
                                 rotation = q * rotation;
                                 rotation = glm::normalize(rotation); // avoid precision loss over time
-                                cout << "Rotation = " << rotation[0] << " ; " << rotation[1] << " ; " << rotation[2] << " ; " << rotation[2] << " ; " << endl;
+                                //cout << "Rotation = " << rotation[0] << " ; " << rotation[1] << " ; " << rotation[2] << " ; " << rotation[2] << " ; " << endl;
                                 previousScreenPosForRotation = curPos ;
                             } 
                         }

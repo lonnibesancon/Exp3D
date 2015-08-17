@@ -236,16 +236,22 @@ int main(int argc, char *argv[])
     else{           // Cas de bug pendant l'expérience/
         //First recover the sequence thanks to the subject ID.
         sequenceOrder = getPermutation(argv);
+        outfile = new ofstream(path+"/info.txt");       // To prevent segfault
+        *outfile << "Recovery mode launched" << endl ;
         //Then check whether the first condition was done by trying to find the file
         bool hasFoundFailurePoint = false ;
         int i = 2 ;
         string p ;
         int nbOfTrialsDone = 0 ;
         int nbOfConditionsDone = 0 ;
+        bool skipTangible = false ;
+        bool skipTouch = false ;
+        bool skipMouse = false ;
         while(i>=0 && hasFoundFailurePoint == false ){
             switch(sequenceOrder[i]){
                 case 1:
                     p = path+MOUSE ;
+                    if(skipMouse) break ;
                     if(boost::filesystem::exists(p)){
                         nbOfTrialsDone = getNextTrialToDo(p);
                         cout <<"Nb Done Mouse= " << nbOfTrialsDone << endl ;
@@ -257,11 +263,13 @@ int main(int argc, char *argv[])
                         }
                         else{
                         cout << "Mouse Not done yet" << endl ;
+                        nbOfConditionsDone -- ;
                         }
                     }
                     break;
                 case 2:
                     p = path+TOUCH ;
+                    if(skipTouch) break ;
                     if(boost::filesystem::exists(p)){
                         nbOfTrialsDone = getNextTrialToDo(p);
                         cout << "Nb Done Touch= " << nbOfTrialsDone << endl ;
@@ -274,10 +282,12 @@ int main(int argc, char *argv[])
                     }
                     else{
                         cout << "Touch Not done yet" << endl ;
+                        nbOfConditionsDone -- ;
                     }
                     break;
                 case 3:
                     p = path+TANGIBLE ;
+                    if(skipTangible) break ;
                     if(boost::filesystem::exists(path+TANGIBLE)){
                         nbOfTrialsDone = getNextTrialToDo(p);
                         cout << "Nb Done Tangible= " << nbOfTrialsDone << endl ;
@@ -289,17 +299,20 @@ int main(int argc, char *argv[])
                     }
                     else{
                         cout << "Tangible Not done yet" << endl ;
+                        nbOfConditionsDone -- ;
                     }
                     break;
             }
             i--;
             nbOfConditionsDone ++ ;
         }
+        cout << "End of recovery mode" << endl;
+        cout << "Nb of conditions done = " << nbOfConditionsDone << endl ;
         if(hasFoundFailurePoint == false){
             cout << "This ID has been previously used without any bug, change ID" << endl ;
         }
 
-        cout << "Nb of conditions done = " << nbOfConditionsDone << endl ;
+        
         for(int i = nbOfConditionsDone ; i < 3 ; i++){       //Do the remaining conditions
             launchCondition(sequenceOrder[i], argc, argv);
              cout << "********************************************************************************************************************************" << endl
