@@ -18,6 +18,8 @@
 #define TWOFINGERS		2
 #define MOREFINGERS		3	
 
+#define RESTART			-1
+
 #define MOUSE 			"/Mouse"
 #define TOUCH			"/Touch"
 #define TANGIBLE		"/Tangible"
@@ -30,5 +32,5 @@
 
 
 //#define ROT_SHOEMAKE_VT
-#define ROT_BELL_VT
-// #define ROT_BLENDER
+//#define ROT_BELL_VT
+#define ROT_BLENDER

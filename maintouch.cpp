@@ -108,6 +108,10 @@ namespace maintouch{
                         }
                         return false;
                     }
+                    if(event.key.keysym.sym == SDLK_r){
+                        t->restartPressed();
+                        touchrenderer->reset();
+                    }
                     break;
                 }
             }
@@ -215,6 +219,7 @@ namespace maintouch{
         touchlistener = new TouchListener(touchrenderer);
 
         while(nextTrialTodo != NBOFTRIALS){ 
+            cout << "***********Launching trial # " << get<0>(trialTargets[nextTrialTodo]) << endl ;
             cout << "Path :" << path << endl ;
             cout << "Next Trial To Do = " << nextTrialTodo << endl ;
             while (getInput()) {

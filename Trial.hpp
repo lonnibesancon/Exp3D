@@ -20,6 +20,9 @@
 #include "glm/gtc/type_ptr.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtx/string_cast.hpp"
+#include "glm/gtc/quaternion.hpp"
+#include "glm/gtx/matrix_decompose.hpp"
+
 
 
 //GLM IS COLUMN MAJOR
@@ -34,6 +37,7 @@ public:
 	
 	void logMatrix(glm::mat4 mat);
 	void measureTime(int c);
+	void restartPressed();
 	std::vector<std::string> getTimeHistory();
 	std::vector<std::string> getMatrixHistory();
 
@@ -45,9 +49,9 @@ public:
 private:
 	glm::mat4 target ;
 	int trialInd ;
-	time_t totalTime ;
 	int currentMode ;
 	int subjectID ;
+	int nbOfRestarts ;
 	std::string path ;
 	std::ofstream *outfileMatrix;
 	std::ofstream *outfileEvents;
@@ -55,7 +59,7 @@ private:
 
 	std::string tostring(glm::mat4 mat);
 
-	std::vector<std::tuple<double,int,double>> historyTime ;								//int for the action type, double for the timestamp of the starting time of the action, double for the duration of the action
-	std::vector<std::tuple<double,glm::mat4,double,glm::mat4>> historyMatrix ;				//double for the timestamp, mat4 for the current model matrix, double for the total difference, mat4 for the difference matrix
+	std::vector<std::tuple<double,int,double>> historyTime ;																	//int for the action type, double for the timestamp of the starting time of the action, double for the duration of the action
+	std::vector<std::tuple<double,double, double, double, glm::vec3,glm::mat4,double,glm::mat4>> historyMatrix ;				//double for the timestamp, double for pitch, double for roll, double for yaw, glm::vec4 for distance, mat4 for the current model matrix, double for the total difference, mat4 for the difference matrix
 };
 #endif

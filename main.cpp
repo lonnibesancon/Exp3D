@@ -236,7 +236,7 @@ int main(int argc, char *argv[])
     else{           // Cas de bug pendant l'expérience/
         //First recover the sequence thanks to the subject ID.
         sequenceOrder = getPermutation(argv);
-        outfile = new ofstream(path+"/info.txt");       // To prevent segfault
+        outfile = new ofstream(path+"/info.txt", std::ios_base::app);       // To prevent segfault
         *outfile << "Recovery mode launched" << endl ;
         //Then check whether the first condition was done by trying to find the file
         bool hasFoundFailurePoint = false ;

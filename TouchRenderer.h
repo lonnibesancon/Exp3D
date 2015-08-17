@@ -46,6 +46,7 @@ public:
 	void remove(long id);
 	void update(long id, double x, double y);
 	void logAndResetTouchInfo();
+	void reset();
 
 	glm::mat4 getModelMatrix();
 	glm::mat4 getViewMatrix();

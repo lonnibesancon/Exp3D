@@ -165,6 +165,9 @@ namespace mainmouse{
                     if(event.key.keysym.sym == SDLK_KP_ENTER){      //L'utilisateur valide son placement
                         return false ;
                     }
+                    if(event.key.keysym.sym == SDLK_r){
+                        t->restartPressed();
+                    }
                     break;
                 }
 
@@ -312,11 +315,7 @@ namespace mainmouse{
         glutWireTeapot(1.0);
     }
 
-    void LogAndReset(){
-        //First Log everything
-        t->logMatrix(modelMatrix);
-        t->writeLog();
-
+    void reset(){
         modelMatrix = glm::mat4(1.0f);
         translationMatrix = glm::mat4(1.0f);
         rotation = glm::quat();
@@ -333,6 +332,13 @@ namespace mainmouse{
         rightClicked = false; 
         modifierPressed = false; 
         modifierSet = false;
+    }
+
+    void LogAndReset(){
+        //First Log everything
+        t->logMatrix(modelMatrix);
+        t->writeLog();
+        reset();
         delete(t);
     }
 

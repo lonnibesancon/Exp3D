@@ -23,6 +23,23 @@ TouchRenderer::TouchRenderer(glm::mat4 model, unsigned int W, unsigned int H, gl
 	//start = std::clock();
 }
 
+void TouchRenderer::reset(){
+	modelMatrix = glm::mat4(1.0f);
+	startModelMatrix = glm::mat4(1.0f);;
+	startScreenPos = glm::vec2();
+	prevScreenPos = glm::vec2();
+	startRotation = glm::quat();
+	startObjectPos = glm::vec3();
+	startOffset = glm::vec2();
+	originalVector = glm::vec2();
+	newVector = glm::vec2();
+	objectPos = glm::vec3();
+	rotation = glm::quat();
+	objectAngle = 0 ;
+	firstDistance = 0 ;
+	distance = 0;
+}
+
 void TouchRenderer::logAndResetTouchInfo(){
 	trial->writeLog();
 	trial->writeNumberOfTouch(nbOfTouches);

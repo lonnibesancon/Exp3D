@@ -261,6 +261,7 @@ namespace maintangible{
 
 		std::string str;
 		while(nextTrialTodo != NBOFTRIALS){            //Loop through trials 
+			cout << "***********Launching trial # " << get<0>(trialTargets[nextTrialTodo]) << endl ;
             t = new Trial(get<1>(targets[nextTrialTodo]),get<0>(targets[nextTrialTodo]), path,SDL_GetTicks(),subjectID);
             t->logMatrix(modelMatrix); 
 
