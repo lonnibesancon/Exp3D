@@ -237,9 +237,6 @@ namespace maintangible{
 		subjectID = atoi(argv[1]);
 
 		int nextTrialTodo = nbOfTrialsDone;
-        if(nextTrialTodo!=0){
-            nextTrialTodo++ ;
-        }
 
 		//glutInit(&argc, argv);
 
@@ -284,7 +281,8 @@ namespace maintangible{
 
 			logAndReset();
 		}
-
+		SDL_Quit();
+		trialTargets.clear();
 		return 0 ;	
 	}
 }

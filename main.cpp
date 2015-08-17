@@ -115,10 +115,10 @@ void getPermutation(char* argv[], int condition){
 
     for(int i=0;i<NBOFTRIALS;i++){
         std::cout << get<0>(trialTargets[i]) << " ; " ;
-        *outfile << get<0>(trialTargets[i]) << " ; " ;
+        //*outfile << get<0>(trialTargets[i]) << " ; " ;
     }
     cout << endl ;
-    *outfile << endl ;
+    //*outfile << endl ;
 
 }
 
@@ -181,6 +181,9 @@ int getNextTrialToDo(string path){
     for(std::vector<string>::size_type i = 0 ; i!=trialsDone.size(); i++){
         cout << "File = " << trialsDone[i] << endl ;
     }
+    nbOfFiles /= 3 ;
+    nbOfFiles -- ;  // Because we start counting from 0 for the vector ;)
+    nbOfFiles -- ;  // It is very likely that the last file is corrupted
     return nbOfFiles ;
     if(NBOFTRIALS == nbOfFiles){
         return -1 ;
@@ -195,7 +198,7 @@ int getNextTrialToDo(string path){
 int main(int argc, char *argv[])
 {
 
-    short a ;
+    string a ;
 
     glutInit(&argc, argv);
 
@@ -213,7 +216,9 @@ int main(int argc, char *argv[])
         cout << "********************************************************************************************************************************" << endl 
              << "This part of the experiment is over" << endl << "Please fill in the questionnaire and press enter" << endl 
              << "********************************************************************************************************************************" << endl ;
-        /*cin >> a ;*/
+        
+        cout << "Press enter to get to next experiment" << endl ;
+        getline(cin,a);
 
         launchCondition(sequenceOrder[1], argc, argv);
         cout << "********************************************************************************************************************************" << endl
@@ -245,7 +250,8 @@ int main(int argc, char *argv[])
                         nbOfTrialsDone = getNextTrialToDo(p);
                         cout <<"Nb Done Mouse= " << nbOfTrialsDone << endl ;
                         if(nbOfTrialsDone < NBOFTRIALS){
-                            cout << "Restart experiment"<<endl ;
+                            cout << "Restart experiment Mouse "<<endl ;
+                            getPermutation(argv,100);
                             mainmouse::launchMouseExp(argc, argv, trialTargets, path+MOUSE,nbOfTrialsDone);
                             hasFoundFailurePoint = true ;
                         }
@@ -260,7 +266,8 @@ int main(int argc, char *argv[])
                         nbOfTrialsDone = getNextTrialToDo(p);
                         cout << "Nb Done Touch= " << nbOfTrialsDone << endl ;
                         if(nbOfTrialsDone < NBOFTRIALS){
-                            cout << "Restart experiment"<<endl ;
+                            cout << "Restart experiment Touch"<<endl ;
+                            getPermutation(argv,200);
                             maintouch::launchTouchExp(argc, argv, trialTargets, path+TOUCH,nbOfTrialsDone);
                             hasFoundFailurePoint = true ;
                         }
@@ -275,7 +282,8 @@ int main(int argc, char *argv[])
                         nbOfTrialsDone = getNextTrialToDo(p);
                         cout << "Nb Done Tangible= " << nbOfTrialsDone << endl ;
                         if(nbOfTrialsDone < NBOFTRIALS){
-                            cout << "Restart experiment"<<endl ;
+                            cout << "Restart experiment Tangible"<<endl ;
+                            getPermutation(argv,300);
                             hasFoundFailurePoint = true ;
                         }
                     }
@@ -290,12 +298,14 @@ int main(int argc, char *argv[])
         if(hasFoundFailurePoint == false){
             cout << "This ID has been previously used without any bug, change ID" << endl ;
         }
-        /*for(int i = 0 ; i < 3 ; i++){       //Do the remaining conditions
+
+        cout << "Nb of conditions done = " << nbOfConditionsDone << endl ;
+        for(int i = nbOfConditionsDone ; i < 3 ; i++){       //Do the remaining conditions
             launchCondition(sequenceOrder[i], argc, argv);
              cout << "********************************************************************************************************************************" << endl
              << "The experiment is over, thanks for your participation" << endl 
              << "********************************************************************************************************************************" << endl ;
-        }*/
+        }
     }
     return 0 ;
 

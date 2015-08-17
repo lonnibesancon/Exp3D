@@ -185,9 +185,6 @@ namespace maintouch{
         trialTargets = targets ;
         subjectID = atoi(argv[1]);
         nextTrialTodo = nbOfTrialsDone;
-        if(nextTrialTodo != 0){
-            nextTrialTodo++ ;
-        }
         path = p;
 
         cout << "Size of trial targets = " << trialTargets.size() << endl ;
@@ -239,6 +236,7 @@ namespace maintouch{
         delete(touchlistener);
         delete(touchrenderer);
         trialTargets.clear();
+        SDL_Quit();
     }
 
 }

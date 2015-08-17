@@ -25,7 +25,7 @@ void Trial::writeLog(){
     *outfileMeta << "Start Time ; " << trialStart / (double) CLOCKS_PER_SEC << endl << "Total Duration ;" << trialDuration << endl ;
 
     vector<string> v = getTimeHistory();
-    cout << "SIZE OF TIME HISTORY " << v.size() << endl ;
+    //cout << "SIZE OF TIME HISTORY " << v.size() << endl ;
     *outfileEvents << "Subject ID ; " << "TrialIndex ; " << "Timestamp ;" << "Action ID ; " << "Duration" << endl ;
     for(std::vector<string>::size_type i = 0; i!=v.size(); i++) {
         *outfileEvents << to_string(subjectID) << " ; " << to_string(trialInd) << " ; " << v.at(i);

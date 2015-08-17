@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cmath>
 
 #ifdef __APPLE__
   #include <OpenGL/gl.h>
@@ -46,6 +47,7 @@ namespace mainmouse{
     glm::vec2 trackballPrevPos;
     glm::mat4 startTranslationMatrix;
     glm::vec2 startScreenPos;
+    glm::vec2 previousScreenPosForRotation;
     bool leftClicked = false, rightClicked = false, modifierPressed = false, modifierSet = false;
     int nextTrialTodo ;
     int subjectID ;
@@ -181,6 +183,7 @@ namespace mainmouse{
                     startTranslationMatrix = translationMatrix;
                     startScreenPos = mouseToScreenCoords(event.motion.x, event.motion.y);
                     modifierSet = modifierPressed;
+                    previousScreenPosForRotation = startScreenPos ;             //Initialization for this
 
                     if (event.button.button == SDL_BUTTON_LEFT) {
                         leftClicked = true;
@@ -232,14 +235,17 @@ namespace mainmouse{
 #endif
                         }
                         else{
-                            glm::vec2 difference = curPos - startScreenPos ;
-                            float test = difference[0] + difference[1];
-                            cout << "Difference = " << test << endl ;
-                            glm::quat q = glm::quat(test, glm::vec3(0,0,1));
-                            q = glm::slerp(glm::quat(), glm::normalize(q), test); // additional normalization step
-                            rotation = q * rotation;
-                            rotation = glm::normalize(rotation); // avoid precision loss over time
-                            cout << "Rotation = " << rotation[0] << " ; " << rotation[1] << " ; " << rotation[2] << " ; " << rotation[2] << " ; " << endl; 
+                            glm::vec2 difference = curPos - previousScreenPosForRotation ;
+                            if(difference[0] != 0){
+                                float test = difference[0] ;
+                                cout << "Difference = " << test << "     ABS " << test/abs(test) << endl ;
+                                glm::quat q = glm::quat(test, glm::vec3(0,0,test/abs(test)));
+                                q = glm::slerp(glm::quat(), glm::normalize(q), test); // additional normalization step
+                                rotation = q * rotation;
+                                rotation = glm::normalize(rotation); // avoid precision loss over time
+                                cout << "Rotation = " << rotation[0] << " ; " << rotation[1] << " ; " << rotation[2] << " ; " << rotation[2] << " ; " << endl;
+                                previousScreenPosForRotation = curPos ;
+                            } 
                         }
                     }
 
@@ -300,7 +306,7 @@ namespace mainmouse{
             glEnable(GL_LIGHT0);
             glutSolidTeapot(1.0);
         glPopMatrix();
-
+        //cout << "Model Matrix " << to_string(modelMatrix) << endl ;
         //glTranslatef(0,0,-5);
         glMultMatrixf(glm::value_ptr(std::get<1>(trialTargets[nextTrialTodo])));
         glutWireTeapot(1.0);
@@ -317,6 +323,7 @@ namespace mainmouse{
         trackballPrevPos = glm::vec2();
         startTranslationMatrix = glm::mat4();
         startScreenPos = glm::vec2();
+        previousScreenPosForRotation = glm::vec2 ();
 #ifdef ROT_SHOEMAKE_VT
         delete(arcball);
         arcball = new CPM_ARC_BALL_NS::ArcBall (glm::vec3(0,0,100), TRACKBALLSIZE);
@@ -335,9 +342,6 @@ namespace mainmouse{
         trialTargets = targets ;
         subjectID = atoi(argv[1]);
         nextTrialTodo = nbOfTrialsDone;
-        if(nextTrialTodo!=0){
-            nextTrialTodo++ ;
-        }
 
         glutInit(&argc, argv);
 
@@ -360,12 +364,12 @@ namespace mainmouse{
 
         glViewport(0, 0, WIDTH, HEIGHT);
 
-        cout << "Launching trial " << nbOfTrialsDone << "out of " << trialTargets.size() << endl ;
 
         while(nextTrialTodo != NBOFTRIALS){            //Loop through trials 
+            cout << "***********Launching trial # " << get<0>(trialTargets[nextTrialTodo]) << endl ;
             t = new Trial(get<1>(targets[nextTrialTodo]),get<0>(targets[nextTrialTodo]), path, SDL_GetTicks(), subjectID);
             t->logMatrix(modelMatrix); 
-            cout << "Path :" << path << endl ;
+            //cout << "Path :" << path << endl ;
             while (getInput()) {
                 render();
                 SDL_GL_SwapBuffers();
@@ -382,8 +386,9 @@ namespace mainmouse{
                 cout << w.at(i) << endl ;
             }*/
         }
-
+        SDL_Quit();
         delete(arcball);
+        trialTargets.clear();
  
 
         return 0 ;
