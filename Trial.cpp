@@ -17,7 +17,10 @@ Trial::Trial(glm::mat4 t, int trialI, string Path, int timeOfStart, int subId){
 }
 
 Trial::~Trial(){
-	historyMatrix.clear();	
+    delete(outfileMeta);
+    delete(outfileMatrix);
+    delete(outfileEvents);
+    historyMatrix.clear();	
 }
 
 void Trial::writeLog(){
@@ -34,7 +37,7 @@ void Trial::writeLog(){
         cout << subjectID << " ; " << v.at(i) << endl ;
     }
 
-    *outfileMatrix << "subjectID ;" << "TrialIndex ; " << "Timestamp ; " << "Pitch ; " << "Roll ; " << "Yaw ; " << "Distance ; " 
+    *outfileMatrix << "subjectID ;" << "TrialIndex ; " << "Timestamp ; " << "Pitch ; " << "Roll ; " << "Yaw ; " << "Distance X ; " << "Distance Y ; " <<  "Distance Z ; " 
     << "Current Model[O];" << "Current Model[1];" << "Current Model[2];" << "Current Model[3];" << "Current Model[4];" 
     << "Current Model[5];" << "Current Model[6];" << "Current Model[7];" << "Current Model[8];" << "Current Model[9];" 
     << "Current Model[1O];" << "Current Model[11];" << "Current Model[12];" << "Current Model[13];" << "Current Model[14];" 
@@ -49,10 +52,6 @@ void Trial::writeLog(){
     for(std::vector<string>::size_type i = 0; i!=w.size(); i++) {
         *outfileMatrix << subjectID << " ; " << trialInd << " ; " << w.at(i) << endl ;
     }
-
-    delete(outfileMeta);
-    delete(outfileMatrix);
-    delete(outfileEvents);
     
 }
 
@@ -89,17 +88,17 @@ void Trial::logMatrix(glm::mat4 mat){
 			totalDiff += difference[i][j];	
 		}
 	}
-	glm::mat4 transformation; // your transformation matrix.
 	glm::vec3 scale;
 	glm::quat rotation;
 	glm::vec3 translation;
 	glm::vec3 skew;
 	glm::vec4 perspective;
-	glm::decompose(transformation, scale, rotation, translation, skew, perspective);
+	glm::decompose(mat, scale, rotation, translation, skew, perspective);
 	glm::quat rot = glm::quat_cast(mat);
 	double roll = glm::roll(rot);
 	double pitch = glm::pitch(rot);
 	double yaw = glm::yaw(rot);
+
 	//historyMatrix.push_back(tuple<double, glm::mat4, double, glm::mat4>(0, glm::mat4(1.0f), 0, glm::mat4(1.0f)));
 	historyMatrix.push_back(tuple<double, double, double, double, glm::vec3, glm::mat4, double, glm::mat4>(timestamp, pitch, roll, yaw, translation, mat, totalDiff, difference));
 	//double for the timestamp, double for pitch, double for roll, double for yaw, glm::vec4 for distance, mat4 for the current model matrix, double for the total difference, mat4 for the difference matrix
@@ -141,7 +140,7 @@ vector<string> Trial::getMatrixHistory(){
     	s.append( ";" );
     	s.append(to_string(get<3>(t))) ;
     	s.append( ";" );
-    	s.append(to_string(get<4>(t))) ;
+    	s.append(tostring(get<4>(t))) ;
     	s.append( ";" );
     	s.append(tostring(get<5>(t))) ;
     	s.append( ";" );
@@ -157,26 +156,16 @@ vector<string> Trial::getMatrixHistory(){
 
 string Trial::tostring(glm::mat4 mat){
 	string s = "";
-	/*cout << to_string(mat[0]) << endl ;
-	cout << mat[1] << endl ;
-	cout << mat[2] << endl ;
-	cout << mat[3] << endl ;
-	cout << mat[4] << endl ;
-	cout << mat[5] << endl ;
-	cout << mat[6] << endl ;
-	cout << mat[7] << endl ;
-	cout << mat[8] << endl ;
-	cout << mat[9] << endl ;
-	cout << mat[10] << endl ;
-	cout << mat[11] << endl ;
-	cout << mat[12] << endl ;
-	cout << mat[13] << endl ;
-	cout << mat[14] << endl ;
-	cout << mat[15] << endl ;*/
 	for(int i = 0 ; i < 4 ; i ++){
 		glm::vec4 currentvec = mat[i];
-		s +=to_string(currentvec[0])+" ;"+to_string(currentvec[1])+" ;"+to_string(currentvec[2])+" ;"+to_string(currentvec[3])+" ;" ;
+		s +=to_string(currentvec[0])+" ;"+to_string(currentvec[1])+" ;"+to_string(currentvec[2])+" ;"+to_string(currentvec[3]) ; 	// On ajoute pas de ";" parce qu'il y en a déjà dans la fonction getMatrixHistory
 	}
+	return s ;
+}
+
+string Trial::tostring(glm::vec3 v){
+	string s = "";
+	s +=to_string(v[0])+" ;"+to_string(v[1])+" ;"+to_string(v[2]) ;	// On ajoute pas de ";" parce qu'il y en a déjà dans la fonction getMatrixHistory
 	return s ;
 }
 

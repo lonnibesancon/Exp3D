@@ -58,6 +58,7 @@ private:
 	std::ofstream *outfileMeta;
 
 	std::string tostring(glm::mat4 mat);
+	std::string tostring(glm::vec3 v);
 
 	std::vector<std::tuple<double,int,double>> historyTime ;																	//int for the action type, double for the timestamp of the starting time of the action, double for the duration of the action
 	std::vector<std::tuple<double,double, double, double, glm::vec3,glm::mat4,double,glm::mat4>> historyMatrix ;				//double for the timestamp, double for pitch, double for roll, double for yaw, glm::vec4 for distance, mat4 for the current model matrix, double for the total difference, mat4 for the difference matrix
