@@ -37,7 +37,7 @@ void Trial::writeLog(){
         //cout << subjectID << " ; " << v.at(i) << endl ;
     }
 
-    *outfileMatrix << "subjectID ;" << "TrialIndex ; " << "Timestamp ; " << "Pitch ; " << "Roll ; " << "Yaw ; " << "Distance X ; " << "Distance Y ; " <<  "Distance Z ; " 
+    *outfileMatrix << "subjectID ;" << "TrialIndex ; " << "Timestamp ; " << "Pitch ; " << "Roll ; " << "Yaw ; " << "DistanceX ; " << "DistanceY ; " <<  "DistanceZ ; " 
     << "Current Model[O];" << "Current Model[1];" << "Current Model[2];" << "Current Model[3];" << "Current Model[4];" 
     << "Current Model[5];" << "Current Model[6];" << "Current Model[7];" << "Current Model[8];" << "Current Model[9];" 
     << "Current Model[1O];" << "Current Model[11];" << "Current Model[12];" << "Current Model[13];" << "Current Model[14];" 
