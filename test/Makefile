@@ -6,11 +6,11 @@ else
   UNAME_S := $(shell uname -s)
   ifeq ($(UNAME_S),Linux)
     CXXFLAGS += -ggdb
-    LDFLAGS := -lGL -lGLU -lglut -lSDL
+    LDFLAGS := -lGL -lGLU -lglut -lSDL -lSDL_net -lvrpn
   endif
   ifeq ($(UNAME_S),Darwin)
     CXXFLAGS += -D_GNU_SOURCE=1 -D_THREAD_SAFE -I/Library/Frameworks/SDL.framework/Headers/
-    LDFLAGS := -framework GLUT -framework OpenGL -L/usr/local/lib -lSDLmain -lSDL -Wl,-framework,Cocoa -L/usr/local/lib
+    LDFLAGS := -framework GLUT -framework OpenGL -L/usr/local/lib -lSDLmain -lSDL -lSDL_net -lvrpn -Wl,-framework,Cocoa -L/usr/local/lib
   endif
 endif
 

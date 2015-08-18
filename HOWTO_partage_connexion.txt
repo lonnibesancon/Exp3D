@@ -1,0 +1,8 @@
+# Tablette 1 (usb0)
+- partage de connexion
+- dhclient eth0 (vérifier qu'on récupère bien l'IP 192.168.42.165)
+
+# Tablette 2 (usb1)
+- partage de connexion
+- ifconfig usb1 192.168.43.165   # au lieu de dhclient !!!
+- adb -s ... shell ifconfig usb0 192.168.43.129 netmask 255.255.255.0
