@@ -137,6 +137,39 @@ namespace mainmouse{
     }
     #endif
 
+
+
+    void reset(){
+        modelMatrix = glm::mat4(1.0f);
+        translationMatrix = glm::mat4(1.0f);
+        rotation = glm::quat();
+        trackballPrevPos = glm::vec2();
+        startTranslationMatrix = glm::mat4();
+        startScreenPos = glm::vec2();
+        previousScreenPosForRotation = glm::vec2 ();
+#ifdef ROT_SHOEMAKE_VT
+        delete(arcball);
+        arcball = new CPM_ARC_BALL_NS::ArcBall (glm::vec3(0,0,100), TRACKBALLSIZE);
+#endif
+
+        leftClicked = false; 
+        rightClicked = false; 
+        modifierPressed = false; 
+        modifierSet = false;
+    }
+
+
+
+    void LogAndReset(){
+        //First Log everything
+        t->logMatrix(modelMatrix);
+        t->writeLog();
+        reset();
+        delete(t);
+    }
+
+
+
     bool getInput()
     {
         SDL_Event event;
@@ -166,7 +199,9 @@ namespace mainmouse{
                         return false ;
                     }
                     if(event.key.keysym.sym == SDLK_r){
+                        cout << "RESTART AT CENTRAL POSITION " << endl ;
                         t->restartPressed();
+                        reset();
                     }
                     break;
                 }
@@ -310,36 +345,9 @@ namespace mainmouse{
             glutSolidTeapot(1.0);
         glPopMatrix();
         //cout << "Model Matrix " << to_string(modelMatrix) << endl ;
-        //glTranslatef(0,0,-5);
+        glTranslatef(0,0,-5);
         glMultMatrixf(glm::value_ptr(std::get<1>(trialTargets[nextTrialTodo])));
         glutWireTeapot(1.0);
-    }
-
-    void reset(){
-        modelMatrix = glm::mat4(1.0f);
-        translationMatrix = glm::mat4(1.0f);
-        rotation = glm::quat();
-        trackballPrevPos = glm::vec2();
-        startTranslationMatrix = glm::mat4();
-        startScreenPos = glm::vec2();
-        previousScreenPosForRotation = glm::vec2 ();
-#ifdef ROT_SHOEMAKE_VT
-        delete(arcball);
-        arcball = new CPM_ARC_BALL_NS::ArcBall (glm::vec3(0,0,100), TRACKBALLSIZE);
-#endif
-
-        leftClicked = false; 
-        rightClicked = false; 
-        modifierPressed = false; 
-        modifierSet = false;
-    }
-
-    void LogAndReset(){
-        //First Log everything
-        t->logMatrix(modelMatrix);
-        t->writeLog();
-        reset();
-        delete(t);
     }
 
 

@@ -30,11 +30,11 @@ void Trial::writeLog(){
     *outfileMeta << "Nb of Restart ; " << nbOfRestarts << endl ;
 
     vector<string> v = getTimeHistory();
-    cout << "SIZE OF TIME HISTORY " << v.size() << endl ;
+    //cout << "SIZE OF TIME HISTORY " << v.size() << endl ;
     *outfileEvents << "Subject ID ; " << "TrialIndex ; " << "Timestamp ;" << "Action ID ; " << "Duration ;" << endl ;
     for(std::vector<string>::size_type i = 0; i!=v.size(); i++) {
         *outfileEvents << subjectID << " ; " << trialInd << " ; " << v.at(i) << endl ;
-        cout << subjectID << " ; " << v.at(i) << endl ;
+        //cout << subjectID << " ; " << v.at(i) << endl ;
     }
 
     *outfileMatrix << "subjectID ;" << "TrialIndex ; " << "Timestamp ; " << "Pitch ; " << "Roll ; " << "Yaw ; " << "Distance X ; " << "Distance Y ; " <<  "Distance Z ; " 
