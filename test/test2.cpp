@@ -13,7 +13,6 @@
   #include <GL/gl.h>
   #include <GL/glut.h>
   #include <SDL/SDL.h>
-  #include <SDL/SDL_net.h>
 #endif
 
 #define GLM_SWIZZLE
