@@ -27,6 +27,8 @@
 
 using namespace std ;
 
+//Reinitialiser lastScreenPosition et startModelMatrix
+//Rajouter le logging dans getInput();
 
 namespace mainmouse{
 
@@ -37,6 +39,7 @@ namespace mainmouse{
     static const glm::mat4 projMatrix = glm::perspective(45.0f, float(WIDTH)/HEIGHT, 0.1f, 1000.0f);
     glm::mat4 viewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, -5));
     glm::mat4 translationMatrix = glm::mat4(1.0f);
+    glm::mat4 startModelMatrix;
     glm::mat4 modelMatrix = glm::mat4(1.0f);
     glm::quat rotation = glm::quat();
 
@@ -46,7 +49,7 @@ namespace mainmouse{
     CPM_ARC_BALL_NS::ArcBall* arcball = new CPM_ARC_BALL_NS::ArcBall(glm::vec3(0,0,100), TRACKBALLSIZE);
     glm::vec2 trackballPrevPos;
     glm::mat4 startTranslationMatrix;
-    glm::vec2 startScreenPos;
+    glm::vec2 startScreenPos, lastScreenPos;
     glm::vec2 previousScreenPosForRotation;
     bool leftClicked = false, rightClicked = false, modifierPressed = false, modifierSet = false;
     int nextTrialTodo ;
@@ -170,7 +173,7 @@ namespace mainmouse{
 
 
 
-    bool getInput()
+    /*bool getInput()
     {
         SDL_Event event;
         bool somethingWasDone = false ;
@@ -320,7 +323,7 @@ namespace mainmouse{
         } 
         return true;
     }
-
+*/
     void render()
     {
         glClearColor(0.0, 0.0, 0.2, 1.0);
@@ -349,6 +352,108 @@ namespace mainmouse{
         glMultMatrixf(glm::value_ptr(std::get<1>(trialTargets[nextTrialTodo])));
         glutWireTeapot(1.0);
     }
+
+    bool getInput()
+    {
+        SDL_Event event;
+
+        while (SDL_PollEvent(&event)) {
+            switch (event.type) {
+                case SDL_QUIT: {
+                    return false;
+                }
+
+                case SDL_KEYDOWN: {
+                    if (event.key.keysym.sym == SDLK_ESCAPE) {
+                        return false;
+                    } else if ((event.key.keysym.sym == SDLK_LSHIFT) || (event.key.keysym.sym == SDLK_RSHIFT)) {
+                        modifierPressed = true;
+                    }
+                    break;
+                }
+
+                case SDL_KEYUP: {
+                    if ((event.key.keysym.sym == SDLK_LSHIFT) || (event.key.keysym.sym == SDLK_RSHIFT)) {
+                        modifierPressed = false;
+                    }
+                    break;
+                }
+
+                case SDL_MOUSEBUTTONDOWN: {
+                    SDL_WM_GrabInput(SDL_GRAB_ON);
+
+                    startModelMatrix = modelMatrix;
+                    startScreenPos = mouseToScreenCoords(event.motion.x, event.motion.y);
+                    lastScreenPos = startScreenPos;
+                    modifierSet = modifierPressed;
+
+                    if (event.button.button == SDL_BUTTON_LEFT) {
+                        leftClicked = true;
+    #ifdef ROT_SHOEMAKE_VT
+                        arcball.beginDrag(-mouseToScreenCoords(event.motion.x, event.motion.y));
+    #else
+                        trackballPrevPos = mouseToScreenCoords(event.motion.x, event.motion.y);
+    #endif
+                    } else if (event.button.button == SDL_BUTTON_RIGHT) {
+                        rightClicked = true;
+                    }
+
+                    break;
+                }
+
+                case SDL_MOUSEMOTION: {
+                    glm::vec2 curPos = mouseToScreenCoords(event.motion.x, event.motion.y);
+                    if (rightClicked) {
+                        if (!modifierSet) {
+                            const float objZ = (viewMatrix * modelMatrix)[3][2];
+                            glm::vec3 unprojStartPos = unproject(startScreenPos, objZ);
+                            glm::vec3 unprojCurPos = unproject(curPos, objZ);
+                            modelMatrix = glm::translate(startModelMatrix, glm::mat3(glm::transpose(modelMatrix)) * (unprojCurPos - unprojStartPos));
+                        } else {
+                            // From: vtkInteractorStyleTrackballCamera.cxx
+                            glm::vec3 center = glm::project(glm::vec3(0,0,0), viewMatrix*modelMatrix, projMatrix, glm::vec4(-1, -1, 2, 2));
+                            float newAngle = std::atan2(curPos.y-center.y, curPos.x-center.x);
+                            float oldAngle = std::atan2(lastScreenPos.y-center.y, lastScreenPos.x-center.x);
+                            modelMatrix = glm::rotate(modelMatrix, newAngle-oldAngle, glm::mat3(modelMatrix)*glm::vec3(0,0,1));
+                        }
+
+                    } else if (leftClicked) {
+                        if (!modifierSet) {
+    #ifdef ROT_SHOEMAKE_VT
+                            arcball.drag(-curPos);
+    #else
+                            trackball(curPos, trackballPrevPos);
+                            trackballPrevPos = curPos;
+    #endif
+                        } else {
+                            modelMatrix = glm::translate(startModelMatrix, glm::vec3(0, 0, ZOOM_SPEED * -(curPos.y - startScreenPos.y)));
+                        }
+                    }
+
+                    lastScreenPos = curPos;
+
+                    break;
+                }
+
+                case SDL_MOUSEBUTTONUP: {
+                    modifierSet = false;
+                    SDL_WM_GrabInput(SDL_GRAB_OFF);
+
+                    if (event.button.button == SDL_BUTTON_LEFT) {
+                        leftClicked = false;
+                    } else if (event.button.button == SDL_BUTTON_RIGHT) {
+                        rightClicked = false;
+                    }
+
+                    break;
+                }
+            }
+        }
+
+        return true;
+    }
+
+
 
 
     int launchMouseExp(int argc, char *argv[], vector<tuple<int,glm::mat4>> targets, string path, int nbOfTrialsDone = 0)

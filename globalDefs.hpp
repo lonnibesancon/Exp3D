@@ -31,6 +31,6 @@
 #define GLM_FORCE_RADIANS
 
 
-#define ROT_SHOEMAKE_VT
+//#define ROT_SHOEMAKE_VT
 //#define ROT_BELL_VT
-//#define ROT_BLENDER
+#define ROT_BLENDER
