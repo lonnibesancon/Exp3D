@@ -6,7 +6,7 @@ else
   UNAME_S := $(shell uname -s)
   ifeq ($(UNAME_S),Linux)
     CXXFLAGS += -ggdb
-    LDFLAGS := -lGL -lGLU -lglut -lSDL -lSDL_net -lvrpn
+    LDFLAGS := -lGL -lGLU -lglut -lSDL #-lSDL_net -lvrpn
   endif
   ifeq ($(UNAME_S),Darwin)
     CXXFLAGS += -D_GNU_SOURCE=1 -D_THREAD_SAFE -I/Library/Frameworks/SDL.framework/Headers/
