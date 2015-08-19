@@ -20,7 +20,7 @@ SOURCESARCBALL= arc-ball/ArcBall.cpp
 SOURCESOSCPACK= oscpack/ip/IpEndpointName.cpp oscpack/ip/posix/NetworkingUtils.cpp oscpack/ip/posix/UdpSocket.cpp oscpack/osc/OscTypes.cpp oscpack/osc/OscOutboundPacketStream.cpp oscpack/osc/OscPrintReceivedElements.cpp oscpack/osc/OscReceivedElements.cpp 
 SOURCESTUIO= TUIO/TuioClient.cpp TUIO/TuioServer.cpp TUIO/TuioTime.cpp
 SOURCETOUCH= TouchRenderer.cpp TouchPoint.cpp TouchListener.cpp
-SOURCETANGIBLE= mainTangible.cpp
+#SOURCETANGIBLE= mainTangible.cpp
 OTHERSOURCES= Trial.cpp
 #$(SOURCETANGIBLE:%.cpp=%.o)#
 all: $(SOURCESARCBALL:%.cpp=%.o) $(SOURCESOSCPACK:%.cpp=%.o) $(SOURCESTUIO:%.cpp=%.o) $(SOURCETOUCH:%.cpp=%.o) $(OTHERSOURCES:%.cpp=%.o) main.o

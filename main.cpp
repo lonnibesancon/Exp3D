@@ -36,7 +36,7 @@
 
 #include "mainmouse.cpp"
 #include "maintouch.cpp"
-#include "maintangible.cpp"
+//#include "maintangible.cpp"
 
 
 std::vector<int> sequenceOrder ;
@@ -182,13 +182,13 @@ int getNextTrialToDo(string path){
         cout << "File = " << trialsDone[i] << endl ;
     }
     nbOfFiles /= 3 ;
-    nbOfFiles -- ;  // Because we start counting from 0 for the vector ;)
-    nbOfFiles -- ;  // It is very likely that the last file is corrupted
-    return nbOfFiles ;
+
     if(NBOFTRIALS == nbOfFiles){
         return -1 ;
     }
     else{
+        nbOfFiles -- ;  // Because we start counting from 0 for the vector ;)
+        nbOfFiles -- ;  // It is very likely that the last file is corrupted
         return nbOfFiles ;
     }
 
@@ -255,16 +255,19 @@ int main(int argc, char *argv[])
                     if(boost::filesystem::exists(p)){
                         nbOfTrialsDone = getNextTrialToDo(p);
                         cout <<"Nb Done Mouse= " << nbOfTrialsDone << endl ;
-                        if(nbOfTrialsDone < NBOFTRIALS){
+                        if(nbOfTrialsDone < NBOFTRIALS && nbOfTrialsDone != -1){
                             cout << "Restart experiment Mouse "<<endl ;
                             getPermutation(argv,100);
                             mainmouse::launchMouseExp(argc, argv, trialTargets, path+MOUSE,nbOfTrialsDone);
                             hasFoundFailurePoint = true ;
                         }
                         else{
-                        cout << "Mouse Not done yet" << endl ;
-                        nbOfConditionsDone -- ;
+                            cout << "Mouse experiment complete" << endl ;
                         }
+                    }
+                    else{
+                    cout << "Mouse Not done yet" << endl ;
+                    nbOfConditionsDone -- ;
                     }
                     break;
                 case 2:
@@ -273,11 +276,14 @@ int main(int argc, char *argv[])
                     if(boost::filesystem::exists(p)){
                         nbOfTrialsDone = getNextTrialToDo(p);
                         cout << "Nb Done Touch= " << nbOfTrialsDone << endl ;
-                        if(nbOfTrialsDone < NBOFTRIALS){
+                        if(nbOfTrialsDone < NBOFTRIALS && nbOfTrialsDone != -1){
                             cout << "Restart experiment Touch"<<endl ;
                             getPermutation(argv,200);
                             maintouch::launchTouchExp(argc, argv, trialTargets, path+TOUCH,nbOfTrialsDone);
                             hasFoundFailurePoint = true ;
+                        }
+                        else{
+                            cout << "Touch experiment complete" << endl ;
                         }
                     }
                     else{
@@ -291,10 +297,13 @@ int main(int argc, char *argv[])
                     if(boost::filesystem::exists(path+TANGIBLE)){
                         nbOfTrialsDone = getNextTrialToDo(p);
                         cout << "Nb Done Tangible= " << nbOfTrialsDone << endl ;
-                        if(nbOfTrialsDone < NBOFTRIALS){
+                        if(nbOfTrialsDone < NBOFTRIALS && nbOfTrialsDone != -1 ){
                             cout << "Restart experiment Tangible"<<endl ;
                             getPermutation(argv,300);
                             hasFoundFailurePoint = true ;
+                        }
+                        else{
+                            cout <<"Tangible experiment complete" << endl ;
                         }
                     }
                     else{

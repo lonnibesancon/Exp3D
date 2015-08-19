@@ -10,9 +10,9 @@ else
   endif
   ifeq ($(UNAME_S),Darwin)
     CXXFLAGS += -D_GNU_SOURCE=1 -D_THREAD_SAFE -I/Library/Frameworks/SDL.framework/Headers/
-    LDFLAGS := -framework GLUT -framework OpenGL -L/usr/local/lib -lSDLmain -lSDL -lSDL_net -lvrpn -Wl,-framework,Cocoa -L/usr/local/lib
+    LDFLAGS := -framework GLUT -framework OpenGL -L/usr/local/lib -lSDLmain -lSDL -lvrpn -Wl,-framework,Cocoa -L/usr/local/lib
   endif
 endif
 
 all:
-	$(CXX) test.cpp arc-ball/ArcBall.cpp -o test $(CXXFLAGS) $(LDFLAGS)
+	$(CXX) test2.cpp arc-ball/ArcBall.cpp -o test2 $(CXXFLAGS) $(LDFLAGS)

@@ -7,11 +7,13 @@
   #include <OpenGL/gl.h>
   #include <GLUT/glut.h>
   #include <SDL.h>
+  #include <SDL/SDL_net.h>
   #undef main
 #else
   #include <GL/gl.h>
   #include <GL/glut.h>
   #include <SDL/SDL.h>
+  #include <SDL/SDL_net.h>
 #endif
 
 #define GLM_SWIZZLE
@@ -22,9 +24,18 @@
 #include "glm/gtx/string_cast.hpp"
 #include "glm/gtx/vector_angle.hpp"
 
+#include <vrpn_Button.h>                // for vrpn_BUTTONCB, etc
+#include <vrpn_Tracker.h>               // for vrpn_TRACKERCB, etc
+#include <vrpn_Configure.h>             // for VRPN_CALLBACK
+#include <vrpn_Connection.h>            // for vrpn_Connection
+#include <vrpn_Types.h>                 // for vrpn_float64
+
 #include "Trial.hpp"
 #include "arc-ball/ArcBall.hpp"
 #include "globalDefs.hpp"
+
+
+
 
 using namespace std ;
 namespace maintangible{
@@ -40,9 +51,10 @@ namespace maintangible{
 	glm::vec3 trackingPos;
 	glm::quat trackingRot;
 
-	// #define ROT_SHOEMAKE_VT
-	//#define ROT_BELL_VT
-	// #define ROT_BLENDER
+	glm::mat4 boardMat, boardMat2;
+	bool detected = false, detected1 = false, detected2 = false;
+	timespec lastTime, lastTime2;
+
 
 	CPM_ARC_BALL_NS::ArcBall* arcball = new CPM_ARC_BALL_NS::ArcBall(glm::vec3(0,0,100), TRACKBALLSIZE);
 	glm::vec2 trackballPrevPos;
@@ -204,7 +216,22 @@ namespace maintangible{
 
 	void render()
 	{
-		glClearColor(0.0, 0.0, 0.2, 1.0);
+		timespec now;
+		clock_gettime(CLOCK_MONOTONIC, &now);
+		float deltaTime = (now.tv_sec - lastTime.tv_sec)
+			+ float(now.tv_nsec - lastTime.tv_nsec) / 1000000000.0f;
+		// std::cout << "dt = " << deltaTime << '\n';
+		// float deltaTime2 = (now.tv_sec - lastTime2.tv_sec)
+		// 	+ float(now.tv_nsec - lastTime2.tv_nsec) / 1000000000.0f;
+		// std::cout << "dt = " << deltaTime << '\n';
+		// detected = (deltaTime < 0.1);
+		detected1 = (deltaTime < 0.1);
+		detected2 = (deltaTime < 0.1);
+		detected = (detected1 || detected2);
+		if (detected)
+			glClearColor(0.0, 0.0, 0.2, 1.0);
+		else
+			glClearColor(0.2, 0.0, 0.0, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glMatrixMode(GL_PROJECTION);
@@ -213,22 +240,184 @@ namespace maintangible{
 
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
-		glPushMatrix();
-#ifdef ROT_SHOEMAKE_VT
-			glMultMatrixf(glm::value_ptr(viewMatrix * modelMatrix * arcball->getTransformation()));
-#else
-			glMultMatrixf(glm::value_ptr(viewMatrix * modelMatrix * glm::mat4_cast(rotation)));
-#endif
+	#ifdef ROT_SHOEMAKE_VT
+		glMultMatrixf(glm::value_ptr(viewMatrix * modelMatrix * arcball.getTransformation()));
+	#else
+		glMultMatrixf(glm::value_ptr(viewMatrix * modelMatrix * glm::mat4_cast(rotation)));
+	#endif
 
-			glEnable(GL_DEPTH_TEST);
-			glEnable(GL_LIGHTING);
-			glEnable(GL_LIGHT0);
-			glutSolidTeapot(1.0);
-		glPopMatrix();
+		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_LIGHTING);
+		glEnable(GL_LIGHT0);
+		// glutSolidTeapot(1.0);
+		// glutSolidTeapot(150.0);
+		glutSolidTeapot(50.0);
+	}
 
-		//glTranslatef(0,0,-5);
-        glMultMatrixf(glm::value_ptr(std::get<1>(trialTargets[nextTrialTodo])));
-        glutWireTeapot(1.0);
+
+	void VRPN_CALLBACK handle_tracker_change(void* userdata, const vrpn_TRACKERCB t)
+	{
+		// std::cout << "tracker: "
+		//           << t.pos[0] << "," << t.pos[1] << "," << t.pos[2] << ","
+		//           << t.quat[0] << "," << t.quat[1] << "," << t.quat[2] << "," << t.quat[3]
+		//           << '\n';
+		trackingPos = glm::vec3(t.pos[0], t.pos[1], t.pos[2]);
+		trackingRot = glm::quat(t.quat[3], t.quat[0], t.quat[1], t.quat[2]);
+		trackingRot = glm::normalize(trackingRot);
+		modelMatrix = glm::inverse(boardMat) * (glm::translate(glm::mat4(), trackingPos) * glm::mat4_cast(trackingRot));
+		// modelMatrix = glm::translate(glm::mat4(), glm::vec3(0,0,100)) * modelMatrix;
+		std::cout << "pos: " << modelMatrix[3][0] << " " << modelMatrix[3][1] << " " << modelMatrix[3][2] << '\n';
+		// modelMatrix[3][0] /= 10;
+		// modelMatrix[3][1] /= 10;
+		// modelMatrix[3][2] /= 10;
+		// modelMatrix[3][2] -= 700;
+		clock_gettime(CLOCK_MONOTONIC, &lastTime);
+	}
+
+	void VRPN_CALLBACK handle_tracker_change2(void* userdata, const vrpn_TRACKERCB t)
+	{
+		if (detected1)
+			return;
+
+		trackingPos = glm::vec3(t.pos[0], t.pos[1], t.pos[2]);
+		trackingRot = glm::quat(t.quat[3], t.quat[0], t.quat[1], t.quat[2]);
+		trackingRot = glm::normalize(trackingRot);
+		modelMatrix = glm::inverse(boardMat2) * (glm::translate(glm::mat4(), trackingPos) * glm::mat4_cast(trackingRot));
+		std::cout << "pos2: " << modelMatrix[3][0] << " " << modelMatrix[3][1] << " " << modelMatrix[3][2] << '\n';
+		clock_gettime(CLOCK_MONOTONIC, &lastTime2);
+	}
+
+	glm::mat4 getBoardMatrix(const char* ipStr)
+	{
+		glm::mat4 result;
+
+		IPaddress vuforiaIP;
+		if (SDLNet_ResolveHost(&vuforiaIP, ipStr, 1234) < 0) {
+			std::cerr << "SDLNet_ResolveHost() failed: " << SDLNet_GetError() << '\n';
+			std::exit(EXIT_FAILURE);
+		}
+
+		TCPsocket socket;
+		if (!(socket = SDLNet_TCP_Open(&vuforiaIP))) {
+			std::cerr << "SDLNet_TCP_Open() failed: " << SDLNet_GetError() << '\n';
+			std::exit(EXIT_FAILURE);
+		}
+
+		bool boardVisible = false;
+
+		std::vector<char> buffer(1024);
+		while (!boardVisible) {
+			static const char msg[] = "board?\n";
+			std::cout << "send: " << msg << '\n';
+			if (SDLNet_TCP_Send(socket, (void*)msg, sizeof(msg)-1) < (signed)sizeof(msg)-1) {
+				std::cerr << "SDLNet_TCP_Send() failed: " << SDLNet_GetError() << '\n';
+				std::exit(EXIT_FAILURE);
+			}
+
+			std::cout << "recv" << '\n';
+			if (SDLNet_TCP_Recv(socket, buffer.data(), 1) > 0) {
+				boardVisible = (buffer[0] == '1');
+				std::cout << "boardVisible? " << boardVisible << '\n';
+
+				if (boardVisible) {
+					static const char msg2[] = "boardmat\n";
+					std::cout << "send: " << msg << '\n';
+					if (SDLNet_TCP_Send(socket, (void*)msg2, sizeof(msg2)) < (signed)sizeof(msg2)) {
+						std::cerr << "SDLNet_TCP_Send() failed: " << SDLNet_GetError() << '\n';
+						std::exit(EXIT_FAILURE);
+					}
+
+					std::cout << "recv" << '\n';
+					int idx = 0;
+					while (SDLNet_TCP_Recv(socket, &buffer[idx], 1) > 0) {
+						if (buffer[idx] == '@')
+							break;
+						++idx;
+					}
+					buffer[idx] = '\0';
+					std::string str(buffer.data());
+					std::vector<std::string> values = split(str, ',');
+					int i = 0;
+					for (const auto& s : values) {
+						// std::cout << s << '\n';
+						result[i/4][i%4] = fromString<float>(s);
+						++i;
+					}
+					std::cout << "boardMat = " << glm::to_string(boardMat) << '\n';
+				}
+			}
+
+			if (!boardVisible)
+				SDL_Delay(500);
+		}
+
+		SDLNet_TCP_Close(socket);
+
+		return result;
+	}
+
+	int main(int argc, char *argv[])
+	{
+		glutInit(&argc, argv);
+
+		SDL_Surface* screen;
+
+		if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+			std::cerr << "SDL_Init() failed: " << SDL_GetError() << '\n';
+			return EXIT_FAILURE;
+		}
+		std::atexit(SDL_Quit);
+
+		SDL_WM_SetCaption("Mon premier programme OpenGL !", nullptr);
+		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+
+		if (!(screen = SDL_SetVideoMode(WIDTH, HEIGHT, 32, SDL_OPENGL /*| SDL_FULLSCREEN*/))) {
+			std::cerr << "SDL_SetVideoMode() failed: " << SDL_GetError() << '\n';
+			return EXIT_FAILURE;
+		}
+
+		glViewport(0, 0, WIDTH, HEIGHT);
+
+		if (SDLNet_Init() < 0) {
+			std::cerr << "SDLNet_Init() failed: " << SDLNet_GetError() << '\n';
+			return EXIT_FAILURE;
+		}
+		std::atexit(SDLNet_Quit);
+
+		std::unique_ptr<vrpn_Tracker_Remote> tracker(new vrpn_Tracker_Remote("Filter0@localhost"));
+		tracker->register_change_handler(nullptr, handle_tracker_change);
+		std::cout << "Connecting to VRPN tracker 1...\n";
+		while (!tracker->connectionPtr()->connected()) {
+			tracker->mainloop();
+		}
+		std::cout << "Connected to VRPN tracker 1!\n";
+		std::unique_ptr<vrpn_Tracker_Remote> tracker2(new vrpn_Tracker_Remote("Filter1@localhost"));
+		tracker2->register_change_handler(nullptr, handle_tracker_change2);
+		std::cout << "Connecting to VRPN tracker 2...\n";
+		while (!tracker2->connectionPtr()->connected()) {
+			tracker2->mainloop();
+		}
+		std::cout << "Connected to VRPN tracker 2!\n";
+
+		boardMat = getBoardMatrix("192.168.42.129");
+		boardMat2 = getBoardMatrix("192.168.43.129");
+
+		std::string str;
+		while (getInput()) {
+			render();
+			// if (std::getline(std::cin, str)) {
+			// 	// if (str.find("----") == 0) continue; // for "adb logcat"
+			// 	std::vector<std::string> values = split(split(str, '|')[1], ',');
+			// 	trackingPos = glm::vec3(fromString<float>(values[0])/10, -fromString<float>(values[1])/10, -fromString<float>(values[2])/10);
+			// 	trackingRot = glm::quat(fromString<float>(values[6]), fromString<float>(values[3]), -fromString<float>(values[4]), -fromString<float>(values[5]));
+			// 	trackingRot = glm::normalize(trackingRot);
+			// 	modelMatrix = glm::translate(glm::mat4(), trackingPos) * glm::mat4_cast(trackingRot);
+			// 	std::cout << glm::to_string(trackingPos) << '\n';
+			// }
+			tracker->mainloop();
+			tracker2->mainloop();
+			SDL_GL_SwapBuffers();
+		}
 	}
 
 	int launchTangibleExp(int argc, char *argv[], vector<tuple<int,glm::mat4>> targets, string path, int nbOfTrialsDone = 0)
