@@ -1,0 +1,1 @@
+Lancer la commande server  sudo vrpn_server -v -f vrpn.cfg puis l'application tablette puis le programme principale
