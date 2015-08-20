@@ -15,4 +15,4 @@ else
 endif
 
 all:
-	$(CXX) test2.cpp arc-ball/ArcBall.cpp -o test2 $(CXXFLAGS) $(LDFLAGS)
+	$(CXX) test.cpp arc-ball/ArcBall.cpp -o test $(CXXFLAGS) $(LDFLAGS)

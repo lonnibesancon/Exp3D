@@ -38,7 +38,7 @@ namespace mainmouse{
 
     static const glm::mat4 projMatrix = glm::perspective(45.0f, float(WIDTH)/HEIGHT, 0.1f, 1000.0f);
     glm::mat4 viewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, -5));
-    glm::mat4 translationMatrix = glm::mat4(1.0f);
+    //glm::mat4 translationMatrix = glm::mat4(1.0f);
     glm::mat4 startModelMatrix;
     glm::mat4 modelMatrix = glm::mat4(1.0f);
     glm::quat rotation = glm::quat();
@@ -48,7 +48,7 @@ namespace mainmouse{
 
     CPM_ARC_BALL_NS::ArcBall* arcball = new CPM_ARC_BALL_NS::ArcBall(glm::vec3(0,0,100), TRACKBALLSIZE);
     glm::vec2 trackballPrevPos;
-    glm::mat4 startTranslationMatrix;
+    //glm::mat4 startTranslationMatrix;
     glm::vec2 startScreenPos, lastScreenPos;
     glm::vec2 previousScreenPosForRotation;
     bool leftClicked = false, rightClicked = false, modifierPressed = false, modifierSet = false;
@@ -144,10 +144,10 @@ namespace mainmouse{
 
     void reset(){
         modelMatrix = glm::mat4(1.0f);
-        translationMatrix = glm::mat4(1.0f);
+        //translationMatrix = glm::mat4(1.0f);
         rotation = glm::quat();
         trackballPrevPos = glm::vec2();
-        startTranslationMatrix = glm::mat4();
+        //  startTranslationMatrix = glm::mat4();
         startScreenPos = glm::vec2();
         previousScreenPosForRotation = glm::vec2 ();
 #ifdef ROT_SHOEMAKE_VT
@@ -325,45 +325,6 @@ namespace mainmouse{
     }
 */
 
-    void render()
-    {
-    //timespec now;
-    //clock_gettime(CLOCK_MONOTONIC, &now);
-    //float deltaTime = (now.tv_sec - lastTime.tv_sec)
-    //    + float(now.tv_nsec - lastTime.tv_nsec) / 1000000000.0f;
-    // std::cout << "dt = " << deltaTime << '\n';
-    // float deltaTime2 = (now.tv_sec - lastTime2.tv_sec)
-    //  + float(now.tv_nsec - lastTime2.tv_nsec) / 1000000000.0f;
-    // std::cout << "dt = " << deltaTime << '\n';
-    // detected = (deltaTime < 0.1);
-    //detected1 = (deltaTime < 0.1);
-    //detected2 = (deltaTime < 0.1);
-    //detected = (detected1 || detected2);
-    /*if (detected)
-        glClearColor(0.0, 0.0, 0.2, 1.0);
-    else*/
-        glClearColor(0.2, 0.0, 0.0, 1.0);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glMultMatrixf(glm::value_ptr(projMatrix));
-
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-#ifdef ROT_SHOEMAKE_VT
-    glMultMatrixf(glm::value_ptr(viewMatrix * modelMatrix * arcball.getTransformation()));
-#else
-    glMultMatrixf(glm::value_ptr(viewMatrix * modelMatrix * glm::mat4_cast(rotation)));
-#endif
-
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
-    // glutSolidTeapot(1.0);
-    // glutSolidTeapot(150.0);
-    glutSolidTeapot(1.0);
-}
 
     /*void render()
     {
@@ -392,9 +353,9 @@ namespace mainmouse{
         glTranslatef(0,0,-5);
         glMultMatrixf(glm::value_ptr(std::get<1>(trialTargets[nextTrialTodo])));
         glutWireTeapot(1.0);
-    }*/
+    }
 
-    /*bool getInput()           //Dernière version
+    bool getInput()           //Dernière version
     {
         SDL_Event event;
         bool somethingWasDone = false ;
@@ -438,17 +399,17 @@ namespace mainmouse{
                     SDL_WM_GrabInput(SDL_GRAB_ON);
 
                     //Paul
-                    startModelMatrix = modelMatrix;
-                    startScreenPos = mouseToScreenCoords(event.motion.x, event.motion.y);
-                    lastScreenPos = startScreenPos;
-                    modifierSet = modifierPressed;
-
-
-                    //Moi
-                    //startTranslationMatrix = translationMatrix;
+                    //startModelMatrix = modelMatrix;
                     //startScreenPos = mouseToScreenCoords(event.motion.x, event.motion.y);
                     //lastScreenPos = startScreenPos;
                     //modifierSet = modifierPressed;
+
+
+                    //Moi
+                    startTranslationMatrix = translationMatrix;
+                    startScreenPos = mouseToScreenCoords(event.motion.x, event.motion.y);
+                    lastScreenPos = startScreenPos;
+                    modifierSet = modifierPressed;
 
 
                     //Ma verison de rotation Z
@@ -488,12 +449,12 @@ namespace mainmouse{
                             const float objZ = (viewMatrix * modelMatrix)[3][2];
                             glm::vec3 unprojStartPos = unproject(startScreenPos, objZ);
                             glm::vec3 unprojCurPos = unproject(curPos, objZ);
-                            //translationMatrix = glm::translate(startTranslationMatrix, unprojCurPos - unprojStartPos);
-                            modelMatrix = glm::translate(startModelMatrix, glm::mat3(glm::transpose(modelMatrix)) * (unprojCurPos - unprojStartPos));
+                            translationMatrix = glm::translate(startTranslationMatrix, unprojCurPos - unprojStartPos);
+                            //modelMatrix = glm::translate(startModelMatrix, glm::mat3(glm::transpose(modelMatrix)) * (unprojCurPos - unprojStartPos));
                         } else {
                             // From: vtkInteractorStyleTrackballCamera.cxx
-                            //translationMatrix = glm::translate(startModelMatrix, glm::vec3(0, 0, ZOOM_SPEED * -(curPos.y - startScreenPos.y)));
-                            modelMatrix = glm::translate(startModelMatrix, glm::vec3(0, 0, ZOOM_SPEED * -(curPos.y - startScreenPos.y)));
+                            translationMatrix = glm::translate(startModelMatrix, glm::vec3(0, 0, ZOOM_SPEED * -(curPos.y - startScreenPos.y)));
+                            //modelMatrix = glm::translate(startModelMatrix, glm::vec3(0, 0, ZOOM_SPEED * -(curPos.y - startScreenPos.y)));
                         }
 
                     } else if (leftClicked) {
@@ -511,6 +472,11 @@ namespace mainmouse{
                             float newAngle = std::atan2(curPos.y-center.y, curPos.x-center.x);
                             float oldAngle = std::atan2(lastScreenPos.y-center.y, lastScreenPos.x-center.x);
                             modelMatrix = glm::rotate(modelMatrix, newAngle-oldAngle, glm::mat3(modelMatrix)*glm::vec3(0,0,1));
+
+                            glm::vec3 center = glm::project(glm::vec3(0,0,0), viewMatrix*modelMatrix, projMatrix, glm::vec4(-1, -1, 2, 2));
+                        float newAngle = std::atan2(curPos.y-center.y, curPos.x-center.x);
+                        float oldAngle = std::atan2(lastScreenPos.y-center.y, lastScreenPos.x-center.x);
+                        modelMatrix = glm::rotate(modelMatrix, newAngle-oldAngle, glm::mat3(modelMatrix)*glm::vec3(0,0,1));
 
                             // My own way, decommenter aussi plus haut une ligne de code
                             //glm::vec2 difference = curPos - previousScreenPosForRotation ;
@@ -550,7 +516,7 @@ namespace mainmouse{
         }
 
 
-/*#ifdef ROT_SHOEMAKE_VT
+#ifdef ROT_SHOEMAKE_VT
         modelMatrix = translationMatrix * arcball->getTransformation();
 #else
         modelMatrix = translationMatrix * glm::mat4_cast(rotation);
@@ -562,10 +528,10 @@ namespace mainmouse{
         } 
 
         return true;
-    }*/
+    }
 
 
-    bool getInput()
+    /*bool getInput()   //Version copied from Test
 {
     SDL_Event event;
 
@@ -663,8 +629,184 @@ namespace mainmouse{
     }
 
     return true;
-}
+}*/
 
+
+    bool getInput()
+    {
+        SDL_Event event;
+        bool somethingWasDone = false ;
+
+        while (SDL_PollEvent(&event)) {
+            switch (event.type) {
+                case SDL_QUIT: {
+                    return false;
+                }
+
+                case SDL_KEYDOWN: {
+                    if (event.key.keysym.sym == SDLK_ESCAPE) {
+                        somethingWasDone = true ;
+                        return false;
+                    } else if ((event.key.keysym.sym == SDLK_LSHIFT) || (event.key.keysym.sym == SDLK_RSHIFT)) {
+                        modifierPressed = true;
+                        if(leftClicked == true){        //For Logging only
+                            t->measureTime(LEFTANDSHIFT);
+                        }
+                        else if(rightClicked == true){
+                            t->measureTime(RIGHTANDSHIFT);
+                        }
+                    }
+                    if(event.key.keysym.sym == SDLK_r){
+                        cout << "RESTART AT CENTRAL POSITION " << endl ;
+                        t->restartPressed();
+                        reset();
+                    }
+                    break;
+                }
+
+                case SDL_KEYUP: {
+                    somethingWasDone = true ;
+                    if ((event.key.keysym.sym == SDLK_LSHIFT) || (event.key.keysym.sym == SDLK_RSHIFT)) {
+                        modifierPressed = false;
+                    }
+                    break;
+                }
+
+                case SDL_MOUSEBUTTONDOWN: {
+                    somethingWasDone = true ;
+                    SDL_WM_GrabInput(SDL_GRAB_ON);
+
+                    startModelMatrix = modelMatrix;
+                    startScreenPos = mouseToScreenCoords(event.motion.x, event.motion.y);
+                    lastScreenPos = startScreenPos;
+                    modifierSet = modifierPressed;
+
+                    if (event.button.button == SDL_BUTTON_LEFT) {
+                        leftClicked = true;
+                        if(modifierPressed == true){        //FOr Logging
+                            t->measureTime(LEFTANDSHIFT);
+                        }
+                        else{
+                            t->measureTime(LEFT);
+                        }
+#ifdef ROT_SHOEMAKE_VT
+                        arcball.beginDrag(-mouseToScreenCoords(event.motion.x, event.motion.y));
+#else
+                        trackballPrevPos = mouseToScreenCoords(event.motion.x, event.motion.y);
+#endif
+                    } else if (event.button.button == SDL_BUTTON_RIGHT) {
+                        rightClicked = true;
+                        if(modifierPressed == true){        //FOr Logging
+                            t->measureTime(RIGHTANDSHIFT);
+                        }
+                        else{
+                            t->measureTime(RIGHT);
+                        }
+                    }
+
+                    break;
+                }
+
+                case SDL_MOUSEMOTION: {
+                    somethingWasDone = true ;
+                    glm::vec2 curPos = mouseToScreenCoords(event.motion.x, event.motion.y);
+                    if (rightClicked) {
+                        if (!modifierSet) {
+                            const float objZ = (viewMatrix * modelMatrix)[3][2];
+                            glm::vec3 unprojStartPos = unproject(startScreenPos, objZ);
+                            glm::vec3 unprojCurPos = unproject(curPos, objZ);
+                            modelMatrix = glm::translate(startModelMatrix, glm::mat3(glm::transpose(modelMatrix)) * (unprojCurPos - unprojStartPos));
+                        } else {
+                            modelMatrix = glm::translate(startModelMatrix, glm::vec3(0, 0, ZOOM_SPEED * -(curPos.y - startScreenPos.y)));
+                        }
+
+                    } else if (leftClicked) {
+                        if (!modifierSet) {
+#ifdef ROT_SHOEMAKE_VT
+                            arcball.drag(-curPos);
+#else
+                            trackball(curPos, trackballPrevPos);
+                            trackballPrevPos = curPos;
+#endif
+                        } else {
+                            // From: vtkInteractorStyleTrackballCamera.cxx
+                            glm::vec3 center = glm::project(glm::vec3(0,0,0), viewMatrix*modelMatrix, projMatrix, glm::vec4(-1, -1, 2, 2));
+                            float newAngle = std::atan2(curPos.y-center.y, curPos.x-center.x);
+                            float oldAngle = std::atan2(lastScreenPos.y-center.y, lastScreenPos.x-center.x);
+                            modelMatrix = glm::rotate(modelMatrix, newAngle-oldAngle, glm::mat3(modelMatrix)*glm::vec3(0,0,1));
+                            
+                        }
+                    }
+
+                    lastScreenPos = curPos;
+
+                    break;
+                }
+
+                case SDL_MOUSEBUTTONUP: {
+                    modifierSet = false;
+                    somethingWasDone = true ;
+                    SDL_WM_GrabInput(SDL_GRAB_OFF);
+
+                    if (event.button.button == SDL_BUTTON_LEFT) {
+                        leftClicked = false;
+                        t->measureTime(IDLE);
+                    } else if (event.button.button == SDL_BUTTON_RIGHT) {
+                        rightClicked = false;
+                        t->measureTime(IDLE);
+                    }
+
+                    break;
+                }
+            }
+        }
+        if(somethingWasDone){       //Logging Only if something was done by the user, otherwise it's not helpful at all
+#ifdef ROT_SHOEMAKE_VT 
+        //modelMatrix = modelMatrix * arcball.getTransformation();
+            t->logMatrix(modelMatrix * arcball.getTransformation()); 
+        
+#else
+        //modelMatrix = modelMatrix * glm::mat4_cast(rotation);
+            t->logMatrix(modelMatrix * glm::mat4_cast(rotation)); 
+            //cout << "Log = " << to_string(modelMatrix * glm::mat4_cast(rotation)) << endl ;
+#endif
+
+        
+                //t->logMatrix(modelMatrix); 
+                //écout << "Logging" << endl ;
+        } 
+
+        return true;
+    }
+
+
+
+void render()
+{
+        glClearColor(0.2, 0.0, 0.0, 1.0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glMultMatrixf(glm::value_ptr(projMatrix));
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+#ifdef ROT_SHOEMAKE_VT
+    glMultMatrixf(glm::value_ptr(viewMatrix * modelMatrix * arcball.getTransformation() ));
+#else
+    glMultMatrixf(glm::value_ptr(viewMatrix * modelMatrix * glm::mat4_cast(rotation) ));
+    //cout << "GLMMF = " << glm::value_ptr(modelMatrix * glm::mat4_cast(rotation) ) << endl ;
+#endif
+
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    // glutSolidTeapot(1.0);
+    // glutSolidTeapot(150.0);
+    glutSolidTeapot(1.0);
+}
 
 
 
