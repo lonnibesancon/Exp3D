@@ -723,9 +723,10 @@ namespace mainmouse{
                     } else if (leftClicked) {
                         if (!modifierSet) {
 #ifdef ROT_SHOEMAKE_VT
-                            arcball.drag(-curPos);
+                            arcball.drag(-(curPos-glm::vec2(center.x, center.y)));
 #else
-                            trackball(curPos, trackballPrevPos);
+                            glm::vec3 center = glm::project(glm::vec3(0,0,0), viewMatrix*modelMatrix, projMatrix, glm::vec4(-1, -1, 2, 2));
+                            trackball(curPos-glm::vec2(center.x, center.y), trackballPrevPos-glm::vec2(center.x, center.y));
                             trackballPrevPos = curPos;
 #endif
                         } else {
