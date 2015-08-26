@@ -427,7 +427,7 @@ namespace maintangible{
 
 		int nextTrialTodo = nbOfTrialsDone;
 
-		//glutInit(&argc, argv);
+				// Not valid on ubuntu systemsglutInit(&argc, argv);
 
 		SDL_Surface* screen;
 

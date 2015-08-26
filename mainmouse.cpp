@@ -816,7 +816,7 @@ void render()
         subjectID = atoi(argv[1]);
         nextTrialTodo = nbOfTrialsDone;
 
-        glutInit(&argc, argv);
+        // Not valid on ubuntu systems        glutInit(&argc, argv);
 
         SDL_Surface* screen;
 

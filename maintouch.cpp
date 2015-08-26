@@ -9,6 +9,7 @@
 #include <fstream>
 #include <algorithm>  // for std::sort, std::next_permutation
 
+
 #ifdef __APPLE__
   #include <OpenGL/gl.h>
   #include <GLUT/glut.h>
@@ -19,6 +20,7 @@
   #include <GL/gl.h>
   #include <GL/glut.h>
   #include <SDL/SDL.h>
+  #include <unistd.h>
 #ifdef WIN32
   #include <direct.h>
 #else
@@ -170,13 +172,11 @@ namespace maintouch{
         //arcball = new CPM_ARC_BALL_NS::ArcBall (glm::vec3(0,0,100), TRACKBALLSIZE);
 #endif
         if(nextTrialTodo < NBOFTRIALS){
-            delete(touchlistener);
+            //delete(touchlistener);
+            //usleep(1000);
             touchlistener = new TouchListener(touchrenderer);
-            cout << "Test" << endl ;
             t = new Trial(get<1>(trialTargets[nextTrialTodo]),get<0>(trialTargets[nextTrialTodo]), path,SDL_GetTicks(), subjectID);
-            cout << "Test 2"<< endl ;
             touchrenderer->trial = t ;
-            cout << "Test 3"<< endl ;
         }
 
     }
