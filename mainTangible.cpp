@@ -43,7 +43,7 @@ namespace maintangible{
 	static const unsigned int WIDTH = 800, HEIGHT = 600;
 	static const float ZOOM_SPEED = 2.5f;
 
-	static const glm::mat4 projMatrix = glm::perspective(45.0f, float(WIDTH)/HEIGHT, 0.1f, 1000.0f);
+	static const glm::mat4 projMatrix = glm::perspective(120.0f, float(WIDTH)/HEIGHT, 50.0f, 2500.0f);
 	glm::mat4 viewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, -5));
 	glm::mat4 modelMatrix = glm::mat4(1.0f);
 	glm::quat rotation = glm::quat();
@@ -245,13 +245,18 @@ namespace maintangible{
 	#else
 		glMultMatrixf(glm::value_ptr(viewMatrix * modelMatrix * glm::mat4_cast(rotation)));
 	#endif
+		glPushMatrix();
+			glEnable(GL_DEPTH_TEST);
+			glEnable(GL_LIGHTING);
+			glEnable(GL_LIGHT0);
+			// glutSolidTeapot(1.0);
+			// glutSolidTeapot(150.0);
+			glutSolidTeapot(50.0);
+		glPopMatrix();
 
-		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_LIGHTING);
-		glEnable(GL_LIGHT0);
-		// glutSolidTeapot(1.0);
-		// glutSolidTeapot(150.0);
-		glutSolidTeapot(50.0);
+		glTranslatef(0,0,-5);
+        glMultMatrixf(glm::value_ptr(std::get<1>(trialTargets[nextTrialTodo])));
+        glutWireTeapot(50.0);
 	}
 
 

@@ -36,8 +36,9 @@ namespace mainmouse{
     static const unsigned int WIDTH = 800, HEIGHT = 600;
     static const float ZOOM_SPEED = 2.5f;
 
-    static const glm::mat4 projMatrix = glm::perspective(45.0f, float(WIDTH)/HEIGHT, 0.1f, 1000.0f);
-    glm::mat4 viewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, -5));
+
+    static const glm::mat4 projMatrix = glm::perspective(120.0f, float(WIDTH)/HEIGHT, 50.0f, 2500.0f);
+    glm::mat4 viewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, -700));
     //glm::mat4 translationMatrix = glm::mat4(1.0f);
     glm::mat4 startModelMatrix;
     glm::mat4 modelMatrix = glm::mat4(1.0f);
@@ -66,7 +67,10 @@ namespace mainmouse{
         const float near = 2*projMatrix[3][2] / (2*projMatrix[2][2]-2);
         const float far = ((projMatrix[2][2]-1)*near) / (projMatrix[2][2]+1);
         const float depth = far*(near+dist)/((far-near)*dist);
-        return glm::unProject(glm::vec3(pos, depth), glm::mat4(), projMatrix, glm::vec4(-2, -2, 2, 2));
+        GLint vp[4];
+        glGetIntegerv(GL_VIEWPORT,vp);
+        //return glm::unProject(glm::vec3(pos, depth), glm::mat4(), projMatrix, glm::vec4(-2, -2, 2, 2));
+        return glm::unProject(glm::vec3(pos, depth), glm::mat4(),viewMatrix, glm::vec4(vp[0], vp[1], vp[2], vp[3]));
     }
 
     glm::vec3 projectToSphere(float r, float x, float y)
@@ -323,7 +327,7 @@ namespace mainmouse{
 
 void render()
 {
-        glClearColor(0.2, 0.0, 0.0, 1.0);
+    glClearColor(0.0, 0.0, 0.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glMatrixMode(GL_PROJECTION);
@@ -333,19 +337,26 @@ void render()
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
+    glPushMatrix();
 #ifdef ROT_SHOEMAKE_VT
-    glMultMatrixf(glm::value_ptr(viewMatrix * modelMatrix * arcball.getTransformation() ));
+        glMultMatrixf(glm::value_ptr(viewMatrix * modelMatrix * arcball.getTransformation() ));
 #else
-    glMultMatrixf(glm::value_ptr(viewMatrix * modelMatrix * glm::mat4_cast(rotation) ));
+        glMultMatrixf(glm::value_ptr(viewMatrix * modelMatrix * glm::mat4_cast(rotation) ));
     //cout << "GLMMF = " << glm::value_ptr(modelMatrix * glm::mat4_cast(rotation) ) << endl ;
 #endif
+   
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_LIGHTING);
+        glEnable(GL_LIGHT0);
 
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
-    // glutSolidTeapot(1.0);
-    // glutSolidTeapot(150.0);
-    glutSolidTeapot(1.0);
+        // glutSolidTeapot(1.0);
+        // glutSolidTeapot(150.0);
+        glutSolidTeapot(50.0);
+    glPopMatrix();
+
+    
+    glMultMatrixf(glm::value_ptr(std::get<1>(trialTargets[nextTrialTodo])));
+    glutWireTeapot(50.0);
 }
 
 
@@ -389,15 +400,6 @@ void render()
             }
             nextTrialTodo ++ ;
             LogAndReset();
-            
-            /*vector<string> v = t->getTimeHistory();
-            for(std::vector<string>::size_type i = 0; i!=v.size(); i++) {
-                cout << v.at(i);
-            }
-            vector<string> w = t->getMatrixHistory();
-            for(std::vector<string>::size_type i = 0; i!=w.size(); i++) {
-                cout << w.at(i) << endl ;
-            }*/
         }
         SDL_Quit();
         delete(arcball);

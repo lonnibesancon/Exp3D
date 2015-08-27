@@ -240,6 +240,9 @@ void TouchRenderer::update(long id, double x, double y){
         glm::vec3 unprojStartPos = unproject(startScreenPos, objZ);
         glm::vec3 unprojCurPos = unproject(curPos, objZ);
         objectPos = (unprojCurPos - unprojStartPos);
+        
+        //What's done for the mouse
+        //modelMatrix = glm::translate(startModelMatrix, glm::mat3(glm::transpose(modelMatrix)) * (unprojCurPos - unprojStartPos));
 
         //objectPos =  glm::project(glm::vec3(0,0,0), objectPos, projMatrix, glm::vec4(-1, -1, 2, 2));
         /*Handles Translation on z*/

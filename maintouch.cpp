@@ -56,8 +56,8 @@ namespace maintouch{
     static const float ZOOM_SPEED = 2.5f;
 
 
-    static const glm::mat4 projMatrix = glm::perspective(45.0f, float(WIDTH)/HEIGHT, 0.1f, 1000.0f);
-    glm::mat4 viewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, -5));
+    static const glm::mat4 projMatrix = glm::perspective(120.0f, float(WIDTH)/HEIGHT, 50.0f, 2500.0f);
+    glm::mat4 viewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, -700));
     glm::mat4 modelMatrix = glm::mat4(1.0f);
     glm::mat4 transformationMatrix = glm::mat4(1.0f);
 
@@ -151,15 +151,15 @@ namespace maintouch{
             glEnable(GL_DEPTH_TEST);
             glEnable(GL_LIGHTING);
             glEnable(GL_LIGHT0);
-            glutSolidTeapot(1.0);
+            glutSolidTeapot(50.0);
             glEnable(GL_DEPTH_TEST);
             glEnable(GL_LIGHTING);
             glEnable(GL_LIGHT0);
         glPopMatrix();
          
-        glTranslatef(0,0,-5);
+        
         glMultMatrixf(glm::value_ptr(std::get<1>(trialTargets[nextTrialTodo])));
-        glutWireTeapot(1.0);
+        glutWireTeapot(50.0);
     }
 
     void LogAndReset(){
