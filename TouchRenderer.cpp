@@ -221,19 +221,29 @@ void TouchRenderer::update(long id, double x, double y){
 		
 		const float objZ = (viewMatrix * modelMatrix)[3][2];
      
+		/*Handles Rotation*/
+
     	//newVector = glm::vec2(touchpoints.at(0).curX,touchpoints.at(0).curY)-glm::vec2(touchpoints.at(1).curX,touchpoints.at(1).curY);
         newVector = getVector(touchpoints[0], touchpoints[1]);
         originalVector = glm::normalize(originalVector);
         newVector = glm::normalize(newVector);
         objectAngle = glm::orientedAngle(newVector,originalVector);
         rotation = glm::rotate(startRotation, objectAngle, glm::inverse(startRotation)*glm::vec3(0,0,1));
-    
+
+        /*Handles Translation on x/y*/
+    	
+    	//Working version, but with object not following fingers
+        //glm::vec3 unprojStartPos = unproject(startScreenPos, objZ);
+        //glm::vec3 unprojCurPos = unproject(curPos, objZ);
+        //objectPos = (unprojCurPos - unprojStartPos);
+        
         glm::vec3 unprojStartPos = unproject(startScreenPos, objZ);
         glm::vec3 unprojCurPos = unproject(curPos, objZ);
         objectPos = (unprojCurPos - unprojStartPos);
 
+        //objectPos =  glm::project(glm::vec3(0,0,0), objectPos, projMatrix, glm::vec4(-1, -1, 2, 2));
+        /*Handles Translation on z*/
         distance = computeDistanceBtwnFingers();
-
         objectPos.z = 1/firstDistance * (1-firstDistance/distance);
         update();
 	}

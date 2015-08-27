@@ -24,6 +24,10 @@
 #define TOUCH			"/Touch"
 #define TANGIBLE		"/Tangible"
 
+#define MOUSECONDITION 		1
+#define TOUCHCONDITION 		2
+#define TANGIBLECONDITION 	3
+
 #define TRACKBALLSIZE 	1.1f // FIXME: value?
 
 

@@ -2,7 +2,7 @@
 
 using namespace std ;
 
-Trial::Trial(glm::mat4 t, int trialI, string Path, int timeOfStart, int subId){
+Trial::Trial(glm::mat4 t, int trialI, string Path, int timeOfStart, int subId, short interactionM){
 	trialInd = trialI ;
 	target = t ;
 	currentMode = 0 ;
@@ -14,6 +14,7 @@ Trial::Trial(glm::mat4 t, int trialI, string Path, int timeOfStart, int subId){
 	outfileMeta = new ofstream(path+to_string(trialI)+"meta.csv");
 	subjectID = subId ;
 	nbOfRestarts = 0 ;
+	interactionMode = interactionM ;
 }
 
 Trial::~Trial(){
@@ -24,6 +25,8 @@ Trial::~Trial(){
 }
 
 void Trial::writeLog(){
+	//First we need to measure the last idle action
+	measureTime(IDLE);
 	cout << path << endl ;
 	double trialDuration = (SDL_GetTicks() - trialStart) ;
     *outfileMeta << "Start Time ; " << trialStart / (double) CLOCKS_PER_SEC << endl << "Total Duration ;" << trialDuration << endl ;
@@ -114,13 +117,68 @@ vector<string> Trial::getTimeHistory(){
 		//cout << get<0>(t) << " , " << get<1>(t) << endl ;
     	s.append(to_string(get<0>(t))) ;
     	s.append( ";" );
-    	s.append(to_string(get<1>(t))) ;
+
+
+    	//Version avec les chiffres dans le log
+    	//s.append(to_string(get<1>(t))) ;
+
+    	//Version avec du texte dans le log
+    	s.append(getActionTypeString(get<1>(t)));
     	s.append( ";" );
     	s.append(to_string(get<2>(t))) ;
 		v.push_back(s);
 		s="";
 	}
 	return v;
+}
+
+std::string Trial::getActionTypeString(int mode){
+
+/*#define LEFT            1
+#define RIGHT 	        2
+#define LEFTANDSHIFT    3
+#define RIGHTANDSHIFT   4
+#define IDLE            0
+
+#define ZEROTOONE 		0
+#define ONETOTWO 		1
+#define ONETOZERO 		1
+#define TWOTOMORE 		2
+#define TWOTOONE 		2
+#define BACKTOTWO 		3
+
+#define ONEFINGER		1
+#define TWOFINGERS		2
+#define MOREFINGERS		3*/	
+
+	switch(interactionMode){
+		case MOUSECONDITION:
+			switch(mode){
+				 case LEFT:
+				 	return "RotationLeftClick";
+				 case RIGHT:
+				 	return "TranslationRightClick";
+				 case LEFTANDSHIFT:
+				 	return "RotationZ";
+				 case RIGHTANDSHIFT:
+				 	return "TranslationZ";
+				 case IDLE:
+				 	return "Idle";
+			}
+			break;
+		case TOUCHCONDITION:
+			switch(mode){
+				case ONEFINGER:
+					return "OneFinger";
+				case TWOFINGERS:
+					return "TwoFinger";
+				case MOREFINGERS:
+					return "ThreeOrMoreFinger";
+				case IDLE:
+					return "Idle";
+			}
+			break ;
+	}
 }
 
 vector<string> Trial::getMatrixHistory(){

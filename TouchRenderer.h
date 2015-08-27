@@ -38,6 +38,7 @@ public:
 	std::vector<glm::mat4> historyMatrix ;
 	std::vector <std::string> GetHistory();
 	Trial* trial ;
+	
 	//void measureTime(int c);
 
 

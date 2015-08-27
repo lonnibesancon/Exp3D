@@ -175,7 +175,7 @@ namespace maintouch{
             //delete(touchlistener);
             //usleep(1000);
             touchlistener = new TouchListener(touchrenderer);
-            t = new Trial(get<1>(trialTargets[nextTrialTodo]),get<0>(trialTargets[nextTrialTodo]), path,SDL_GetTicks(), subjectID);
+            t = new Trial(get<1>(trialTargets[nextTrialTodo]),get<0>(trialTargets[nextTrialTodo]), path,SDL_GetTicks(), subjectID, TOUCHCONDITION);
             touchrenderer->trial = t ;
         }
 
@@ -214,7 +214,7 @@ namespace maintouch{
 
         glViewport(0, 0, WIDTH, HEIGHT);
 
-        t = new Trial(get<1>(trialTargets[nextTrialTodo]),get<0>(trialTargets[nextTrialTodo]), path,SDL_GetTicks(),subjectID);
+        t = new Trial(get<1>(trialTargets[nextTrialTodo]),get<0>(trialTargets[nextTrialTodo]), path,SDL_GetTicks(),subjectID, TOUCHCONDITION);
         touchrenderer = new TouchRenderer(transformationMatrix, WIDTH, HEIGHT, projMatrix, viewMatrix, t);
         touchlistener = new TouchListener(touchrenderer);
 
