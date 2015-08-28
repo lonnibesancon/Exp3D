@@ -13,6 +13,7 @@ float maxRotation = 1  ;
 float maxTranslation = 1 ;
 float minRotation = - 1 ;
 float minTranslation = - 1 ;
+int seed = 100 ;
 
 glm::mat4 id(1.0f);
 
@@ -37,6 +38,7 @@ glm::mat4 generateRandomModelMatrix(){
 }
 
 int main(){
+    srand(seed);
     for (int i = 0 ; i < 15 ; i++){
         cout << glm::to_string(generateRandomModelMatrix()) << '\n' ;
     }

@@ -1,0 +1,20 @@
+Ce qu'on dit aux participants:
+	Vous allez participer à une expérience de docking en 3D avec différentes méthodes/moyen pour interagir avec l’object virtuel. Le docking est une tâche pour laquelle il faut déplacer un objet d’une position dans l’espace a une autre position dans l’espace. L’orientation de l’objet compte également. + Faire un exemple avec les mains.
+	Il s’agira de réussir ce docking 15 fois pour chacune des techniques proposées.
+Les techniques sont les suivantes: souris et clavier, écran tactile et objet tangible; l’ordre est aléatoire donc ne vous fiez pas à ce que je viens de vous dire.
+Il vous est d’abord demander de répondre à un bref questionnaire avant de commencer avec une première technique. Entre chaque technique, un questionnaire devra également être rempli pour évaluer les techniques. Il est important de noter que chacune des techniques que je vous propose aujourd’hui n’a pas été inventée ou découverte par moi ou mes collègues et qu’il s’agit donc d’être parfaitement objectif dans votre évaluation de chacune d’entre elles.
+	L’écran face à vous est un écran tactile multi-touch (traduire?? est-ce que ça dit pas qu’on peut utiliser plusieurs doigts directement et du coup fausse nos mesures?), la souris est une souris standard et l’objet posé devant vous est l’objet qu’il vous faudra manipuler pour la technique de l’objet tangible. Les deux tablettes autour de vous servent à suivre l’objet et la caméra en face de vous filme la séance pour des besoins post-analytiques.
+	Chaque tache de docking vous présentera donc une cible à atteindre tant d’un point de vue du positionnement que de l’orientation de l’objet. Une fois que vous êtes satisfaits, la validation d’une tache s’effectue avec la touche Esc du clavier. Il est enfin important de noté qu’il faut effectuer la tache le plus rapidement possible et le plus précisement possible cad qu’il est inutile de passer 30 minutes pour être parfaitement positionné tout comme il est inutile de se valider en moins de 2 secondes pour un résultat très loin de la cible visée.
+	
+
+Hypotheses:
+	Le space-multiplexing du tangible permettra de finir les taches bien plus rapidement
+	La souris sera tres certainement tres frustrante
+	Le touch plus precis
+	Le tangible sera certainement plus fun et facile à apprendre.
+	Le trackball risque d’agacer les participants dans les deux conditions.
+
+
+Other Interesting measures:
+	Temps avant de mettre les deux doigts sur l’écran
+	Temps avant d'utiliser SHIFT
