@@ -44,6 +44,8 @@ namespace mainmouse{
     glm::mat4 modelMatrix = glm::mat4(1.0f);
     glm::quat rotation = glm::quat();
 
+    glm::mat4 rotationZMatrix = glm::mat4();
+
     glm::vec3 center ; //For rotations
 
     Trial *t ;
@@ -278,6 +280,7 @@ namespace mainmouse{
                             center = glm::project(glm::vec3(0,0,0), viewMatrix*modelMatrix, projMatrix, glm::vec4(-1, -1, 2, 2));
                             float newAngle = std::atan2(curPos.y-center.y, curPos.x-center.x);
                             float oldAngle = std::atan2(lastScreenPos.y-center.y, lastScreenPos.x-center.x);
+                            rotationZMatrix = glm::rotate(rotationZMatrix, newAngle-oldAngle, glm::mat3(modelMatrix)*glm::vec3(0,0,1));
                             modelMatrix = glm::rotate(modelMatrix, newAngle-oldAngle, glm::mat3(modelMatrix)*glm::vec3(0,0,1));
                             
                         }
@@ -342,7 +345,7 @@ void render()
 #ifdef ROT_SHOEMAKE_VT
         glMultMatrixf(glm::value_ptr(viewMatrix * modelMatrix * arcball.getTransformation() ));
 #else
-        glMultMatrixf(glm::value_ptr(viewMatrix * modelMatrix * glm::mat4_cast(rotation) ));
+        glMultMatrixf(glm::value_ptr(viewMatrix * modelMatrix * rotationZMatrix * glm::mat4_cast(rotation) * glm::inverse(rotationZMatrix) ));
     //cout << "GLMMF = " << glm::value_ptr(modelMatrix * glm::mat4_cast(rotation) ) << endl ;
 #endif
    
