@@ -104,6 +104,7 @@ vector<int> getPermutation(char* argv[]){
 void getPermutation(char* argv[], int condition){
     int subjectID = atoi(argv[1]);
     int seed = subjectID * condition ;
+    cout << "SEED = " << seed << endl ;
     srand(seed);
 
     for (int i=0; i<(NBOFTRIALS); i++) {
@@ -121,6 +122,32 @@ void getPermutation(char* argv[], int condition){
     //*outfile << endl ;
 
 }
+
+
+/*void getPermutationFromFile(short conditon){
+    ifstream in = new ifstream(path+MOUSE+"/info.txt");
+    cout << " Path = " << path+MOUSE+"/info.txt" << endl ;
+    string line ;
+    bool found = false ;
+    switch(condition){
+        case MOUSECONDITION:
+            while(found == false && in >> line){
+                if (string::npos !=line.find("Mouse condition")){
+                    found = true ;
+                }
+            }
+            //std::vector<std::string> split(line, ":");
+            std::vector<std::string> sequenceString = split(split(line,":")[1], ";");
+            for (int i = 0 ; i < sequenceString ; i++){
+                trialTargets[0] = stod()
+            }
+        break ;
+
+
+    }
+
+    outfile = new ofstream(path+"/info.txt", std::ios_base::app); 
+}*/
 
 
 void loadTargets(){
@@ -147,17 +174,30 @@ void launchCondition(int ind, int argc, char * argv[]){
             createConditionDirectory(path+MOUSE);
             *outfile << "Mouse condition order of trials:" ;
             getPermutation(argv,100);
+            for(int i = 0 ; i < trialTargets.size() ; i++){
+                *outfile << get<0>(trialTargets[i]) << ";" ;
+            }
+            *outfile << endl ;
 			mainmouse::launchMouseExp(argc, argv, trialTargets, path+MOUSE);
 			break;
 		case 2:
             createConditionDirectory(path+TOUCH);
             *outfile << "Touch condition order of trials:" ;
             getPermutation(argv,200);
+            for(int i = 0 ; i < trialTargets.size() ; i++){
+                *outfile << get<0>(trialTargets[i]) << ";" ;
+            }
+            *outfile << endl ;
 			maintouch::launchTouchExp(argc, argv, trialTargets, path+TOUCH);
 			break ;
 		case 3:
             *outfile << "Tangible condition order of trials:" ;
 			createConditionDirectory(path+TANGIBLE);
+            getPermutation(argv,300);
+            for(int i = 0 ; i < trialTargets.size() ; i++){
+                *outfile << get<0>(trialTargets[i]) << ";" ;
+            }
+            *outfile << endl ;
             //maintangible::launchTangibleExp(argc, argv, trialTargets, path+TANGIBLE);
 			break ;
 		default:
@@ -193,6 +233,8 @@ int getNextTrialToDo(string path){
     }
 
 }
+
+
 
 
 int main(int argc, char *argv[])
@@ -243,7 +285,7 @@ int main(int argc, char *argv[])
         int i = 2 ;
         string p ;
         int nbOfTrialsDone = 0 ;
-        int nbOfConditionsDone = 0 ;
+        int nbOfConditionsDone = 3 ;
         bool skipTangible = false ;
         bool skipTouch = false ;
         bool skipMouse = false ;
@@ -263,11 +305,13 @@ int main(int argc, char *argv[])
                         }
                         else{
                             cout << "Mouse experiment complete" << endl ;
+                            skipMouse = true ;
+                            
                         }
+                        nbOfConditionsDone ++ ;
                     }
                     else{
                     cout << "Mouse Not done yet" << endl ;
-                    nbOfConditionsDone -- ;
                     }
                     break;
                 case 2:
@@ -284,15 +328,17 @@ int main(int argc, char *argv[])
                         }
                         else{
                             cout << "Touch experiment complete" << endl ;
+                            skipTouch = true ;
                         }
+                        nbOfConditionsDone ++ ;
                     }
                     else{
                         cout << "Touch Not done yet" << endl ;
-                        nbOfConditionsDone -- ;
                     }
                     break;
                 case 3:
                     p = path+TANGIBLE ;
+                    cout << "TANGIBLE " << endl ;
                     if(skipTangible) break ;
                     if(boost::filesystem::exists(path+TANGIBLE)){
                         nbOfTrialsDone = getNextTrialToDo(p);
@@ -304,16 +350,18 @@ int main(int argc, char *argv[])
                         }
                         else{
                             cout <<"Tangible experiment complete" << endl ;
+                            skipTangible = true ;
                         }
+                        nbOfConditionsDone ++ ;
                     }
                     else{
                         cout << "Tangible Not done yet" << endl ;
-                        nbOfConditionsDone -- ;
+                        
                     }
                     break;
             }
             i--;
-            nbOfConditionsDone ++ ;
+            nbOfConditionsDone -- ;
         }
         cout << "End of recovery mode" << endl;
         cout << "Nb of conditions done = " << nbOfConditionsDone << endl ;

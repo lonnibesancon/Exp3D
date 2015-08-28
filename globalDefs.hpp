@@ -29,6 +29,7 @@
 #define TANGIBLECONDITION 	3
 
 #define TRACKBALLSIZE 	1.1f // FIXME: value?
+#define ZOOMSPEED		50.0f
 
 
 #define GLM_SWIZZLE

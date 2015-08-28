@@ -29,7 +29,7 @@
 
 class Trial{
 public:
-	Trial(glm::mat4 t, int trialI, std::string Path, int timeOfStart, int subId,short interactionMode);
+	Trial(glm::mat4 t, int trialI, std::string Path, int timeOfStart, int subId,short interactionMode, int nbDone );
 	~Trial();
 
 	void writeLog();
@@ -54,6 +54,7 @@ private:
 	int currentMode ;
 	int subjectID ;
 	int nbOfRestarts ;
+	int nbOfTrialsDone ;
 	std::string path ;
 	std::ofstream *outfileMatrix;
 	std::ofstream *outfileEvents;

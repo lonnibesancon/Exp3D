@@ -2,7 +2,7 @@
 
 using namespace std ;
 
-Trial::Trial(glm::mat4 t, int trialI, string Path, int timeOfStart, int subId, short interactionM){
+Trial::Trial(glm::mat4 t, int trialI, string Path, int timeOfStart, int subId, short interactionM, int nbDone){
 	trialInd = trialI ;
 	target = t ;
 	currentMode = 0 ;
@@ -15,6 +15,7 @@ Trial::Trial(glm::mat4 t, int trialI, string Path, int timeOfStart, int subId, s
 	subjectID = subId ;
 	nbOfRestarts = 0 ;
 	interactionMode = interactionM ;
+	nbOfTrialsDone = nbDone ;
 
 	//Get all the different elements of the target matrix ;
 	glm::decompose(target, targetscale, targetrotation, targettranslation, targetskew, targetperspective);
@@ -33,17 +34,17 @@ void Trial::writeLog(){
 	cout << path << endl ;
 	double trialDuration = (SDL_GetTicks() - trialStart) ;
     *outfileMeta << "StartTime;" << trialStart / (double) CLOCKS_PER_SEC << endl << "TotalDuration;" << trialDuration << endl ;
-    *outfileMeta << "NbOfRestart;" << nbOfRestarts << endl ;
+    *outfileMeta << "NbOfRestart;" << nbOfRestarts << endl << "NbOfTrialsDone;" << nbOfTrialsDone << ";" << endl ;
 
     vector<string> v = getTimeHistory();
-    //cout << "SIZE OF TIME HISTORY " << v.size() << endl ;
-    *outfileEvents << "SubjectID;" << "TrialIndex;" << "Timestamp;" << "ActionID;" << "Duration;" << endl ;
+    //On rajoute le nbOfTrialsDone, le sujetID and le trialID 
+    *outfileEvents << "SubjectID;" << "TrialIndex;" << "NbOfTrialsDone;" << "Timestamp;" << "ActionID;" << "Duration;" << endl ;
     for(std::vector<string>::size_type i = 0; i!=v.size(); i++) {
-        *outfileEvents << subjectID << ";" << trialInd << ";" << v.at(i) << endl ;
+        *outfileEvents << subjectID << ";" << trialInd << ";" << nbOfTrialsDone << ";" << v.at(i) << endl ;
         //cout << subjectID << " ; " << v.at(i) << endl ;
     }
 
-    *outfileMatrix << "subjectID;" << "TrialIndex; " << "Timestamp; " << "EuclidianDistance;" << "RotationDifference;" 
+    *outfileMatrix << "subjectID;" << "TrialIndex; " << "NbOfTrialsDone;" << "Timestamp; " << "EuclidianDistance;" << "RotationDifference;" 
     << "Pitch;" << "Roll;" << "Yaw;" << "DistanceX;" << "DistanceY;" <<  "DistanceZ;" 
     << "Current Model[O];" << "Current Model[1];" << "Current Model[2];" << "Current Model[3];" << "Current Model[4];" 
     << "Current Model[5];" << "Current Model[6];" << "Current Model[7];" << "Current Model[8];" << "Current Model[9];" 
@@ -57,7 +58,7 @@ void Trial::writeLog(){
     << endl ;
     vector<string> w = getMatrixHistory();
     for(std::vector<string>::size_type i = 0; i!=w.size(); i++) {
-        *outfileMatrix << subjectID << ";" << trialInd << ";" << w.at(i) << endl ;
+        *outfileMatrix << subjectID << ";" << trialInd << ";" << nbOfTrialsDone << ";" << w.at(i) << endl ;
     }
     
 }

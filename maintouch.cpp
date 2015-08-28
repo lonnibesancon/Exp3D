@@ -53,7 +53,7 @@ namespace maintouch{
     //#else
     //static const unsigned int WIDTH = 1920, HEIGHT = 1080;
     //#endif
-    static const float ZOOM_SPEED = 2.5f;
+    //static const float ZOOM_SPEED = 2.5f;
 
 
     static const glm::mat4 projMatrix = glm::perspective(120.0f, float(WIDTH)/HEIGHT, 50.0f, 2500.0f);
@@ -73,6 +73,7 @@ namespace maintouch{
     int nextTrialTodo ;
     string path ;
     int subjectID ;
+    int numberOfTrialsDone = 0 ;
 
 
     glm::vec2 mouseToScreenCoords(int mouseX, int mouseY)
@@ -175,7 +176,7 @@ namespace maintouch{
             //delete(touchlistener);
             //usleep(1000);
             touchlistener = new TouchListener(touchrenderer);
-            t = new Trial(get<1>(trialTargets[nextTrialTodo]),get<0>(trialTargets[nextTrialTodo]), path,SDL_GetTicks(), subjectID, TOUCHCONDITION);
+            t = new Trial(get<1>(trialTargets[nextTrialTodo]),get<0>(trialTargets[nextTrialTodo]), path,SDL_GetTicks(), subjectID, TOUCHCONDITION,nextTrialTodo);
             touchrenderer->trial = t ;
         }
 
@@ -183,12 +184,12 @@ namespace maintouch{
 
 
 
-    int launchTouchExp(int argc, char *argv[], vector<tuple<int,glm::mat4>> targets, string p, int nbOfTrialsDone = 0)
+    int launchTouchExp(int argc, char *argv[], vector<tuple<int,glm::mat4>> targets, string p, int nbTrialsDone = 0)
     {
         
         trialTargets = targets ;
         subjectID = atoi(argv[1]);
-        nextTrialTodo = nbOfTrialsDone;
+        nextTrialTodo = nbTrialsDone;
         path = p;
 
         cout << "Size of trial targets = " << trialTargets.size() << endl ;
@@ -214,7 +215,7 @@ namespace maintouch{
 
         glViewport(0, 0, WIDTH, HEIGHT);
 
-        t = new Trial(get<1>(trialTargets[nextTrialTodo]),get<0>(trialTargets[nextTrialTodo]), path,SDL_GetTicks(),subjectID, TOUCHCONDITION);
+        t = new Trial(get<1>(trialTargets[nextTrialTodo]),get<0>(trialTargets[nextTrialTodo]), path,SDL_GetTicks(),subjectID, TOUCHCONDITION,nextTrialTodo);
         touchrenderer = new TouchRenderer(transformationMatrix, WIDTH, HEIGHT, projMatrix, viewMatrix, t);
         touchlistener = new TouchListener(touchrenderer);
 

@@ -66,6 +66,7 @@ namespace maintangible{
 	vector <tuple<int,glm::mat4>> trialTargets ;
 	int nextTrialTodo ;
 	int subjectID ;
+	int numberOfTrialsDone = 0 ;
 
 
 	glm::vec2 mouseToScreenCoords(int mouseX, int mouseY)
@@ -456,7 +457,7 @@ namespace maintangible{
 		std::string str;
 		while(nextTrialTodo != NBOFTRIALS){            //Loop through trials 
 			cout << "***********Launching trial # " << get<0>(trialTargets[nextTrialTodo]) << endl ;
-            t = new Trial(get<1>(targets[nextTrialTodo]),get<0>(targets[nextTrialTodo]), path,SDL_GetTicks(),subjectID,TANGIBLECONDITIOn);
+            t = new Trial(get<1>(targets[nextTrialTodo]),get<0>(targets[nextTrialTodo]), path,SDL_GetTicks(),subjectID,TANGIBLECONDITION,nextTrialTodo);
             t->logMatrix(modelMatrix); 
 
 			while (getInput()) {
@@ -473,7 +474,8 @@ namespace maintangible{
 				}
 				SDL_GL_SwapBuffers();
 			}
-
+			nextTrialTodo++;
+			nbOfTrialsDone ++;
 			logAndReset();
 		}
 		SDL_Quit();

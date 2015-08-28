@@ -80,6 +80,9 @@ TouchRenderer::~TouchRenderer(void)
 
 }
 
+
+
+
 glm::vec3 projectToSphere(float r, float x, float y)
 {
     float z;
@@ -248,9 +251,12 @@ void TouchRenderer::update(long id, double x, double y){
         /*Handles Translation on z*/
         distance = computeDistanceBtwnFingers();
         objectPos.z = 1/firstDistance * (1-firstDistance/distance);
+        objectPos.z *= ZOOMSPEED ;
+        std::cout << "FIRST DISTANCE = " << firstDistance << std::endl << "DISTANCE = " << distance << std::endl ;
         update();
 	}
 }
+
 
 void TouchRenderer::update(){
 	// modelMatrix = glm::translate(startModelMatrix, objectPos) * glm::rotate(startModelMatrix,objectAngle, glm::vec3(0,0,1));
@@ -351,3 +357,5 @@ glm::vec3 TouchRenderer::unproject(const glm::vec2& pos, float dist)
     const float depth = far*(near+dist)/((far-near)*dist);
     return glm::unProject(glm::vec3(pos, depth), glm::mat4(), projMatrix, glm::vec4(-2, -2, 2, 2));
 }
+
+
