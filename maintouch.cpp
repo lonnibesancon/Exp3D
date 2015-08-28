@@ -159,7 +159,7 @@ namespace maintouch{
             glEnable(GL_LIGHT0);
         glPopMatrix();
          
-        
+        glMultMatrixf(glm::value_ptr(viewMatrix));
         glMultMatrixf(glm::value_ptr(std::get<1>(trialTargets[nextTrialTodo])));
         glutWireTeapot(50.0);
     }

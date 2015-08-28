@@ -487,7 +487,7 @@ namespace maintangible{
 			logAndReset();
 			cout << "Appuyez sur la touche entrée pour la test suivant" << endl ;
             getline(cin,a);
-            initSDL(screen);
+            initSDL();
 		}
 		SDL_Quit();
 		trialTargets.clear();

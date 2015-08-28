@@ -336,7 +336,7 @@ namespace mainmouse{
 
 void render()
 {
-    glClearColor(0.0, 0.0, 0.0, 1.0);
+    glClearColor(0.0, 0.0, 0.2, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glMatrixMode(GL_PROJECTION);
@@ -363,7 +363,10 @@ void render()
         glutSolidTeapot(50.0);
     glPopMatrix();
 
-    
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    glMultMatrixf(glm::value_ptr(viewMatrix));
     glMultMatrixf(glm::value_ptr(std::get<1>(trialTargets[nextTrialTodo])));
     glutWireTeapot(50.0);
 }

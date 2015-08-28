@@ -5,4 +5,8 @@
 # Tablette 2 (usb1)
 - partage de connexion
 - ifconfig usb1 192.168.43.165   # au lieu de dhclient !!!
-- adb -s ... shell ifconfig usb0 192.168.43.129 netmask 255.255.255.0
+- adb -s CEIPBP5A0443002629 shell su -c ifconfig rndis0 192.168.43.129 netmask 255.255.255.0
+
+
+#1:CEIPBP5A0445004598	
+#2:CEIPBP5A0443002629
