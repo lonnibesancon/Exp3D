@@ -42,6 +42,7 @@ namespace maintangible{
 
 	static const unsigned int WIDTH = 800, HEIGHT = 600;
 	static const float ZOOM_SPEED = 2.5f;
+	SDL_Surface* screen ;
 
 	static const glm::mat4 projMatrix = glm::perspective(120.0f, float(WIDTH)/HEIGHT, 50.0f, 2500.0f);
 	glm::mat4 viewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, -5));
@@ -187,6 +188,7 @@ namespace maintangible{
         arcball = new CPM_ARC_BALL_NS::ArcBall (glm::vec3(0,0,100), TRACKBALLSIZE);
 #endif
         delete(t);
+        SDL_Quit();
     }
 
 
@@ -426,33 +428,39 @@ namespace maintangible{
 		}
 	}
 
+
+	int initSDL(){
+        if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+            std::cerr << "SDL_Init() failed: " << SDL_GetError() << '\n';
+            return EXIT_FAILURE;
+        }
+
+        std::atexit(SDL_Quit);
+
+        SDL_WM_SetCaption("Tangible Interaction!", nullptr);
+        SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+
+        if (!(screen = SDL_SetVideoMode(WIDTH, HEIGHT, 32, SDL_OPENGL))) {
+            std::cerr << "SDL_SetVideoMode() failed: " << SDL_GetError() << '\n';
+            return EXIT_FAILURE;
+        }
+
+        glViewport(0, 0, WIDTH, HEIGHT);
+    }
+
+
 	int launchTangibleExp(int argc, char *argv[], vector<tuple<int,glm::mat4>> targets, string path, int nbOfTrialsDone = 0)
 	{
 		trialTargets = targets ;
 		subjectID = atoi(argv[1]);
 
 		int nextTrialTodo = nbOfTrialsDone;
+		string a ;
 
 				// Not valid on ubuntu systemsglutInit(&argc, argv);
 
-		SDL_Surface* screen;
 
-		if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-			std::cerr << "SDL_Init() failed: " << SDL_GetError() << '\n';
-			return EXIT_FAILURE;
-		}
-
-		std::atexit(SDL_Quit);
-
-		SDL_WM_SetCaption("Tangible !", nullptr);
-		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-
-		if (!(screen = SDL_SetVideoMode(WIDTH, HEIGHT, 32, SDL_OPENGL /*| SDL_FULLSCREEN*/))) {
-			std::cerr << "SDL_SetVideoMode() failed: " << SDL_GetError() << '\n';
-			return EXIT_FAILURE;
-		}
-
-		glViewport(0, 0, WIDTH, HEIGHT);
+		initSDL();
 
 		std::string str;
 		while(nextTrialTodo != NBOFTRIALS){            //Loop through trials 
@@ -477,6 +485,9 @@ namespace maintangible{
 			nextTrialTodo++;
 			nbOfTrialsDone ++;
 			logAndReset();
+			cout << "Appuyez sur la touche entrée pour la test suivant" << endl ;
+            getline(cin,a);
+            initSDL(screen);
 		}
 		SDL_Quit();
 		trialTargets.clear();

@@ -35,6 +35,14 @@ namespace mainmouse{
 
     static const unsigned int WIDTH = 800, HEIGHT = 600;
     //static const float ZOOM_SPEED = 2.5f;
+    SDL_Surface* screen ;
+
+
+    glm::vec3 dummyscale;
+    glm::quat ObjectRotation;
+    glm::vec3 dummytranslation;
+    glm::vec3 dummyskew;
+    glm::vec4 dummyperspective;
 
 
     static const glm::mat4 projMatrix = glm::perspective(120.0f, float(WIDTH)/HEIGHT, 50.0f, 2500.0f);
@@ -176,6 +184,7 @@ namespace mainmouse{
         t->writeLog();
         reset();
         delete(t);
+        SDL_Quit();
     }
 
     bool getInput()
@@ -311,11 +320,14 @@ namespace mainmouse{
         if(somethingWasDone){       //Logging Only if something was done by the user, otherwise it's not helpful at all
 #ifdef ROT_SHOEMAKE_VT 
         //modelMatrix = modelMatrix * arcball.getTransformation();
-            t->logMatrix(modelMatrix * arcball.getTransformation()); 
+            glm::decompose(modelMatrix, dummyscale, ObjectRotation, dummytranslation, dummyskew, dummyperspective);
+            t->logMatrix(modelMatrix * glm::mat4_cast(ObjectRotation) * arcball.getTransformation() * glm::inverse(glm::mat4_cast(ObjectRotation))); 
         
 #else
         //modelMatrix = modelMatrix * glm::mat4_cast(rotation);
-            t->logMatrix(modelMatrix * glm::mat4_cast(rotation)); 
+            glm::decompose(modelMatrix, dummyscale, ObjectRotation, dummytranslation, dummyskew, dummyperspective);
+            glMultMatrixf(glm::value_ptr(viewMatrix * modelMatrix * glm::mat4_cast(ObjectRotation) * glm::mat4_cast(rotation) * glm::mat4_cast(glm::inverse(ObjectRotation)) ));
+
             //cout << "Log = " << to_string(modelMatrix * glm::mat4_cast(rotation)) << endl ;
 #endif
 
@@ -343,9 +355,9 @@ void render()
 
     glPushMatrix();
 #ifdef ROT_SHOEMAKE_VT
-        glMultMatrixf(glm::value_ptr(viewMatrix * modelMatrix * arcball.getTransformation() ));
+        glMultMatrixf(glm::value_ptr(viewMatrix * modelMatrix * rotationZMatrix * arcball.getTransformation() * glm::inverse(rotationZMatrix)));
 #else
-        glMultMatrixf(glm::value_ptr(viewMatrix * modelMatrix * rotationZMatrix * glm::mat4_cast(rotation) * glm::inverse(rotationZMatrix) ));
+        glMultMatrixf(glm::value_ptr(viewMatrix * modelMatrix * glm::mat4_cast(ObjectRotation) * glm::mat4_cast(rotation) * glm::mat4_cast(glm::inverse(ObjectRotation)) ));
     //cout << "GLMMF = " << glm::value_ptr(modelMatrix * glm::mat4_cast(rotation) ) << endl ;
 #endif
    
@@ -363,18 +375,7 @@ void render()
     glutWireTeapot(50.0);
 }
 
-
-
-    int launchMouseExp(int argc, char *argv[], vector<tuple<int,glm::mat4>> targets, string path, int nbOfTrialsDone = 0)
-    {
-        trialTargets = targets ;
-        subjectID = atoi(argv[1]);
-        nextTrialTodo = nbOfTrialsDone;
-
-        // Not valid on ubuntu systems        glutInit(&argc, argv);
-
-        SDL_Surface* screen;
-
+    int initSDL(){
         if (SDL_Init(SDL_INIT_VIDEO) < 0) {
             std::cerr << "SDL_Init() failed: " << SDL_GetError() << '\n';
             return EXIT_FAILURE;
@@ -391,6 +392,22 @@ void render()
         }
 
         glViewport(0, 0, WIDTH, HEIGHT);
+    }
+
+
+
+    int launchMouseExp(int argc, char *argv[], vector<tuple<int,glm::mat4>> targets, string path, int nbOfTrialsDone = 0)
+    {
+        trialTargets = targets ;
+        subjectID = atoi(argv[1]);
+        nextTrialTodo = nbOfTrialsDone;
+
+        // Not valid on ubuntu systems        glutInit(&argc, argv);
+
+        string a ;
+
+
+        initSDL();
 
 
         while(nextTrialTodo != NBOFTRIALS){            //Loop through trials 
@@ -405,6 +422,9 @@ void render()
             nextTrialTodo ++ ;
             nbOfTrialsDone ++;
             LogAndReset();
+            cout << "Appuyez sur la touche entrée pour la test suivant" << endl ;
+            getline(cin,a);
+                
         }
         SDL_Quit();
         delete(arcball);

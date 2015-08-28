@@ -54,6 +54,7 @@ namespace maintouch{
     //static const unsigned int WIDTH = 1920, HEIGHT = 1080;
     //#endif
     //static const float ZOOM_SPEED = 2.5f;
+    SDL_Surface* screen ;
 
 
     static const glm::mat4 projMatrix = glm::perspective(120.0f, float(WIDTH)/HEIGHT, 50.0f, 2500.0f);
@@ -163,10 +164,33 @@ namespace maintouch{
         glutWireTeapot(50.0);
     }
 
+
+    int initSDL(){
+        if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+            std::cerr << "SDL_Init() failed: " << SDL_GetError() << '\n';
+            return EXIT_FAILURE;
+        }
+
+        std::atexit(SDL_Quit);
+
+        SDL_WM_SetCaption("Touch Interaction!", nullptr);
+        SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+
+        if (!(screen = SDL_SetVideoMode(WIDTH, HEIGHT, 32, SDL_OPENGL))) {
+            std::cerr << "SDL_SetVideoMode() failed: " << SDL_GetError() << '\n';
+            return EXIT_FAILURE;
+        }
+
+        glViewport(0, 0, WIDTH, HEIGHT);
+    }
+
+
     void LogAndReset(){
+        string a ;
         //First Log everything
         t->logMatrix(modelMatrix);
         touchrenderer->logAndResetTouchInfo();      // Free and delete trial there
+        SDL_Quit();
 
 #ifdef ROT_SHOEMAKE_VT
         //delete(arcball);
@@ -175,6 +199,9 @@ namespace maintouch{
         if(nextTrialTodo < NBOFTRIALS){
             //delete(touchlistener);
             //usleep(1000);
+            cout << "Appuyez sur la touche entrée pour la test suivant" << endl ;
+            getline(cin,a);
+            initSDL() ;
             touchlistener = new TouchListener(touchrenderer);
             t = new Trial(get<1>(trialTargets[nextTrialTodo]),get<0>(trialTargets[nextTrialTodo]), path,SDL_GetTicks(), subjectID, TOUCHCONDITION,nextTrialTodo);
             touchrenderer->trial = t ;
@@ -191,29 +218,11 @@ namespace maintouch{
         subjectID = atoi(argv[1]);
         nextTrialTodo = nbTrialsDone;
         path = p;
+        
 
         cout << "Size of trial targets = " << trialTargets.size() << endl ;
         
-
-        SDL_Surface* screen;
-
-        if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-            std::cerr << "SDL_Init() failed: " << SDL_GetError() << '\n';
-            return EXIT_FAILURE;
-        }
-
-        std::atexit(SDL_Quit);
-
-        SDL_WM_SetCaption("Mon premier programme OpenGL !", nullptr);
-        SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-        SDL_ShowCursor(SDL_DISABLE);
-
-        if (!(screen = SDL_SetVideoMode(WIDTH, HEIGHT, 32, SDL_OPENGL /*| SDL_FULLSCREEN*/))) {
-            std::cerr << "SDL_SetVideoMode() failed: " << SDL_GetError() << '\n';
-            return EXIT_FAILURE;
-        }
-
-        glViewport(0, 0, WIDTH, HEIGHT);
+        initSDL();
 
         t = new Trial(get<1>(trialTargets[nextTrialTodo]),get<0>(trialTargets[nextTrialTodo]), path,SDL_GetTicks(),subjectID, TOUCHCONDITION,nextTrialTodo);
         touchrenderer = new TouchRenderer(transformationMatrix, WIDTH, HEIGHT, projMatrix, viewMatrix, t);
@@ -229,14 +238,6 @@ namespace maintouch{
             }
             nextTrialTodo ++ ;
             LogAndReset();
-            /*vector<string> v = t->getTimeHistory();
-            for(std::vector<string>::size_type i = 0; i!=v.size(); i++) {
-                cout << v.at(i);
-            }
-            vector<string> w = t->getMatrixHistory();
-            for(std::vector<string>::size_type i = 0; i!=w.size(); i++) {
-                cout << w.at(i) << endl ;
-            }*/
         }
 
         delete(touchlistener);
