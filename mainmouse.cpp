@@ -178,14 +178,7 @@ namespace mainmouse{
 
 
 
-    void LogAndReset(){
-        //First Log everything
-        t->logMatrix(modelMatrix);
-        t->writeLog();
-        reset();
-        delete(t);
-        SDL_Quit();
-    }
+
 
     bool getInput()
     {
@@ -375,22 +368,33 @@ void render()
     glutWireTeapot(50.0);
 }
 
+
+    void LogAndReset(){
+        //First Log everything
+        t->logMatrix(modelMatrix);
+        t->writeLog();
+        reset();
+        delete(t);
+        SDL_Quit();
+    }
+
     int initSDL(){
+        cout << "init" << endl ;
         if (SDL_Init(SDL_INIT_VIDEO) < 0) {
             std::cerr << "SDL_Init() failed: " << SDL_GetError() << '\n';
             return EXIT_FAILURE;
         }
-
+        cout << "2" << endl ;
         std::atexit(SDL_Quit);
-
+        cout << "3" << endl ;
         SDL_WM_SetCaption("Mouse Interaction!", nullptr);
         SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-
+        cout << "4" << endl ;
         if (!(screen = SDL_SetVideoMode(WIDTH, HEIGHT, 32, SDL_OPENGL))) {
             std::cerr << "SDL_SetVideoMode() failed: " << SDL_GetError() << '\n';
             return EXIT_FAILURE;
         }
-
+        cout << "5" << endl ;
         glViewport(0, 0, WIDTH, HEIGHT);
     }
 
@@ -424,6 +428,7 @@ void render()
             LogAndReset();
             cout << "Appuyez sur la touche entrée pour la test suivant" << endl ;
             getline(cin,a);
+            initSDL();
                 
         }
         SDL_Quit();
