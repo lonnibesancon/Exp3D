@@ -366,6 +366,7 @@ void render()
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
+    //glTranslatef(210,170,-300);  //Limit for matrices
     glMultMatrixf(glm::value_ptr(viewMatrix));
     glMultMatrixf(glm::value_ptr(std::get<1>(trialTargets[nextTrialTodo])));
     glutWireTeapot(50.0);

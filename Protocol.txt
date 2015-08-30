@@ -1,10 +1,18 @@
 Ce qu'on dit aux participants:
 	Vous allez participer à une expérience de docking en 3D avec différentes méthodes/moyen pour interagir avec l’object virtuel. Le docking est une tâche pour laquelle il faut déplacer un objet d’une position dans l’espace a une autre position dans l’espace. L’orientation de l’objet compte également. + Faire un exemple avec les mains.
-	Il s’agira de réussir ce docking 15 fois pour chacune des techniques proposées.
-Les techniques sont les suivantes: souris et clavier, écran tactile et objet tangible; l’ordre est aléatoire donc ne vous fiez pas à ce que je viens de vous dire.
-Il vous est d’abord demander de répondre à un bref questionnaire avant de commencer avec une première technique. Entre chaque technique, un questionnaire devra également être rempli pour évaluer les techniques. Il est important de noter que chacune des techniques que je vous propose aujourd’hui n’a pas été inventée ou découverte par moi ou mes collègues et qu’il s’agit donc d’être parfaitement objectif dans votre évaluation de chacune d’entre elles.
-	L’écran face à vous est un écran tactile multi-touch (traduire?? est-ce que ça dit pas qu’on peut utiliser plusieurs doigts directement et du coup fausse nos mesures?), la souris est une souris standard et l’objet posé devant vous est l’objet qu’il vous faudra manipuler pour la technique de l’objet tangible. Les deux tablettes autour de vous servent à suivre l’objet et la caméra en face de vous filme la séance pour des besoins post-analytiques.
-	Chaque tache de docking vous présentera donc une cible à atteindre tant d’un point de vue du positionnement que de l’orientation de l’objet. Une fois que vous êtes satisfaits, la validation d’une tache s’effectue avec la touche Esc du clavier. Il est enfin important de noté qu’il faut effectuer la tache le plus rapidement possible et le plus précisement possible cad qu’il est inutile de passer 30 minutes pour être parfaitement positionné tout comme il est inutile de se valider en moins de 2 secondes pour un résultat très loin de la cible visée.
+	Il s’agira d’effectuer ce docking X fois pour chacune des techniques proposées.
+Les techniques sont les suivantes: souris et clavier, écran tactile et objet tangible; pas forcément dans cet ordre là.
+Il vous est d’abord demander de répondre à un bref questionnaire avant de commencer avec une première technique. Entre chaque technique, un questionnaire devra également être rempli pour évaluer les techniques. Il est important de noter que chacune des techniques que je vous propose aujourd’hui n’a pas été inventée ou découverte par moi ou mes collègues et qui sont utilisées dans des logiciels existants. Il s’agit donc d’être parfaitement objectif dans votre évaluation de chacune d’entre elles.
+	L’écran face à vous est un écran tactile multi-touch (cad on peut utiliser plusieurs doigts), la souris est une souris standard et l’objet posé devant vous est l’objet qu’il vous faudra manipuler pour la technique de l’objet tangible. Les deux tablettes autour de vous servent à suivre l’objet et la caméra en face de vous filme la séance pour des besoins post-analytiques.
+	Chaque tache de docking vous présentera donc une cible à atteindre tant d’un point de vue du positionnement que de l’orientation de l’objet. Une fois que vous êtes satisfaits du résultat, la validation d’une tache s’effectue avec la touche Entrée du clavier. La vitesse et la précision sont toutes les deux importantes, c’est à vous d’estimer la qualité du résultat mais évitez de passer trop de temps sur une seule tache pour vous positionner précisément. C’est à vous de trouver un bon compromis entre précision et rapidité, mais les deux comptes de la même façon pour nous.
+
+
+Après la fin de l’XP:
+En fait, il reste 15 docking à faire mais vous avez le choix de la technique. Laquelle souhaitez-vous utiliser?
+Bon, en fait c’est pas vrai, il ne reste aucune tâche à accomplir, c’était simplement pour savoir laquelle vous préféreriez. Mais, répondez honnêtement, si vous aviez le choix là maintenant entre refaire avec une des techniques ou ne pas refaire, que feriez-vous?
+
+
+Il est enfin important de noté qu’il faut effectuer la tache le plus rapidement possible et le plus précisément possible cad qu’il est inutile de passer 30 minutes pour être parfaitement positionné tout comme il est inutile de se valider en moins de 2 secondes pour un résultat très loin de la cible visée.
 	
 
 Hypotheses:
