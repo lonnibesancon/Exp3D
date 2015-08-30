@@ -9,9 +9,9 @@ Trial::Trial(glm::mat4 t, int trialI, string Path, int timeOfStart, int subId, s
 	trialStart = timeOfStart ;
 	start = timeOfStart ;
 	path = Path+"/" ;
-	outfileMatrix = new ofstream(path+to_string(trialI)+".csv");
-	outfileEvents = new ofstream(path+to_string(trialI)+"events.csv");
-	outfileMeta = new ofstream(path+to_string(trialI)+"meta.csv");
+	outfileMatrix = new ofstream(path+to_string(nbDone)+".csv");
+	outfileEvents = new ofstream(path+to_string(nbDone)+"events.csv");
+	outfileMeta = new ofstream(path+to_string(nbDone)+"meta.csv");
 	subjectID = subId ;
 	nbOfRestarts = 0 ;
 	interactionMode = interactionM ;
