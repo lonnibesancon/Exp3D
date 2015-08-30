@@ -256,9 +256,9 @@ namespace mainmouse{
                 }
 
                 case SDL_MOUSEMOTION: {
-                    somethingWasDone = true ;
                     glm::vec2 curPos = mouseToScreenCoords(event.motion.x, event.motion.y);
                     if (rightClicked) {
+                        somethingWasDone = true ;
                         if (!modifierSet) {
                             const float objZ = (viewMatrix * modelMatrix)[3][2];
                             glm::vec3 unprojStartPos = unproject(startScreenPos, objZ);
@@ -269,6 +269,7 @@ namespace mainmouse{
                         }
 
                     } else if (leftClicked) {
+                        somethingWasDone = true ;
                         if (!modifierSet) {
 #ifdef ROT_SHOEMAKE_VT
                             arcball.drag(-(curPos-glm::vec2(center.x, center.y)));
@@ -319,8 +320,7 @@ namespace mainmouse{
 #else
         //modelMatrix = modelMatrix * glm::mat4_cast(rotation);
             glm::decompose(modelMatrix, dummyscale, ObjectRotation, dummytranslation, dummyskew, dummyperspective);
-            glMultMatrixf(glm::value_ptr(viewMatrix * modelMatrix * glm::mat4_cast(ObjectRotation) * glm::mat4_cast(rotation) * glm::mat4_cast(glm::inverse(ObjectRotation)) ));
-
+            t->logMatrix(modelMatrix * glm::mat4_cast(ObjectRotation) * glm::mat4_cast(rotation) * glm::mat4_cast(glm::inverse(ObjectRotation) ));
             //cout << "Log = " << to_string(modelMatrix * glm::mat4_cast(rotation)) << endl ;
 #endif
 
