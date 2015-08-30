@@ -69,6 +69,10 @@ namespace mainmouse{
     int subjectID ;
     int numberOfTrialsDone = 0 ;
 
+    int numberOfRightClicks = 0 ;
+    int numberOfLeftClicks = 0 ;
+    int numberOfShiftClicks = 0 ;
+
 
     glm::vec2 mouseToScreenCoords(int mouseX, int mouseY)
     {

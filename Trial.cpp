@@ -16,6 +16,17 @@ Trial::Trial(glm::mat4 t, int trialI, string Path, int timeOfStart, int subId, s
 	nbOfRestarts = 0 ;
 	interactionMode = interactionM ;
 	nbOfTrialsDone = nbDone ;
+	nbOfRightClicks = 0 ;
+	nbOfLeftClicks = 0 ;
+	nbOfShifts = 0 ;
+	nbOfLeftShifts = 0 ;
+	nbOfRightShifts = 0 ;
+
+	nbOfOneFinger = 0 ;
+	nbOfTwoFingers = 0 ;
+	nbOfMoreFingers = 0 ;
+	nbOfTouches = 0 ;
+	isTangibleDetected = false ;
 
 	//Get all the different elements of the target matrix ;
 	glm::decompose(target, targetscale, targetrotation, targettranslation, targetskew, targetperspective);
@@ -38,7 +49,11 @@ void Trial::writeLog(){
 
     vector<string> v = getTimeHistory();
     //On rajoute le nbOfTrialsDone, le sujetID and le trialID 
-    *outfileEvents << "SubjectID;" << "TrialIndex;" << "NbOfTrialsDone;" << "Timestamp;" << "ActionID;" << "Duration;" << endl ;
+    *outfileEvents 	<< "SubjectID;" << "TrialIndex;" << "NbOfTrialsDone;" << "Timestamp;" << "ActionID;" << "Duration;"
+    				<< "nbOfLeftClicks;" << "nbOfRightClicks;" << "nbOfLeftShifts;" << "nbOfRightShifts;" << "nbOfShifts;" << "totalNumberOfClicks;"
+    				<< "nbOfOneFinger;" << "nbOfTwoFingers;" << "nbOfMoreFingers;" << "totalNumberOfTouch;"
+    				<< "TangibleVisible"
+    				<< endl ;
     for(std::vector<string>::size_type i = 0; i!=v.size(); i++) {
         *outfileEvents << subjectID << ";" << trialInd << ";" << nbOfTrialsDone << ";" << v.at(i) << endl ;
         //cout << subjectID << " ; " << v.at(i) << endl ;
@@ -71,7 +86,49 @@ void Trial::writeNumberOfTouch(int nbOfTouch){
 void Trial::measureTime(int c){
 	double duration = ( SDL_GetTicks() - start ) ;
 	double timestamp = (start-trialStart) ;
-	historyTime.push_back(tuple<double,int,double>(timestamp,currentMode,duration));
+	if(interactionMode == MOUSECONDITION){
+		if(c == LEFT){
+			nbOfLeftClicks ++ ;
+		}
+		else if(c == RIGHT){
+			nbOfRightClicks ++ ;
+		}
+		else if(c == LEFTANDSHIFT){
+			nbOfShifts ++ ;
+			nbOfLeftShifts ++ ;
+		}
+		else if(c == RIGHTANDSHIFT){
+			nbOfShifts ++ ;
+			nbOfRightShifts ++ ;
+		}
+		int totalNumberOfClicks = nbOfLeftClicks + nbOfRightShifts + nbOfRightClicks + nbOfLeftShifts ;
+		historyTime.push_back(tuple<double,int,double>(timestamp,currentMode,duration));
+		nbTime.push_back(tuple<int,int,int,int,int,int,int,int,int,int,bool>(nbOfLeftClicks,nbOfRightClicks,nbOfLeftShifts,nbOfRightShifts,nbOfShifts,totalNumberOfClicks,-1,-1,-1,-1,false));
+	}
+	else if(interactionMode == TOUCHCONDITION){
+		if(c==ONEFINGER){
+			nbOfOneFinger ++ ;
+		}
+		else if(c==TWOFINGERS){
+			nbOfTwoFingers ++ ;
+		}
+		else if(c==MOREFINGERS){
+			nbOfMoreFingers ++ ;
+		}
+		int totalNumberOfTouch = nbOfOneFinger + nbOfTwoFingers + nbOfMoreFingers ;
+		historyTime.push_back(tuple<double,int,double>(timestamp,currentMode,duration));
+		nbTime.push_back(tuple<int,int,int,int,int,int,int,int,int,int,bool>(-1,-1,-1,-1,-1,-1,nbOfOneFinger,nbOfTwoFingers,nbOfMoreFingers,totalNumberOfTouch,false));
+	}
+	else if(interactionMode == TANGIBLECONDITION){
+		if(c == TANGIBLEVISBILE){
+			historyTime.push_back(tuple<double,int,double>(timestamp,currentMode,duration));
+			nbTime.push_back(tuple<int,int,int,int,int,int,int,int,int,int,bool>(-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,false));
+		}
+		else{
+			historyTime.push_back(tuple<double,int,double>(timestamp,currentMode,duration));
+			nbTime.push_back(tuple<int,int,int,int,int,int,int,int,int,int,bool>(-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,false));
+		}
+	}
 	currentMode = c ;
 	start = SDL_GetTicks();
 
@@ -131,16 +188,17 @@ void Trial::logMatrix(glm::mat4 mat){
 
 vector<string> Trial::getTimeHistory(){
 	string s ;
-	tuple<double,int,double> t ;
+	tuple <double,int,double> t ;
+	tuple<int,int,int,int,int,int,int,int,int,int,bool> tt ;
+	//tuple<double,int,double,int,int,int,int,int,int,int,int,int,int,int,bool> t ;
 	vector<string> v ;
 //for(std::vector<tuple<int, double>>::iterator it = historyFingers.begin(); it != historyFingers.end(); ++it) {
 	for(std::vector<tuple<double,int,double>>::size_type i = 0; i!= historyTime.size(); i++) {
 		t = historyTime[i];
+		tt = nbTime[i];
 		//cout << get<0>(t) << " , " << get<1>(t) << endl ;
     	s.append(to_string(get<0>(t))) ;
     	s.append( ";" );
-
-
     	//Version avec les chiffres dans le log
     	//s.append(to_string(get<1>(t))) ;
 
@@ -148,8 +206,32 @@ vector<string> Trial::getTimeHistory(){
     	s.append(getActionTypeString(get<1>(t)));
     	s.append( ";" );
     	s.append(to_string(get<2>(t))) ;
-		v.push_back(s);
+    	s.append( ";");
+    	s.append(to_string(get<0>(tt))) ;
+    	s.append( ";");
+    	s.append(to_string(get<1>(tt))) ;
+    	s.append( ";");
+    	s.append(to_string(get<2>(tt))) ;
+    	s.append( ";");
+    	s.append(to_string(get<3>(tt))) ;
+    	s.append( ";");
+    	s.append(to_string(get<4>(tt))) ;
+    	s.append( ";");
+    	s.append(to_string(get<5>(tt))) ;
+    	s.append( ";");
+    	s.append(to_string(get<6>(tt))) ;
+    	s.append( ";");
+    	s.append(to_string(get<7>(tt))) ;
+    	s.append( ";");
+    	s.append(to_string(get<8>(tt))) ;
+    	s.append( ";");
+    	s.append(to_string(get<9>(tt))) ;
+    	s.append( ";");
+    	s.append(to_string(get<10>(tt))) ;
+		s.append( ";");
+    	v.push_back(s);
 		s="";
+		//tuple<double,int,double,int,int,int,int,int,int,int,int,int,int,int,bool>
 	}
 	return v;
 }

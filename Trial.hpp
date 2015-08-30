@@ -55,6 +55,20 @@ private:
 	int subjectID ;
 	int nbOfRestarts ;
 	int nbOfTrialsDone ;
+	
+
+	int nbOfLeftClicks ;
+	int nbOfRightClicks ;
+	int nbOfShifts ;
+	int nbOfLeftShifts ;
+	int nbOfRightShifts ;
+
+	int nbOfTouches ;
+	int nbOfOneFinger ;
+	int nbOfTwoFingers ;
+	int nbOfMoreFingers ;
+
+	bool isTangibleDetected ;
 	std::string path ;
 	std::ofstream *outfileMatrix;
 	std::ofstream *outfileEvents;
@@ -72,6 +86,7 @@ private:
 
 	std::string getActionTypeString(int);
 
+	std::vector<std::tuple<int,int,int,int,int,int,int,int,int,int,bool>> nbTime ;
 	std::vector<std::tuple<double,int,double>> historyTime ;																	//int for the action type, double for the timestamp of the starting time of the action, double for the duration of the action
 	std::vector<std::tuple<double,double,double,double, double, double, glm::vec3,glm::mat4,double,glm::mat4>> historyMatrix ;				//double for the timestamp, double for pitch, double for roll, double for yaw, glm::vec4 for distance, mat4 for the current model matrix, double for the total difference, mat4 for the difference matrix
 };

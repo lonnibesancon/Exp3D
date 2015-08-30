@@ -18,6 +18,9 @@
 #define TWOFINGERS		2
 #define MOREFINGERS		3	
 
+#define TANGIBLENOTVISIBLE  0
+#define TANGIBLEVISBILE		1
+
 #define RESTART			-1
 
 #define MOUSE 			"/Mouse"
