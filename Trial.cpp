@@ -59,7 +59,7 @@ void Trial::writeLog(){
         //cout << subjectID << " ; " << v.at(i) << endl ;
     }
 
-    *outfileMatrix << "subjectID;" << "TrialIndex; " << "NbOfTrialsDone;" << "Timestamp; " << "EuclidianDistance;" << "RotationDifference;" 
+    *outfileMatrix << "subjectID;" << "TrialIndex; " << "NbOfTrialsDone;" << "Timestamp;" <<"ActionType;" << "EuclidianDistance;" << "RotationDifference;" 
     << "Pitch;" << "Roll;" << "Yaw;" << "DistanceX;" << "DistanceY;" <<  "DistanceZ;" 
     << "Current Model[O];" << "Current Model[1];" << "Current Model[2];" << "Current Model[3];" << "Current Model[4];" 
     << "Current Model[5];" << "Current Model[6];" << "Current Model[7];" << "Current Model[8];" << "Current Model[9];" 
@@ -181,8 +181,9 @@ void Trial::logMatrix(glm::mat4 mat){
 											(currenttranslation.y - targettranslation.y)*(currenttranslation.y - targettranslation.y) +
 											(currenttranslation.z - targettranslation.z)*(currenttranslation.x - targettranslation.z), 0.5	) ;
 	double rotationDifference = 0 ;
+
 	//historyMatrix.push_back(tuple<double, glm::mat4, double, glm::mat4>(0, glm::mat4(1.0f), 0, glm::mat4(1.0f)));
-	historyMatrix.push_back(tuple<double, double, double, double, double, double, glm::vec3, glm::mat4, double, glm::mat4>(timestamp, euclidianDistance, rotationDifference, pitchDiff, rollDiff, yawDiff, difftranslation, mat, totalDiff, difference));
+	historyMatrix.push_back(tuple<double, int, double, double, double, double, double, glm::vec3, glm::mat4, double, glm::mat4>(timestamp, currentMode, euclidianDistance, rotationDifference, pitchDiff, rollDiff, yawDiff, difftranslation, mat, totalDiff, difference));
 	//double for the timestamp, double for pitch, double for roll, double for yaw, glm::vec4 for distance, mat4 for the current model matrix, double for the total difference, mat4 for the difference matrix
 }
 
@@ -288,17 +289,17 @@ std::string Trial::getActionTypeString(int mode){
 vector<string> Trial::getMatrixHistory(){
 	string s ;
 	//double for the timestamp, double for pitch, double for roll, double for yaw, glm::vec4 for distance, mat4 for the current model matrix, double for the total difference, mat4 for the difference matrix
-	tuple<double, double, double,  double, double, double, glm::vec3, glm::mat4, double, glm::mat4> t ;
+	tuple<double, int, double, double,  double, double, double, glm::vec3, glm::mat4, double, glm::mat4> t ;
 	vector<string> v ;
 //for(std::vector<tuple<int, double>>::iterator it = historyFingers.begin(); it != historyFingers.end(); ++it) {
-	for(std::vector<tuple<double, double, double, double, double, double, glm::vec3, glm::mat4, double, glm::mat4>>::size_type i = 0; i!= historyMatrix.size(); i++) {
+	for(std::vector<tuple<double, int, double, double, double, double, double, glm::vec3, glm::mat4, double, glm::mat4>>::size_type i = 0; i!= historyMatrix.size(); i++) {
 		t = historyMatrix[i];
 		//cout << get<0>(t) << " , " << get<1>(t) << endl ;
 		s.append(to_string(get<0>(t))) ;
     	s.append( ";" );
-		s.append(to_string(get<1>(t))) ;
+    	s.append(getActionTypeString(get<1>(t)));
     	s.append( ";" );
-    	s.append(to_string(get<2>(t))) ;
+		s.append(to_string(get<2>(t))) ;
     	s.append( ";" );
     	s.append(to_string(get<3>(t))) ;
     	s.append( ";" );
@@ -306,13 +307,15 @@ vector<string> Trial::getMatrixHistory(){
     	s.append( ";" );
     	s.append(to_string(get<5>(t))) ;
     	s.append( ";" );
-    	s.append(tostring(get<6>(t))) ;
+    	s.append(to_string(get<6>(t))) ;
     	s.append( ";" );
     	s.append(tostring(get<7>(t))) ;
     	s.append( ";" );
-    	s.append(to_string(get<8>(t))) ;
+    	s.append(tostring(get<8>(t))) ;
     	s.append( ";" );
-    	s.append(tostring(get<9>(t))) ;
+    	s.append(to_string(get<9>(t))) ;
+    	s.append( ";" );
+    	s.append(tostring(get<10>(t))) ;
     	s.append( ";" );
 		v.push_back(s);
 		//cout << "Test : " << s << endl ;
