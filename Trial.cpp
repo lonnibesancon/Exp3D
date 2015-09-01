@@ -180,7 +180,12 @@ void Trial::logMatrix(glm::mat4 mat){
 
 	double euclidianDistance = std::pow(	(currenttranslation.x - targettranslation.x)*(currenttranslation.x - targettranslation.x) + 
 											(currenttranslation.y - targettranslation.y)*(currenttranslation.y - targettranslation.y) +
-											(currenttranslation.z - targettranslation.z)*(currenttranslation.x - targettranslation.z), 0.5	) ;
+											(currenttranslation.z - targettranslation.z)*(currenttranslation.z - targettranslation.z), 0.5	) ;
+
+	//cout << "EuclidianDistance = " << euclidianDistance << " -- (currenttranslation.x - targettranslation.x) = " << (currenttranslation.x - targettranslation.x)  
+	//													<< " -- (currenttranslation.y - targettranslation.y) = " << (currenttranslation.y - targettranslation.y) 
+	//													<< " -- (currenttranslation.z - targettranslation.z) = " << (currenttranslation.z - targettranslation.z) 
+	//													<<endl ;
 	double rotationDifference = 0 ;
 
 	//historyMatrix.push_back(tuple<double, glm::mat4, double, glm::mat4>(0, glm::mat4(1.0f), 0, glm::mat4(1.0f)));
