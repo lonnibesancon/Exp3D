@@ -319,12 +319,15 @@ namespace mainmouse{
 #ifdef ROT_SHOEMAKE_VT 
         //modelMatrix = modelMatrix * arcball.getTransformation();
             glm::decompose(modelMatrix, dummyscale, ObjectRotation, dummytranslation, dummyskew, dummyperspective);
-            t->logMatrix(modelMatrix * glm::mat4_cast(ObjectRotation) * arcball.getTransformation() * glm::inverse(glm::mat4_cast(ObjectRotation))); 
+            //t->logMatrix(modelMatrix * glm::mat4_cast(ObjectRotation) * arcball.getTransformation() * glm::inverse(glm::mat4_cast(ObjectRotation)));
+            t->logMatrix(modelMatrix * glm::mat4_cast(ObjectRotation) * rotationZMatrix * arcball.getTransformation() * glm::mat4_cast(glm::inverse(ObjectRotation)) *glm::inverse(rotationZMatrix) ));
+            
         
 #else
         //modelMatrix = modelMatrix * glm::mat4_cast(rotation);
             glm::decompose(modelMatrix, dummyscale, ObjectRotation, dummytranslation, dummyskew, dummyperspective);
-            t->logMatrix(modelMatrix * glm::mat4_cast(ObjectRotation) * glm::mat4_cast(rotation) * glm::mat4_cast(glm::inverse(ObjectRotation)));
+            //t->logMatrix(modelMatrix * glm::mat4_cast(ObjectRotation) * glm::mat4_cast(rotation) * glm::mat4_cast(glm::inverse(ObjectRotation)));
+            t->logMatrix(modelMatrix * glm::mat4_cast(ObjectRotation) * rotationZMatrix * glm::mat4_cast(rotation) * glm::mat4_cast(glm::inverse(ObjectRotation)) *glm::inverse(rotationZMatrix) ));
             //cout << "Log = " << to_string(modelMatrix * glm::mat4_cast(rotation)) << endl ;
 #endif
 
