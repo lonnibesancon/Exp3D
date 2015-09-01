@@ -208,6 +208,7 @@ void TouchRenderer::update(long id, double x, double y){
 	touchpoints.at(index).update(x,y);
 	glm::vec2 curPos;
 
+
 	if (nbOfFingers == 1){
 		curPos = mouseToScreenCoords(x, y);
 

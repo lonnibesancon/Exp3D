@@ -197,7 +197,7 @@ namespace mainmouse{
 
                 case SDL_KEYDOWN: {
                     if (event.key.keysym.sym == SDLK_ESCAPE) {
-                        somethingWasDone = true ;
+                        //somethingWasDone = true ;
                         return false;
                     } else if ((event.key.keysym.sym == SDLK_LSHIFT) || (event.key.keysym.sym == SDLK_RSHIFT)) {
                         modifierPressed = true;
@@ -324,7 +324,7 @@ namespace mainmouse{
 #else
         //modelMatrix = modelMatrix * glm::mat4_cast(rotation);
             glm::decompose(modelMatrix, dummyscale, ObjectRotation, dummytranslation, dummyskew, dummyperspective);
-            t->logMatrix(modelMatrix * glm::mat4_cast(ObjectRotation) * glm::mat4_cast(rotation) * glm::mat4_cast(glm::inverse(ObjectRotation) ));
+            t->logMatrix(modelMatrix * glm::mat4_cast(ObjectRotation) * glm::mat4_cast(rotation) * glm::mat4_cast(glm::inverse(ObjectRotation)));
             //cout << "Log = " << to_string(modelMatrix * glm::mat4_cast(rotation)) << endl ;
 #endif
 
@@ -354,7 +354,7 @@ void render()
 #ifdef ROT_SHOEMAKE_VT
         glMultMatrixf(glm::value_ptr(viewMatrix * modelMatrix * rotationZMatrix * arcball.getTransformation() * glm::inverse(rotationZMatrix)));
 #else
-        glMultMatrixf(glm::value_ptr(viewMatrix * modelMatrix * glm::mat4_cast(ObjectRotation) * glm::mat4_cast(rotation) * glm::mat4_cast(glm::inverse(ObjectRotation)) ));
+        glMultMatrixf(glm::value_ptr(viewMatrix * modelMatrix * glm::mat4_cast(ObjectRotation) * rotationZMatrix * glm::mat4_cast(rotation) * glm::mat4_cast(glm::inverse(ObjectRotation)) *glm::inverse(rotationZMatrix) ));
     //cout << "GLMMF = " << glm::value_ptr(modelMatrix * glm::mat4_cast(rotation) ) << endl ;
 #endif
    
