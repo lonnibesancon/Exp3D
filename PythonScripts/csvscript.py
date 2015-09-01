@@ -22,6 +22,9 @@ TouchDictionary["TranslationZ"]=0.0
 avgDist = 0.0
 avgRot = 0.0
 
+EUCLIDEANDISTANCEPOS = 5 ;
+ROTATIONDISTANCEPOS = 6 ;
+
 def getAverageLastLineInfo(c):
 	totalDistance = 0.0
 	totalRotationDistance = 0.0
@@ -52,8 +55,9 @@ def getLastLineInfo(filename):
 		#print "Number of Lines = "+str(numberOfLines) ;
 
 		#print "Coucou : " + array[3];
-		euclideanDistanceList.append(float(array[4]));
-		rotationDistanceList.append(float(array[5]));
+		print(array[EUCLIDEANDISTANCEPOS])
+		euclideanDistanceList.append(float(array[EUCLIDEANDISTANCEPOS]));
+		rotationDistanceList.append(float(array[ROTATIONDISTANCEPOS]));
 		
 
 def getTotalDurationByEvent(filename):
