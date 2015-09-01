@@ -12,13 +12,13 @@ using namespace std ;
 
 float maxTranslationRight = 210 ;
 float maxTranslationUp = 170 ;
-float maxTranslationForward = 150 ;
+float maxTranslationForward = 300 ;
 float minTranslationRight = -210 ;
 float minTranslationUp = -170 ;
-float minTranslationForward = -250 ;
+float minTranslationForward = -300 ;
 float maxRotation = 2  ;
 float minRotation = - 2 ;
-int seed = 239 ;
+int seed = 8 ;
 
 glm::mat4 id(1.0f);
 
@@ -62,7 +62,7 @@ string tostring(glm::vec3 v){
 int main(){
     srand(seed);
     for (int i = 0 ; i < 40 ; i++){
-        cout <<"trialTargets.push_back(tuple<int,glm::mat4>("<<i<<",glm::mat4("<< tostring(generateRandomModelMatrix())<< ")));" << std::endl ;
+        cout <<"trialTargetsMouse.push_back(tuple<int,glm::mat4>("<<i<<",glm::mat4("<< tostring(generateRandomModelMatrix())<< ")));" << std::endl ;
     }
     return 0 ;
 }

@@ -1,4 +1,5 @@
 #include "Trial.hpp"
+#include "cmath"
 
 using namespace std ;
 
@@ -173,7 +174,9 @@ void Trial::logMatrix(glm::mat4 mat){
 	//double pitch = glm::pitch(rot);
 	//double yaw = glm::yaw(rot);
 
+
 	glm::quat rot = glm::quat_cast(difference);
+	glm::normalize(rot);
 	double rollDiff = glm::roll(rot);
 	double pitchDiff = glm::pitch(rot);
 	double yawDiff = glm::yaw(rot);
@@ -186,8 +189,12 @@ void Trial::logMatrix(glm::mat4 mat){
 	//													<< " -- (currenttranslation.y - targettranslation.y) = " << (currenttranslation.y - targettranslation.y) 
 	//													<< " -- (currenttranslation.z - targettranslation.z) = " << (currenttranslation.z - targettranslation.z) 
 	//													<<endl ;
-	double rotationDifference = 0 ;
+	
 
+	double rotationDifference = 2*std::acos(rot.w) ;
+
+
+	cout << "Rot difference = " << 180*rotationDifference*M_PI << endl ;
 	//historyMatrix.push_back(tuple<double, glm::mat4, double, glm::mat4>(0, glm::mat4(1.0f), 0, glm::mat4(1.0f)));
 	//historyMatrix.push_back(tuple<double, int, double, double, double, double, double, glm::vec3, glm::mat4, double, glm::mat4>(timestamp, currentMode, euclidianDistance, rotationDifference, pitchDiff, rollDiff, yawDiff, difftranslation, mat, totalDiff, difference));
 	historyMatrix.emplace_back(timestamp, currentMode, euclidianDistance, rotationDifference, pitchDiff, rollDiff, yawDiff, difftranslation, mat, totalDiff, difference);

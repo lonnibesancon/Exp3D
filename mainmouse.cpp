@@ -327,7 +327,7 @@ namespace mainmouse{
         //modelMatrix = modelMatrix * glm::mat4_cast(rotation);
             glm::decompose(modelMatrix, dummyscale, ObjectRotation, dummytranslation, dummyskew, dummyperspective);
             //t->logMatrix(modelMatrix * glm::mat4_cast(ObjectRotation) * glm::mat4_cast(rotation) * glm::mat4_cast(glm::inverse(ObjectRotation)));
-            t->logMatrix(modelMatrix * glm::mat4_cast(ObjectRotation) * rotationZMatrix * glm::mat4_cast(rotation) * glm::mat4_cast(glm::inverse(ObjectRotation)) *glm::inverse(rotationZMatrix) ));
+            t->logMatrix(modelMatrix * glm::mat4_cast(ObjectRotation) * rotationZMatrix * glm::mat4_cast(rotation) * glm::mat4_cast(glm::inverse(ObjectRotation)) *glm::inverse(rotationZMatrix));
             //cout << "Log = " << to_string(modelMatrix * glm::mat4_cast(rotation)) << endl ;
 #endif
 
