@@ -353,23 +353,27 @@ int main(int argc, char *argv[])
     	createSubjectFileInfo(argv[1], sequenceOrder);
         launchCondition(sequenceOrder[0], argc, argv);
         cout << "********************************************************************************************************************************" << endl 
-             << "This part of the experiment is over" << endl << "Please fill in the questionnaire and press enter" << endl 
-             << "********************************************************************************************************************************" << endl ;
+            << "Cette partie est terminée, merci de remplir le questionnaire correspondant" << endl 
+            << "********************************************************************************************************************************" << endl ;
         
-        cout << "Press enter to get to next experiment" << endl ;
+            cout << "Si le questionnaire est rempli, appuyez sur entree" << endl ;
         getline(cin,a);
 
         launchCondition(sequenceOrder[1], argc, argv);
-        cout << "********************************************************************************************************************************" << endl
-             << "This part of the experiment is over" << endl << "Please fill in the questionnaire and press enter" << endl 
-             << "********************************************************************************************************************************" << endl ;
-        //cin >> a ;
+        cout << "********************************************************************************************************************************" << endl 
+            << "Cette partie est terminée, merci de remplir le questionnaire correspondant" << endl 
+            << "********************************************************************************************************************************" << endl ;
+        
+        cout << "Si le questionnaire est rempli, appuyez sur entree" << endl ;
+        getline(cin,a);
 
         launchCondition(sequenceOrder[2], argc, argv);
-        cout << "********************************************************************************************************************************" << endl
-             << "The experiment is over, thanks for your participation" << endl 
-             << "********************************************************************************************************************************" << endl ;
+        cout << "********************************************************************************************************************************" << endl 
+            << "Cette partie est terminée, merci de remplir le questionnaire correspondant" << endl 
+            << "********************************************************************************************************************************" << endl ;
         
+        cout << "Si le questionnaire est rempli, appuyez sur entree" << endl ;
+        getline(cin,a);
     }
     
     else{           // Cas de bug pendant l'expérience/
@@ -470,13 +474,20 @@ int main(int argc, char *argv[])
             cout << "This ID has been previously used without any bug, change ID" << endl ;
         }
 
-        
+
         for(int i = nbOfConditionsDone ; i < 3 ; i++){       //Do the remaining conditions
-            launchCondition(sequenceOrder[i], argc, argv);
-             cout << "********************************************************************************************************************************" << endl
-             << "The experiment is over, thanks for your participation" << endl 
-             << "********************************************************************************************************************************" << endl ;
+            cout << "********************************************************************************************************************************" << endl 
+            << "Cette partie est terminée, merci de remplir le questionnaire correspondant" << endl 
+            << "********************************************************************************************************************************" << endl ;
+        
+            cout << "Si le questionnaire est rempli, appuyez sur entree" << endl ;
+            getline(cin,a);
         }
+
+        launchCondition(sequenceOrder[i], argc, argv);
+             cout << "********************************************************************************************************************************" << endl
+             << "Cette partie est terminée, merci de remplir le questionnaire correspondant" << endl 
+             << "********************************************************************************************************************************" << endl ;
     }
     return 0 ;
 
