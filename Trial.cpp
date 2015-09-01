@@ -72,6 +72,7 @@ void Trial::writeLog(){
     << "Difference[15];" 
     << endl ;
     vector<string> w = getMatrixHistory();
+    cout << "Size of matrix history=" << w.size() << endl ;
     for(std::vector<string>::size_type i = 0; i!=w.size(); i++) {
         *outfileMatrix << subjectID << ";" << trialInd << ";" << nbOfTrialsDone << ";" << w.at(i) << endl ;
     }
@@ -183,7 +184,8 @@ void Trial::logMatrix(glm::mat4 mat){
 	double rotationDifference = 0 ;
 
 	//historyMatrix.push_back(tuple<double, glm::mat4, double, glm::mat4>(0, glm::mat4(1.0f), 0, glm::mat4(1.0f)));
-	historyMatrix.push_back(tuple<double, int, double, double, double, double, double, glm::vec3, glm::mat4, double, glm::mat4>(timestamp, currentMode, euclidianDistance, rotationDifference, pitchDiff, rollDiff, yawDiff, difftranslation, mat, totalDiff, difference));
+	//historyMatrix.push_back(tuple<double, int, double, double, double, double, double, glm::vec3, glm::mat4, double, glm::mat4>(timestamp, currentMode, euclidianDistance, rotationDifference, pitchDiff, rollDiff, yawDiff, difftranslation, mat, totalDiff, difference));
+	historyMatrix.emplace_back(timestamp, currentMode, euclidianDistance, rotationDifference, pitchDiff, rollDiff, yawDiff, difftranslation, mat, totalDiff, difference);
 	//double for the timestamp, double for pitch, double for roll, double for yaw, glm::vec4 for distance, mat4 for the current model matrix, double for the total difference, mat4 for the difference matrix
 }
 

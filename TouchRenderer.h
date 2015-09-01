@@ -76,6 +76,7 @@ private:
 	unsigned int WIDTH;
 	unsigned int HEIGHT;
 	int nbOfFingers ;
+	float zPosition ;
 
 
 	int getIndexOfFingerById(long id);

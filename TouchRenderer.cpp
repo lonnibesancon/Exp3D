@@ -251,8 +251,19 @@ void TouchRenderer::update(long id, double x, double y){
         /*Handles Translation on z*/
         
         distance = computeDistanceBtwnFingers();
+        float zTranslation = 1/firstDistance * (1-firstDistance/distance);
+        zTranslation *= ZOOMSPEED ;
+        cout << zTranslation << endl ;
         objectPos.z = 1/firstDistance * (1-firstDistance/distance);
         objectPos.z *= ZOOMSPEED ;
+        //cout << "OBJECTPOS.Z = " << objectPos.z << endl ; 
+        //if(zPosition < MAXBEFORECLIPPINGZ && zTranslation < objectPos.z){
+        //	cout << "Je suis ici" << endl ,
+        //	objectPos.z = 1 ;
+        //}
+        //else{
+        //	objectPos.z = zTranslation ;
+        //}
         //std::cout << "FIRST DISTANCE = " << firstDistance << std::endl << "DISTANCE = " << distance << std::endl ;
         update();
 	}
@@ -263,6 +274,10 @@ void TouchRenderer::update(){
 	// modelMatrix = glm::translate(startModelMatrix, objectPos) * glm::rotate(startModelMatrix,objectAngle, glm::vec3(0,0,1));
 	// modelMatrix = glm::translate(startModelMatrix, objectPos) * glm::mat4_cast(rotation);
 	modelMatrix = glm::translate(glm::mat4(), startObjectPos+objectPos) * glm::mat4_cast(rotation);
+	zPosition = modelMatrix[3][2];
+	if(zPosition < MAXBEFORECLIPPINGZ){
+		modelMatrix[3][2] = MAXBEFORECLIPPINGZ ;
+	}
 	//historyMatrix.push_back(modelMatrix);
 	trial->logMatrix(modelMatrix);
 }
@@ -356,6 +371,6 @@ glm::vec3 TouchRenderer::unproject(const glm::vec2& pos, float dist)
     const float near = 2*projMatrix[3][2] / (2*projMatrix[2][2]-2);
     const float far = ((projMatrix[2][2]-1)*near) / (projMatrix[2][2]+1);
     const float depth = far*(near+dist)/((far-near)*dist);
-    return glm::unProject(glm::vec3(pos, depth), glm::mat4(), projMatrix, glm::vec4(-1, -1, 1, 1));
+    return glm::unProject(glm::vec3(pos, depth), glm::mat4(), projMatrix, glm::vec4(-2, -2, 2, 2));
 }
 

@@ -38,6 +38,8 @@
 #define GLM_SWIZZLE
 #define GLM_FORCE_RADIANS
 
+#define MAXBEFORECLIPPINGZ -1680
+
 
 //#define ROT_SHOEMAKE_VT
 #define ROT_BELL_VT
