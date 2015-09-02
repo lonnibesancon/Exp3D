@@ -33,7 +33,7 @@ using namespace std ;
 namespace mainmouse{
 
 
-    static const unsigned int WIDTH = 800, HEIGHT = 600;
+    static const unsigned int WIDTH = 1920, HEIGHT = 1080;
     //static const float ZOOM_SPEED = 2.5f;
     SDL_Surface* screen ;
 

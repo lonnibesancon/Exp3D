@@ -4,8 +4,9 @@
 
 # Tablette 2 (usb1)
 - partage de connexion
-- ifconfig usb1 192.168.43.165   # au lieu de dhclient !!!
+- sudo ifconfig usb1 192.168.43.173  (si besoin)
 - adb -s CEIPBP5A0443002629 shell su -c ifconfig rndis0 192.168.43.129 netmask 255.255.255.0
+adb -s 0795ae87 shell su -c ifconfig usb0 192.168.43.129 netmask 255.255.255.0  # pour Nexus
 
 
 #1:CEIPBP5A0445004598	

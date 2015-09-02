@@ -40,6 +40,7 @@ static const float TRACKBALLSIZE = 1.1f; // FIXME: value?
 // static const glm::mat4 projMatrix = glm::perspective(45.0f, float(WIDTH)/HEIGHT, 0.1f, 1000.0f);
 static const glm::mat4 projMatrix = glm::perspective(120.0f, float(WIDTH)/HEIGHT, 50.0f, 2500.0f);
 glm::mat4 viewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, -700));
+// glm::mat4 viewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, -2000));
 glm::mat4 modelMatrix = glm::mat4(1.0f);
 glm::quat rotation = glm::quat();
 
@@ -59,6 +60,11 @@ bool leftClicked = false, rightClicked = false, modifierPressed = false, modifie
 glm::mat4 boardMat, boardMat2;
 bool detected = false, detected1 = false, detected2 = false;
 timespec lastTime, lastTime2;
+
+glm::mat4 modelMatrix_cam1, modelMatrix_cam2;
+glm::mat4 diff = glm::mat4(); // identity
+bool cam1Recovered = false;
+timespec recoveredTimestamp;
 
 glm::vec2 mouseToScreenCoords(int mouseX, int mouseY)
 {
@@ -263,6 +269,13 @@ bool getInput()
 	return true;
 }
 
+void updateDifference()
+{
+	diff = modelMatrix_cam1 * glm::inverse(modelMatrix_cam2);
+	// (mm_cam1 * mm_cam2^-1) * mm_cam2 = mm_cam1
+	std::cout << "updateDifference " << glm::to_string(diff) << '\n';
+}
+
 void render()
 {
 	timespec now;
@@ -270,17 +283,42 @@ void render()
 	float deltaTime = (now.tv_sec - lastTime.tv_sec)
 		+ float(now.tv_nsec - lastTime.tv_nsec) / 1000000000.0f;
 	// std::cout << "dt = " << deltaTime << '\n';
-	// float deltaTime2 = (now.tv_sec - lastTime2.tv_sec)
-	// 	+ float(now.tv_nsec - lastTime2.tv_nsec) / 1000000000.0f;
+	float deltaTime2 = (now.tv_sec - lastTime2.tv_sec)
+		+ float(now.tv_nsec - lastTime2.tv_nsec) / 1000000000.0f;
 	// std::cout << "dt = " << deltaTime << '\n';
 	// detected = (deltaTime < 0.1);
 	detected1 = (deltaTime < 0.1);
-	detected2 = (deltaTime < 0.1);
-	detected = (detected1 || detected2);
-	if (detected)
-		glClearColor(0.0, 0.0, 0.2, 1.0);
-	else
-		glClearColor(0.2, 0.0, 0.0, 1.0);
+	detected2 = (deltaTime2 < 0.1);
+	//detected = (detected1 || detected2);
+
+	if (detected2 && !detected1) {
+		cam1Recovered = true;
+		recoveredTimestamp = now;
+		// std::cout << "rec " << "?" << '\n';
+	} else if (detected1) {
+		if (detected2 && cam1Recovered) {
+			float deltaTimeRec = (now.tv_sec - recoveredTimestamp.tv_sec)
+				+ float(now.tv_nsec - recoveredTimestamp.tv_nsec) / 1000000000.0f;
+			// std::cout << "rec " << deltaTimeRec << '\n';
+			if (deltaTimeRec > 0.5) {
+				cam1Recovered = false;
+				// std::cout << "rec " << "end" << '\n';
+			}
+		} else {
+			cam1Recovered = false;
+		}
+	}
+
+	if (detected1 && detected2 && !cam1Recovered)
+		updateDifference();
+
+	if (detected1 && !cam1Recovered) {
+		modelMatrix = modelMatrix_cam1;
+	} else if (detected2) {
+		modelMatrix = diff * modelMatrix_cam2;
+	}
+
+	//glClearColor((detected2?1.0:0.0), 0.0, (detected1?0.2:0.0), 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glMatrixMode(GL_PROJECTION);
@@ -312,7 +350,7 @@ void VRPN_CALLBACK handle_tracker_change(void* userdata, const vrpn_TRACKERCB t)
 	trackingPos = glm::vec3(t.pos[0], t.pos[1], t.pos[2]);
 	trackingRot = glm::quat(t.quat[3], t.quat[0], t.quat[1], t.quat[2]);
 	trackingRot = glm::normalize(trackingRot);
-	modelMatrix = glm::inverse(boardMat) * (glm::translate(glm::mat4(), trackingPos) * glm::mat4_cast(trackingRot));
+	modelMatrix_cam1 = glm::inverse(boardMat) * (glm::translate(glm::mat4(), trackingPos) * glm::mat4_cast(trackingRot));
 	// modelMatrix = glm::translate(glm::mat4(), glm::vec3(0,0,100)) * modelMatrix;
 	std::cout << "pos: " << modelMatrix[3][0] << " " << modelMatrix[3][1] << " " << modelMatrix[3][2] << '\n';
 	// modelMatrix[3][0] /= 10;
@@ -324,15 +362,16 @@ void VRPN_CALLBACK handle_tracker_change(void* userdata, const vrpn_TRACKERCB t)
 
 void VRPN_CALLBACK handle_tracker_change2(void* userdata, const vrpn_TRACKERCB t)
 {
-	if (detected1)
-		return;
-
 	trackingPos = glm::vec3(t.pos[0], t.pos[1], t.pos[2]);
 	trackingRot = glm::quat(t.quat[3], t.quat[0], t.quat[1], t.quat[2]);
 	trackingRot = glm::normalize(trackingRot);
-	modelMatrix = glm::inverse(boardMat2) * (glm::translate(glm::mat4(), trackingPos) * glm::mat4_cast(trackingRot));
-	std::cout << "pos2: " << modelMatrix[3][0] << " " << modelMatrix[3][1] << " " << modelMatrix[3][2] << '\n';
-	clock_gettime(CLOCK_MONOTONIC, &lastTime2);
+	modelMatrix_cam2 = glm::inverse(boardMat2) * (glm::translate(glm::mat4(), trackingPos) * glm::mat4_cast(trackingRot));;
+
+	// if (!detected1) {
+	// 	modelMatrix = modelMatrix_cam2;
+		std::cout << "pos2: " << modelMatrix[3][0] << " " << modelMatrix[3][1] << " " << modelMatrix[3][2] << '\n';
+		clock_gettime(CLOCK_MONOTONIC, &lastTime2);
+	// }
 }
 
 glm::mat4 getBoardMatrix(const char* ipStr)
