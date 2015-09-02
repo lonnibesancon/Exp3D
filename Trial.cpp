@@ -193,7 +193,6 @@ void Trial::logMatrix(glm::mat4 mat){
 
 	double rotationDifference = 2*std::acos(rot.w) ;
 
-
 	cout << "Rot difference = " << 180*rotationDifference/M_PI << endl ;
 	//historyMatrix.push_back(tuple<double, glm::mat4, double, glm::mat4>(0, glm::mat4(1.0f), 0, glm::mat4(1.0f)));
 	//historyMatrix.push_back(tuple<double, int, double, double, double, double, double, glm::vec3, glm::mat4, double, glm::mat4>(timestamp, currentMode, euclidianDistance, rotationDifference, pitchDiff, rollDiff, yawDiff, difftranslation, mat, totalDiff, difference));

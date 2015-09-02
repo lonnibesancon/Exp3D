@@ -1,5 +1,5 @@
 #define PI 				3.141592654f
-#define NBOFTRIALS 		40
+#define NBOFTRIALS 		20
 
 #define LEFT            1
 #define RIGHT 	        2
