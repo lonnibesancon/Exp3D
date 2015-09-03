@@ -49,14 +49,16 @@ namespace maintangible{
 	static const float ZOOM_SPEED = 2.5f;
 
 	// static const glm::mat4 projMatrix = glm::perspective(45.0f, float(WIDTH)/HEIGHT, 0.1f, 1000.0f);
-	static const glm::mat4 projMatrix = glm::perspective(120.0f, float(WIDTH)/HEIGHT, 50.0f, 2500.0f);
-	glm::mat4 viewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, -700));
+	static const glm::mat4 projMatrix = glm::perspective(45.0f, float(WIDTH)/HEIGHT, 50.0f, 2500.0f);
+	glm::mat4 viewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, -500));
 	// glm::mat4 viewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, -2000));
 	glm::mat4 modelMatrix = glm::mat4(1.0f);
 	glm::quat rotation = glm::quat();
 
 	glm::vec3 trackingPos;
 	glm::quat trackingRot;
+
+	bool tangibleVisible = false ;
 
 
 	Trial *t ;
@@ -65,17 +67,6 @@ namespace maintangible{
     string path ;
     int subjectID ;
     int numberOfTrialsDone = 0 ;
-
-
-	// #define ROT_SHOEMAKE_VT
-	//#define ROT_BELL_VT
-	// #define ROT_BLENDER
-
-	CPM_ARC_BALL_NS::ArcBall arcball(glm::vec3(0,0,100), TRACKBALLSIZE);
-	glm::vec2 trackballPrevPos;
-	glm::mat4 startModelMatrix;
-	glm::vec2 startScreenPos, lastScreenPos;
-	bool leftClicked = false, rightClicked = false, modifierPressed = false, modifierSet = false;
 
 	glm::mat4 boardMat, boardMat2;
 	bool detected = false, detected1 = false, detected2 = false;
@@ -86,89 +77,6 @@ namespace maintangible{
 	bool cam1Recovered = false;
 	timespec recoveredTimestamp;
 
-	glm::vec2 mouseToScreenCoords(int mouseX, int mouseY)
-	{
-		return glm::vec2((mouseX/float(WIDTH)-0.5f)*2, -(mouseY/float(HEIGHT)-0.5f)*2);
-	}
-
-	glm::vec3 unproject(const glm::vec2& pos, float dist)
-	{
-		const float near = 2*projMatrix[3][2] / (2*projMatrix[2][2]-2);
-		const float far = ((projMatrix[2][2]-1)*near) / (projMatrix[2][2]+1);
-		const float depth = far*(near+dist)/((far-near)*dist);
-		return glm::unProject(glm::vec3(pos, depth), glm::mat4(), projMatrix, glm::vec4(-2, -2, 2, 2));
-	}
-
-	glm::vec3 projectToSphere(float r, float x, float y)
-	{
-		float z;
-		float d = std::sqrt(x*x + y*y);
-		if (d < r * M_SQRT1_2) {
-			// Inside sphere
-			z = std::sqrt(r*r - d*d);
-		} else {
-			// On hyperbola
-			float t = r / M_SQRT2;
-			z = t*t / d;
-		}
-		return glm::vec3(x, y, z);
-	}
-
-	#if defined ROT_BELL_VT || defined ROT_BLENDER
-	//
-	// ROT_BELL_VT = the original Gavin Bell's VT:
-	// ftp://ftp.sgi.com/opengl/contrib/kschwarz/OPEN_GL/SOURCE/GLUTSPIN/trackball.c
-	//
-	// ROT_BLENDER = Blender version:
-	// https://svn.blender.org/svnroot/bf-blender/trunk/blender/source/blender/editors/space_view3d/view3d_edit.c
-	//
-	void trackball(const glm::vec2& pt1, const glm::vec2& pt2)
-	{
-		if (pt1 == pt2)
-			return; // zero rotation
-
-		// First, figure out z-coordinates for projection of pt1 and pt2
-		// to deformed sphere
-		glm::vec3 p1 = projectToSphere(TRACKBALLSIZE, pt1.x, pt1.y);
-		glm::vec3 p2 = projectToSphere(TRACKBALLSIZE, pt2.x, pt2.y);
-
-	#ifdef ROT_BELL_VT
-		// Now, we want the cross product of p1 and p2
-		glm::vec3 a = glm::cross(p2, p1); // rotation axis
-
-		// Figure out how much to rotate around that axis.
-		glm::vec3 d = p1 - p2;
-		float t = d.length() / (2.0f * TRACKBALLSIZE);
-
-		// Avoid problems with out-of-control values...
-		t = std::min(std::max(t, -1.0f), 1.0f);
-		float phi = 2.0f * std::asin(t);
-
-		// Rotate "phi" radians about the "a" axis
-		glm::quat q = glm::quat(phi, a);
-		q = glm::slerp(glm::quat(), glm::normalize(q), phi); // additional normalization step
-		rotation = q * rotation;
-
-	#else
-
-		glm::vec3 a = glm::cross(p1, p2); // rotation axis
-
-		glm::vec3 d = p1 - p2;
-		float t = d.length() / (2.0f * TRACKBALLSIZE);
-
-		// This relation is used instead of phi = asin(si) so that the
-		// angle of rotation is linearly proportional to the distance that
-		// the mouse is dragged.
-		while (t > 1.0f) t -= 2.0f;
-		float phi = t * (M_PI / 2.0f);
-
-		glm::quat q = glm::quat(phi, a);
-		rotation = q * rotation;
-		rotation = glm::normalize(rotation); // avoid precision loss over time
-
-	#endif
-	}
-	#endif
 
 	std::vector<std::string> split(const std::string& str, char sep)
 	{
@@ -202,87 +110,10 @@ namespace maintangible{
 				case SDL_KEYDOWN: {
 					if (event.key.keysym.sym == SDLK_ESCAPE) {
 						return false;
-					} else if ((event.key.keysym.sym == SDLK_LSHIFT) || (event.key.keysym.sym == SDLK_RSHIFT)) {
-						modifierPressed = true;
-					}
+					} 
 					break;
 				}
 
-				case SDL_KEYUP: {
-					if ((event.key.keysym.sym == SDLK_LSHIFT) || (event.key.keysym.sym == SDLK_RSHIFT)) {
-						modifierPressed = false;
-					}
-					break;
-				}
-
-				case SDL_MOUSEBUTTONDOWN: {
-					SDL_WM_GrabInput(SDL_GRAB_ON);
-
-					startModelMatrix = modelMatrix;
-					startScreenPos = mouseToScreenCoords(event.motion.x, event.motion.y);
-					lastScreenPos = startScreenPos;
-					modifierSet = modifierPressed;
-
-					if (event.button.button == SDL_BUTTON_LEFT) {
-						leftClicked = true;
-	#ifdef ROT_SHOEMAKE_VT
-						arcball.beginDrag(-mouseToScreenCoords(event.motion.x, event.motion.y));
-	#else
-						trackballPrevPos = mouseToScreenCoords(event.motion.x, event.motion.y);
-	#endif
-					} else if (event.button.button == SDL_BUTTON_RIGHT) {
-						rightClicked = true;
-					}
-
-					break;
-				}
-
-				case SDL_MOUSEMOTION: {
-					glm::vec2 curPos = mouseToScreenCoords(event.motion.x, event.motion.y);
-					if (rightClicked) {
-						if (!modifierSet) {
-							const float objZ = (viewMatrix * modelMatrix)[3][2];
-							glm::vec3 unprojStartPos = unproject(startScreenPos, objZ);
-							glm::vec3 unprojCurPos = unproject(curPos, objZ);
-							modelMatrix = glm::translate(startModelMatrix, glm::mat3(glm::transpose(modelMatrix)) * (unprojCurPos - unprojStartPos));
-						} else {
-							// From: vtkInteractorStyleTrackballCamera.cxx
-							glm::vec3 center = glm::project(glm::vec3(0,0,0), viewMatrix*modelMatrix, projMatrix, glm::vec4(-1, -1, 2, 2));
-							float newAngle = std::atan2(curPos.y-center.y, curPos.x-center.x);
-							float oldAngle = std::atan2(lastScreenPos.y-center.y, lastScreenPos.x-center.x);
-							modelMatrix = glm::rotate(modelMatrix, newAngle-oldAngle, glm::mat3(modelMatrix)*glm::vec3(0,0,1));
-						}
-
-					} else if (leftClicked) {
-						if (!modifierSet) {
-	#ifdef ROT_SHOEMAKE_VT
-							arcball.drag(-curPos);
-	#else
-							trackball(curPos, trackballPrevPos);
-							trackballPrevPos = curPos;
-	#endif
-						} else {
-							modelMatrix = glm::translate(startModelMatrix, glm::vec3(0, 0, ZOOM_SPEED * -(curPos.y - startScreenPos.y)));
-						}
-					}
-
-					lastScreenPos = curPos;
-
-					break;
-				}
-
-				case SDL_MOUSEBUTTONUP: {
-					modifierSet = false;
-					SDL_WM_GrabInput(SDL_GRAB_OFF);
-
-					if (event.button.button == SDL_BUTTON_LEFT) {
-						leftClicked = false;
-					} else if (event.button.button == SDL_BUTTON_RIGHT) {
-						rightClicked = false;
-					}
-
-					break;
-				}
 			}
 		}
 
@@ -298,6 +129,7 @@ namespace maintangible{
 
 	void render()
 	{
+		cout << "NEXTTRIALTODO 3 " << nextTrialTodo << endl ;
 		timespec now;
 		clock_gettime(CLOCK_MONOTONIC, &now);
 		float deltaTime = (now.tv_sec - lastTime.tv_sec)
@@ -309,8 +141,17 @@ namespace maintangible{
 		// detected = (deltaTime < 0.1);
 		detected1 = (deltaTime < 0.1);
 		detected2 = (deltaTime2 < 0.1);
-		//detected = (detected1 || detected2);
 
+		bool b = (detected1 || detected2) ;
+		if(b != tangibleVisible){
+			if(b){
+				t->measureTime(TANGIBLEVISIBLE);
+			}
+			else{
+				t->measureTime(TANGIBLENOTVISIBLE);
+			}
+		}
+		tangibleVisible = b ;
 		if (detected2 && !detected1) {
 			cam1Recovered = true;
 			recoveredTimestamp = now;
@@ -338,30 +179,32 @@ namespace maintangible{
 			modelMatrix = diff * modelMatrix_cam2;
 		}
 
-		//glClearColor((detected2?1.0:0.0), 0.0, (detected1?0.2:0.0), 1.0);
+		glClearColor(0.,0.,0.2,1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
 		glMultMatrixf(glm::value_ptr(projMatrix));
-
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
-	#ifdef ROT_SHOEMAKE_VT
-		glMultMatrixf(glm::value_ptr(viewMatrix * modelMatrix * arcball.getTransformation()));
-	#else
-		glMultMatrixf(glm::value_ptr(viewMatrix * modelMatrix * glm::mat4_cast(rotation)));
-	#endif
+		glPushMatrix();
+			glMultMatrixf(glm::value_ptr(viewMatrix * modelMatrix ));
+			glEnable(GL_DEPTH_TEST);
+			glEnable(GL_LIGHTING);
+			glEnable(GL_LIGHT0);
+			// glutSolidTeapot(1.0);
+			// glutSolidTeapot(150.0);
+			glTranslatef(0,10,0);
+			glutSolidTeapot(50.0);
+		glPopMatrix();
 
-		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_LIGHTING);
-		glEnable(GL_LIGHT0);
-		// glutSolidTeapot(1.0);
-		// glutSolidTeapot(150.0);
-		glTranslatef(0,10,0);
-		glutSolidTeapot(50.0);
 
-		t->logMatrix(glm::translate(modelMatrix, glm::vec3(0,-10,0)));
+		glMultMatrixf(glm::value_ptr(viewMatrix));
+    	glMultMatrixf(glm::value_ptr(std::get<1>(trialTargets[nextTrialTodo])));
+		glutWireTeapot(50);
+		cout << "NEXTTRIALTODO 4 " << nextTrialTodo << endl ;
+
+		t->logMatrix(modelMatrix);
 	}
 
 	void VRPN_CALLBACK handle_tracker_change(void* userdata, const vrpn_TRACKERCB t)
@@ -470,9 +313,11 @@ namespace maintangible{
         //First Log everything
         t->logMatrix(modelMatrix);
         t->writeLog();
+        tangibleVisible = false ;
         delete(t);
         SDL_Quit();
         modelMatrix = glm::mat4(1.0f);
+
     }
 
 
@@ -509,7 +354,7 @@ namespace maintangible{
 		trialTargets = targets ;
 		subjectID = atoi(argv[1]);
 
-		int nextTrialTodo = nbOfTrialsDone;
+		nextTrialTodo = nbOfTrialsDone;
 		string a ;
 
 
@@ -539,8 +384,9 @@ namespace maintangible{
 			cout << "***********Launching trial # " << get<0>(trialTargets[nextTrialTodo]) << endl ;
             t = new Trial(get<1>(targets[nextTrialTodo]),get<0>(targets[nextTrialTodo]), path,SDL_GetTicks(),subjectID,TANGIBLECONDITION,nextTrialTodo);
             t->logMatrix(modelMatrix); 
-
+            cout << "NEXTTRIALTODO 1 " << nextTrialTodo << endl ;
 			while (getInput()) {
+				cout << "NEXTTRIALTODO 2 " << nextTrialTodo << endl ;
 				render();
 					// if (std::getline(std::cin, str)) {
 					// 	// if (str.find("----") == 0) continue; // for "adb logcat"
@@ -558,7 +404,7 @@ namespace maintangible{
 			nextTrialTodo++;
 			nbOfTrialsDone ++;
 			LogAndReset();
-			cout << "Appuyez sur la touche entrée pour la test suivant" << endl ;
+			cout << "Appuyez sur la touche entrée pour le test suivant test numero" << nextTrialTodo << endl ;
             getline(cin,a);
             initSDL();
 		}

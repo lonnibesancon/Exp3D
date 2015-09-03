@@ -1,6 +1,6 @@
 
 
-CXXFLAGS := -I .. -I arc-ball -std=c++0x -Wall -Wextra -Wno-unused-parameter -Wno-comment -pedantic -Wno-unknown-pragmas
+CXXFLAGS := -I .. -I arc-ball -std=c++0x -Wall -Wextra -Wno-unused-parameter -Wno-comment -pedantic -Wno-unknown-pragmas -Wno-sign-compare -Wno-return-type
 
 ifeq ($(OS),Windows_NT)
 # ...

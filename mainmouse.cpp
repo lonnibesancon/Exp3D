@@ -113,8 +113,6 @@ namespace mainmouse{
     //
     void trackball(const glm::vec2& pt1, const glm::vec2& pt2)
     {
-        cout << "PT1 X = " << pt1.x << "PT1 y = " << pt1.y << endl;
-        cout << "PT2 X = " << pt2.x << "PT2 y = " << pt2.y << endl;
         if (pt1 == pt2)
             return; // zero rotation
 
@@ -271,7 +269,7 @@ namespace mainmouse{
                             glm::vec3 unprojCurPos = unproject(curPos, objZ);
                             modelMatrix = glm::translate(startModelMatrix, glm::mat3(glm::transpose(modelMatrix)) * (unprojCurPos - unprojStartPos));
                         } else {
-                            modelMatrix = glm::translate(startModelMatrix, glm::vec3(0, 0, ZOOMSPEED * -(curPos.y - startScreenPos.y)));
+                            modelMatrix = glm::translate(startModelMatrix, glm::vec3(0, 0, 4*ZOOMSPEED * -(curPos.y - startScreenPos.y)));
                         }
 
                     } else if (leftClicked) {
@@ -332,7 +330,8 @@ namespace mainmouse{
         //modelMatrix = modelMatrix * glm::mat4_cast(rotation);
             glm::decompose(modelMatrix, dummyscale, ObjectRotation, dummytranslation, dummyskew, dummyperspective);
             //t->logMatrix(modelMatrix * glm::mat4_cast(ObjectRotation) * glm::mat4_cast(rotation) * glm::mat4_cast(glm::inverse(ObjectRotation)));
-            t->logMatrix(modelMatrix * glm::mat4_cast(ObjectRotation) * rotationZMatrix * glm::mat4_cast(rotation) * glm::mat4_cast(glm::inverse(ObjectRotation)) *glm::inverse(rotationZMatrix));
+            //Ancien Log avant qu'on corrige les bugst->logMatrix(modelMatrix * glm::mat4_cast(ObjectRotation) * rotationZMatrix * glm::mat4_cast(rotation) * glm::mat4_cast(glm::inverse(ObjectRotation)) *glm::inverse(rotationZMatrix));
+            t->logMatrix(modelMatrix * (glm::mat4(glm::mat3(glm::transpose(glm::inverse(modelMatrix)))) * glm::mat4_cast(rotation) * glm::mat4(glm::mat3(modelMatrix))));
             //cout << "Log = " << to_string(modelMatrix * glm::mat4_cast(rotation)) << endl ;
 #endif
 

@@ -27,7 +27,7 @@
 #define MOREFINGERS		3	
 
 #define TANGIBLENOTVISIBLE  0
-#define TANGIBLEVISBILE		1
+#define TANGIBLEVISIBLE		1
 
 #define RESTART			-1
 

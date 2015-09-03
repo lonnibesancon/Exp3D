@@ -28,6 +28,8 @@ Trial::Trial(glm::mat4 t, int trialI, string Path, int timeOfStart, int subId, s
 	nbOfMoreFingers = 0 ;
 	nbOfTouches = 0 ;
 	isTangibleDetected = false ;
+	matriceprecedente = glm::mat4();
+	first = true ;
 
 	//Get all the different elements of the target matrix ;
 	glm::decompose(target, targetscale, targetrotation, targettranslation, targetskew, targetperspective);
@@ -66,12 +68,8 @@ void Trial::writeLog(){
     << "Current Model[O];" << "Current Model[1];" << "Current Model[2];" << "Current Model[3];" << "Current Model[4];" 
     << "Current Model[5];" << "Current Model[6];" << "Current Model[7];" << "Current Model[8];" << "Current Model[9];" 
     << "Current Model[1O];" << "Current Model[11];" << "Current Model[12];" << "Current Model[13];" << "Current Model[14];" 
-    << "Current Model[15];" 
-    << "Total Difference; " 
-	<< "Difference[O];" << "Difference[1];" << "Difference[2];" << "Difference[3];" << "Difference[4];" 
-    << "Difference[5];" << "Difference[6];" << "Difference[7];" << "Difference[8];" << "Difference[9];" 
-    << "Difference[1O];" << "Difference[11];" << "Difference[12];" << "Difference[13];" << "Difference[14];" 
-    << "Difference[15];" 
+    << "Current Model[15];"  
+	<< "DistanceEuclidienneAvecPrecedente;" << "AngleAvecPrecedente;" << "TangibleVisible;"
     << endl ;
     vector<string> w = getMatrixHistory();
     cout << "Size of matrix history=" << w.size() << endl ;
@@ -124,9 +122,9 @@ void Trial::measureTime(int c){
 		nbTime.push_back(tuple<int,int,int,int,int,int,int,int,int,int,bool>(-1,-1,-1,-1,-1,-1,nbOfOneFinger,nbOfTwoFingers,nbOfMoreFingers,totalNumberOfTouch,false));
 	}
 	else if(interactionMode == TANGIBLECONDITION){
-		if(c == TANGIBLEVISBILE){
+		if(c == TANGIBLEVISIBLE){
 			historyTime.push_back(tuple<double,int,double>(timestamp,currentMode,duration));
-			nbTime.push_back(tuple<int,int,int,int,int,int,int,int,int,int,bool>(-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,false));
+			nbTime.push_back(tuple<int,int,int,int,int,int,int,int,int,int,bool>(-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,true));
 		}
 		else{
 			historyTime.push_back(tuple<double,int,double>(timestamp,currentMode,duration));
@@ -143,8 +141,13 @@ void Trial::restartPressed(){
 	historyTime.push_back(tuple<double,int,double>(timestamp,RESTART,0));
 	nbOfRestarts ++ ;
 }	
-
+namespace maintangible{
+	extern bool tangibleVisible;
+}
 void Trial::logMatrix(glm::mat4 mat){
+	if(mat == matriceprecedente && interactionMode == TANGIBLECONDITION){
+		return ;
+	}
 	double timestamp = ( SDL_GetTicks() - trialStart ) ;
 	
 	glm::mat4 difference = glm::inverse(mat) * target ;
@@ -196,10 +199,33 @@ void Trial::logMatrix(glm::mat4 mat){
 	double rotationDifference = 2*std::acos(rot.w) ;
 	rotationDifference = 180*rotationDifference/M_PI ;
 	cout << "Rot difference = " << rotationDifference<< endl ;
+	
+	glm::mat4 diffprev ;
+	glm::quat diffquat ;
+	float diffangle ;
+	glm::vec4 diffeucl ;
+	float dist ;
+	if(!first){
+		diffprev = glm::inverse(matriceprecedente) * mat ;
+		diffquat = glm::quat_cast(diffprev);
+		diffangle = 2*std::acos(diffquat.w);
+		diffeucl = diffprev * glm::vec4(0,0,0,1);;
+		dist = glm::length(glm::vec3(diffeucl));
+		if(maintangible::tangibleVisible == false){
+			dist = 0 ;
+		}
+	}
+	else{
+		diffangle = 0 ;
+		dist = 0 ;
+	}
+
 	//historyMatrix.push_back(tuple<double, glm::mat4, double, glm::mat4>(0, glm::mat4(1.0f), 0, glm::mat4(1.0f)));
 	//historyMatrix.push_back(tuple<double, int, double, double, double, double, double, glm::vec3, glm::mat4, double, glm::mat4>(timestamp, currentMode, euclidianDistance, rotationDifference, pitchDiff, rollDiff, yawDiff, difftranslation, mat, totalDiff, difference));
-	historyMatrix.emplace_back(timestamp, currentMode, euclidianDistance, rotationDifference, pitchDiff, rollDiff, yawDiff, difftranslation, mat, totalDiff, difference);
+	historyMatrix.emplace_back(timestamp, currentMode, euclidianDistance, rotationDifference, pitchDiff, rollDiff, yawDiff, difftranslation, mat, dist, diffangle,maintangible::tangibleVisible);
 	//double for the timestamp, double for pitch, double for roll, double for yaw, glm::vec4 for distance, mat4 for the current model matrix, double for the total difference, mat4 for the difference matrix
+	matriceprecedente = mat ;
+	first = false ;
 }
 
 vector<string> Trial::getTimeHistory(){
@@ -260,16 +286,11 @@ std::string Trial::getActionTypeString(int mode){
 #define RIGHTANDSHIFT   4
 #define IDLE            0
 
-#define ZEROTOONE 		0
-#define ONETOTWO 		1
-#define ONETOZERO 		1
-#define TWOTOMORE 		2
-#define TWOTOONE 		2
-#define BACKTOTWO 		3
-
 #define ONEFINGER		1
 #define TWOFINGERS		2
-#define MOREFINGERS		3*/	
+#define MOREFINGERS		3
+
+#define RESTART -1*/	
 
 	switch(interactionMode){
 		case MOUSECONDITION:
@@ -284,6 +305,9 @@ std::string Trial::getActionTypeString(int mode){
 				 	return "TranslationZ";
 				 case IDLE:
 				 	return "Idle";
+				 case RESTART:
+				 cout << "RESTART" << endl ;
+				 	return "Restart";
 			}
 			break;
 		case TOUCHCONDITION:
@@ -296,21 +320,30 @@ std::string Trial::getActionTypeString(int mode){
 					return "ThreeOrMoreFinger";
 				case IDLE:
 					return "Idle";
+				case RESTART:
+				 	return "Restart";
 			}
 			break ;
+		case TANGIBLECONDITION:
+			switch(mode){
+				case TANGIBLEVISIBLE:
+					return "visible";
+					break;
+				case TANGIBLENOTVISIBLE:
+					return "notvisible";
+
+			}
 	}
-	cout << "MODE = " << mode << endl ;
-	cout << "INTERACTION MODE = " << interactionMode << endl ;
 	assert(false);
 }
 
 vector<string> Trial::getMatrixHistory(){
 	string s ;
 	//double for the timestamp, double for pitch, double for roll, double for yaw, glm::vec4 for distance, mat4 for the current model matrix, double for the total difference, mat4 for the difference matrix
-	tuple<double, int, double, double,  double, double, double, glm::vec3, glm::mat4, double, glm::mat4> t ;
+	tuple<double, int, double, double,  double, double, double, glm::vec3, glm::mat4, float, float,bool> t ;
 	vector<string> v ;
 //for(std::vector<tuple<int, double>>::iterator it = historyFingers.begin(); it != historyFingers.end(); ++it) {
-	for(std::vector<tuple<double, int, double, double, double, double, double, glm::vec3, glm::mat4, double, glm::mat4>>::size_type i = 0; i!= historyMatrix.size(); i++) {
+	for(std::vector<tuple<double, int, double, double, double, double, double, glm::vec3, glm::mat4, float, float,bool>>::size_type i = 0; i!= historyMatrix.size(); i++) {
 		t = historyMatrix[i];
 		//cout << get<0>(t) << " , " << get<1>(t) << endl ;
 		s.append(to_string(get<0>(t))) ;
@@ -333,7 +366,9 @@ vector<string> Trial::getMatrixHistory(){
     	s.append( ";" );
     	s.append(to_string(get<9>(t))) ;
     	s.append( ";" );
-    	s.append(tostring(get<10>(t))) ;
+    	s.append(to_string(get<10>(t))) ;
+    	s.append( ";" );
+    	s.append(to_string(get<11>(t))) ;
     	s.append( ";" );
 		v.push_back(s);
 		//cout << "Test : " << s << endl ;
