@@ -36,7 +36,7 @@
 
 #include "mainmouse.cpp"
 #include "maintouch.cpp"
-//#include "mainTangible.cpp"
+#include "mainTangible.cpp"
 
 
 std::vector<int> sequenceOrder ;

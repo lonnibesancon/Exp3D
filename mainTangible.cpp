@@ -361,7 +361,7 @@ namespace maintangible{
 		glTranslatef(0,10,0);
 		glutSolidTeapot(50.0);
 
-		t->logMatrix(glm::translate(modelMatrix, glm::vec3(0,-10,0)));g
+		t->logMatrix(glm::translate(modelMatrix, glm::vec3(0,-10,0)));
 	}
 
 	void VRPN_CALLBACK handle_tracker_change(void* userdata, const vrpn_TRACKERCB t)
