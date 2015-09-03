@@ -51,7 +51,7 @@ namespace maintouch{
     //#ifdef __APPLE__
     //static const unsigned int WIDTH = 1440, HEIGHT = 900;
     //#else
-    static const unsigned int WIDTH = 1920, HEIGHT = 1080;
+    //static const unsigned int WIDTH = 1920, HEIGHT = 1080;
     //#endif
     //static const float ZOOM_SPEED = 2.5f;
     SDL_Surface* screen ;
@@ -188,7 +188,8 @@ namespace maintouch{
     void LogAndReset(){
         string a ;
         //First Log everything
-        t->logMatrix(modelMatrix);
+        //cout << "Log And Reset Touch" << endl;
+        //t->logMatrix(modelMatrix);
         touchrenderer->logAndResetTouchInfo();      // Free and delete trial there
         SDL_Quit();
 

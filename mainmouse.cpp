@@ -33,7 +33,7 @@ using namespace std ;
 namespace mainmouse{
 
 
-    static const unsigned int WIDTH = 1920, HEIGHT = 1080;
+    //static const unsigned int WIDTH = 1920, HEIGHT = 1080;
     //static const float ZOOM_SPEED = 2.5f;
     SDL_Surface* screen ;
 
@@ -113,6 +113,8 @@ namespace mainmouse{
     //
     void trackball(const glm::vec2& pt1, const glm::vec2& pt2)
     {
+        cout << "PT1 X = " << pt1.x << "PT1 y = " << pt1.y << endl;
+        cout << "PT2 X = " << pt2.x << "PT2 y = " << pt2.y << endl;
         if (pt1 == pt2)
             return; // zero rotation
 
@@ -279,8 +281,10 @@ namespace mainmouse{
                             arcball.drag(-(curPos-glm::vec2(center.x, center.y)));
 #else
                             center = glm::project(glm::vec3(0,0,0), viewMatrix*modelMatrix, projMatrix, glm::vec4(-1, -1, 2, 2));
+                            //cout << "X " << curPos.x << " Y " << curPos.y << endl ;
                             trackball(curPos-glm::vec2(center.x, center.y), trackballPrevPos-glm::vec2(center.x, center.y));
                             trackballPrevPos = curPos;
+
 #endif
                         } else {
                             // From: vtkInteractorStyleTrackballCamera.cxx
@@ -288,7 +292,8 @@ namespace mainmouse{
                             float newAngle = std::atan2(curPos.y-center.y, curPos.x-center.x);
                             float oldAngle = std::atan2(lastScreenPos.y-center.y, lastScreenPos.x-center.x);
                             rotationZMatrix = glm::rotate(rotationZMatrix, newAngle-oldAngle, glm::mat3(modelMatrix)*glm::vec3(0,0,1));
-                            modelMatrix = glm::rotate(modelMatrix, newAngle-oldAngle, glm::mat3(modelMatrix)*glm::vec3(0,0,1));
+                            //modelMatrix = glm::rotate(modelMatrix, newAngle-oldAngle, glm::mat3(modelMatrix)*glm::vec3(0,0,1));
+                            rotation = glm::angleAxis(newAngle-oldAngle, glm::vec3(0,0,1))*rotation;
                             
                         }
                     }
@@ -357,7 +362,9 @@ void render()
 #ifdef ROT_SHOEMAKE_VT
         glMultMatrixf(glm::value_ptr(viewMatrix * modelMatrix * rotationZMatrix * arcball.getTransformation() * glm::inverse(rotationZMatrix)));
 #else
-        glMultMatrixf(glm::value_ptr(viewMatrix * modelMatrix * glm::mat4_cast(ObjectRotation) * rotationZMatrix * glm::mat4_cast(rotation) * glm::mat4_cast(glm::inverse(ObjectRotation)) *glm::inverse(rotationZMatrix) ));
+        glMultMatrixf(glm::value_ptr(viewMatrix * modelMatrix * (glm::mat4(glm::mat3(glm::transpose(glm::inverse(modelMatrix)))) * glm::mat4_cast(rotation) * glm::mat4(glm::mat3(modelMatrix))) ));
+    
+        //glMultMatrixf(glm::value_ptr(viewMatrix * modelMatrix * glm::mat4_cast(ObjectRotation) * rotationZMatrix * glm::mat4_cast(rotation) * glm::mat4_cast(glm::inverse(ObjectRotation)) *glm::inverse(rotationZMatrix) ));
     //cout << "GLMMF = " << glm::value_ptr(modelMatrix * glm::mat4_cast(rotation) ) << endl ;
 #endif
    
@@ -382,7 +389,7 @@ void render()
 
     void LogAndReset(){
         //First Log everything
-        t->logMatrix(modelMatrix);
+        //t->logMatrix(modelMatrix);
         t->writeLog();
         reset();
         delete(t);

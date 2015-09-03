@@ -1,6 +1,14 @@
 #define PI 				3.141592654f
 #define NBOFTRIALS 		20
 
+#ifdef __APPLE__
+	#define WIDTH 			1080 
+	#define HEIGHT 			720
+#else
+	#define WIDTH 			1920 
+	#define HEIGHT 			1080
+#endif
+
 #define LEFT            1
 #define RIGHT 	        2
 #define LEFTANDSHIFT    3

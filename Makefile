@@ -7,8 +7,8 @@ ifeq ($(OS),Windows_NT)
 else
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
-CXXFLAGS += -ggdb
-LDFLAGS := -lGL -lGLU -lglut -lSDL -lpthread -lboost_system -lboost_filesystem
+CXXFLAGS += -ggdb -I ~/vrpn/
+LDFLAGS := -lGL -lGLU -lglut -lSDL -lSDL_net -lpthread -lboost_system -lboost_filesystem -L ~/vrpn/build/ -lvrpn -lpthread
 endif
 ifeq ($(UNAME_S),Darwin)
 CXXFLAGS += -D_GNU_SOURCE=1 -D_THREAD_SAFE -I/Library/Frameworks/SDL.framework/Headers/ -I /usr/local/include
@@ -23,7 +23,7 @@ SOURCETOUCH= TouchRenderer.cpp TouchPoint.cpp TouchListener.cpp
 #SOURCETANGIBLE= mainTangible.cpp
 OTHERSOURCES= Trial.cpp
 #$(SOURCETANGIBLE:%.cpp=%.o)#
-all: $(SOURCESARCBALL:%.cpp=%.o) $(SOURCESOSCPACK:%.cpp=%.o) $(SOURCESTUIO:%.cpp=%.o) $(SOURCETOUCH:%.cpp=%.o) $(OTHERSOURCES:%.cpp=%.o) main.o
+all: $(SOURCESARCBALL:%.cpp=%.o) $(SOURCESOSCPACK:%.cpp=%.o) $(SOURCESTUIO:%.cpp=%.o) $(SOURCETANGIBLE:%.cpp=%.o) $(SOURCETOUCH:%.cpp=%.o)  $(OTHERSOURCES:%.cpp=%.o) main.o
 	$(CXX) $^ -o main $(CXXFLAGS) $(LDFLAGS)
 
 %.o: %.cpp

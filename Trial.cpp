@@ -41,6 +41,7 @@ Trial::~Trial(){
 }
 
 void Trial::writeLog(){
+	cout << "Writing Log " << endl ;
 	//First we need to measure the last idle action
 	measureTime(IDLE);
 	cout << path << endl ;
@@ -118,6 +119,7 @@ void Trial::measureTime(int c){
 			nbOfMoreFingers ++ ;
 		}
 		int totalNumberOfTouch = nbOfOneFinger + nbOfTwoFingers + nbOfMoreFingers ;
+
 		historyTime.push_back(tuple<double,int,double>(timestamp,currentMode,duration));
 		nbTime.push_back(tuple<int,int,int,int,int,int,int,int,int,int,bool>(-1,-1,-1,-1,-1,-1,nbOfOneFinger,nbOfTwoFingers,nbOfMoreFingers,totalNumberOfTouch,false));
 	}
@@ -192,8 +194,8 @@ void Trial::logMatrix(glm::mat4 mat){
 	
 
 	double rotationDifference = 2*std::acos(rot.w) ;
-
-	cout << "Rot difference = " << 180*rotationDifference/M_PI << endl ;
+	rotationDifference = 180*rotationDifference/M_PI ;
+	cout << "Rot difference = " << rotationDifference<< endl ;
 	//historyMatrix.push_back(tuple<double, glm::mat4, double, glm::mat4>(0, glm::mat4(1.0f), 0, glm::mat4(1.0f)));
 	//historyMatrix.push_back(tuple<double, int, double, double, double, double, double, glm::vec3, glm::mat4, double, glm::mat4>(timestamp, currentMode, euclidianDistance, rotationDifference, pitchDiff, rollDiff, yawDiff, difftranslation, mat, totalDiff, difference));
 	historyMatrix.emplace_back(timestamp, currentMode, euclidianDistance, rotationDifference, pitchDiff, rollDiff, yawDiff, difftranslation, mat, totalDiff, difference);
@@ -297,6 +299,9 @@ std::string Trial::getActionTypeString(int mode){
 			}
 			break ;
 	}
+	cout << "MODE = " << mode << endl ;
+	cout << "INTERACTION MODE = " << interactionMode << endl ;
+	assert(false);
 }
 
 vector<string> Trial::getMatrixHistory(){

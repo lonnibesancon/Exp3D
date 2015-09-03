@@ -36,7 +36,7 @@
 
 #include "mainmouse.cpp"
 #include "maintouch.cpp"
-//#include "maintangible.cpp"
+//#include "mainTangible.cpp"
 
 
 std::vector<int> sequenceOrder ;
@@ -292,7 +292,7 @@ void launchCondition(int ind, int argc, char * argv[]){
                 *outfile << get<0>(trialTargetsTangible[i]) << ";" ;
             }
             *outfile << endl ;
-            //maintangible::launchTangibleExp(argc, argv, trialTargets, path+TANGIBLE);
+            //maintangible::launchTangibleExp(argc, argv, trialTargetsTangible, path+TANGIBLE);
 			break ;
 		default:
 			cerr << "Error, not a valid condition number" << std::endl ;

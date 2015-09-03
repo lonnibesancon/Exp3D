@@ -70,11 +70,13 @@ private:
 	glm::quat rotation ;
 	glm::vec3 startObjectPos;
 	glm::vec2 startOffset;
+	glm::vec3 center ;
+
+	glm::vec3 unprojStartPos ;
+	glm::vec3 unprojCurPos ;
 	float firstDistance ;
 	float distance ;
 
-	unsigned int WIDTH;
-	unsigned int HEIGHT;
 	int nbOfFingers ;
 	float zPosition ;
 
