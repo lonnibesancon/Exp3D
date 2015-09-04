@@ -111,6 +111,9 @@ namespace maintangible{
 					if (event.key.keysym.sym == SDLK_ESCAPE) {
 						return false;
 					} 
+					if (event.key.keysym.sym == SDLK_a) {
+						cout << "Model Matrix" << glm::to_string(modelMatrix) << endl ;
+					}
 					break;
 				}
 
@@ -120,16 +123,34 @@ namespace maintangible{
 		return true;
 	}
 
+	bool waitForKey(int key)
+	{
+		SDL_Event event;
+
+		while (SDL_PollEvent(&event)) {
+			switch (event.type) {
+				case SDL_KEYDOWN: {
+					if (event.key.keysym.sym == key) {
+						return tangibleVisible;
+					} 
+					break;
+				}
+
+			}
+		}
+
+		return false;
+	}
+
 	void updateDifference()
 	{
 		diff = modelMatrix_cam1 * glm::inverse(modelMatrix_cam2);
 		// (mm_cam1 * mm_cam2^-1) * mm_cam2 = mm_cam1
-		std::cout << "updateDifference " << glm::to_string(diff) << '\n';
 	}
 
-	void render()
+	void render(bool expStarted)
 	{
-		cout << "NEXTTRIALTODO 3 " << nextTrialTodo << endl ;
+
 		timespec now;
 		clock_gettime(CLOCK_MONOTONIC, &now);
 		float deltaTime = (now.tv_sec - lastTime.tv_sec)
@@ -143,15 +164,18 @@ namespace maintangible{
 		detected2 = (deltaTime2 < 0.1);
 
 		bool b = (detected1 || detected2) ;
-		if(b != tangibleVisible){
-			if(b){
-				t->measureTime(TANGIBLEVISIBLE);
-			}
-			else{
-				t->measureTime(TANGIBLENOTVISIBLE);
+		if (expStarted) {
+			if(b != tangibleVisible){
+				if(b){
+					t->measureTime(TANGIBLEVISIBLE);
+				}
+				else{
+					t->measureTime(TANGIBLENOTVISIBLE);
+				}
 			}
 		}
 		tangibleVisible = b ;
+
 		if (detected2 && !detected1) {
 			cam1Recovered = true;
 			recoveredTimestamp = now;
@@ -187,24 +211,26 @@ namespace maintangible{
 		glMultMatrixf(glm::value_ptr(projMatrix));
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
+		//glTranslatef(-100,0,0);
+		glTranslatef(0,-120,0);
 		glPushMatrix();
-			glMultMatrixf(glm::value_ptr(viewMatrix * modelMatrix ));
+			glMultMatrixf(glm::value_ptr(viewMatrix * glm::mat4_cast(glm::angleAxis((float)(-30*M_PI/180),glm::vec3(1.0f,0.0f,0.0f)))*modelMatrix));
 			glEnable(GL_DEPTH_TEST);
 			glEnable(GL_LIGHTING);
 			glEnable(GL_LIGHT0);
 			// glutSolidTeapot(1.0);
 			// glutSolidTeapot(150.0);
-			glTranslatef(0,10,0);
+			//glTranslatef(0,10,0);
 			glutSolidTeapot(50.0);
 		glPopMatrix();
 
+		if (expStarted) {
+			glMultMatrixf(glm::value_ptr(viewMatrix));
+    		glMultMatrixf(glm::value_ptr(std::get<1>(trialTargets[nextTrialTodo])));
+			glutWireTeapot(50);
 
-		glMultMatrixf(glm::value_ptr(viewMatrix));
-    	glMultMatrixf(glm::value_ptr(std::get<1>(trialTargets[nextTrialTodo])));
-		glutWireTeapot(50);
-		cout << "NEXTTRIALTODO 4 " << nextTrialTodo << endl ;
-
-		t->logMatrix(modelMatrix);
+			t->logMatrix(glm::mat4_cast(glm::angleAxis((float)(-30*M_PI/180),glm::vec3(1.0f,0.0f,0.0f)))*modelMatrix);
+		}
 	}
 
 	void VRPN_CALLBACK handle_tracker_change(void* userdata, const vrpn_TRACKERCB t)
@@ -218,7 +244,7 @@ namespace maintangible{
 		trackingRot = glm::normalize(trackingRot);
 		modelMatrix_cam1 = glm::inverse(boardMat) * (glm::translate(glm::mat4(), trackingPos) * glm::mat4_cast(trackingRot));
 		// modelMatrix = glm::translate(glm::mat4(), glm::vec3(0,0,100)) * modelMatrix;
-		std::cout << "pos: " << modelMatrix[3][0] << " " << modelMatrix[3][1] << " " << modelMatrix[3][2] << '\n';
+		//std::cout << "pos: " << modelMatrix[3][0] << " " << modelMatrix[3][1] << " " << modelMatrix[3][2] << '\n';
 		// modelMatrix[3][0] /= 10;
 		// modelMatrix[3][1] /= 10;
 		// modelMatrix[3][2] /= 10;
@@ -235,7 +261,7 @@ namespace maintangible{
 
 		// if (!detected1) {
 		// 	modelMatrix = modelMatrix_cam2;
-			std::cout << "pos2: " << modelMatrix[3][0] << " " << modelMatrix[3][1] << " " << modelMatrix[3][2] << '\n';
+			//std::cout << "pos2: " << modelMatrix[3][0] << " " << modelMatrix[3][1] << " " << modelMatrix[3][2] << '\n';
 			clock_gettime(CLOCK_MONOTONIC, &lastTime2);
 		// }
 	}
@@ -261,7 +287,7 @@ namespace maintangible{
 		std::vector<char> buffer(1024);
 		while (!boardVisible) {
 			static const char msg[] = "board?\n";
-			std::cout << "send: " << msg << '\n';
+			//std::cout << "send: " << msg << '\n';
 			if (SDLNet_TCP_Send(socket, (void*)msg, sizeof(msg)-1) < (signed)sizeof(msg)-1) {
 				std::cerr << "SDLNet_TCP_Send() failed: " << SDLNet_GetError() << '\n';
 				std::exit(EXIT_FAILURE);
@@ -296,7 +322,7 @@ namespace maintangible{
 						result[i/4][i%4] = fromString<float>(s);
 						++i;
 					}
-					std::cout << "boardMat = " << glm::to_string(boardMat) << '\n';
+					//std::cout << "boardMat = " << glm::to_string(boardMat) << '\n';
 				}
 			}
 
@@ -312,7 +338,7 @@ namespace maintangible{
 	void LogAndReset(){
         //First Log everything
         t->logMatrix(modelMatrix);
-        t->writeLog();
+        //t->writeLog();
         tangibleVisible = false ;
         delete(t);
         SDL_Quit();
@@ -381,13 +407,18 @@ namespace maintangible{
 
 		std::string str;
 		while(nextTrialTodo != NBOFTRIALS){            //Loop through trials 
+			while (!waitForKey(SDLK_SPACE)) {
+				//cout << "TAngible visible " << tangibleVisible << endl ;
+				render(false);
+				tracker->mainloop();
+				tracker2->mainloop();
+				SDL_GL_SwapBuffers();
+			}
 			cout << "***********Launching trial # " << get<0>(trialTargets[nextTrialTodo]) << endl ;
             t = new Trial(get<1>(targets[nextTrialTodo]),get<0>(targets[nextTrialTodo]), path,SDL_GetTicks(),subjectID,TANGIBLECONDITION,nextTrialTodo);
             t->logMatrix(modelMatrix); 
-            cout << "NEXTTRIALTODO 1 " << nextTrialTodo << endl ;
 			while (getInput()) {
-				cout << "NEXTTRIALTODO 2 " << nextTrialTodo << endl ;
-				render();
+				render(true);
 					// if (std::getline(std::cin, str)) {
 					// 	// if (str.find("----") == 0) continue; // for "adb logcat"
 					// 	std::vector<std::string> values = split(split(str, '|')[1], ',');
@@ -404,7 +435,8 @@ namespace maintangible{
 			nextTrialTodo++;
 			nbOfTrialsDone ++;
 			LogAndReset();
-			cout << "Appuyez sur la touche entrée pour le test suivant test numero" << nextTrialTodo << endl ;
+			cout << "Appuyez sur la touche entrée pour le test suivant/Press enter to get to the following trial" << endl ;
+			cout << "#####Trial number " << get<0>(targets[nextTrialTodo]) << endl ;
             getline(cin,a);
             initSDL();
 		}

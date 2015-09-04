@@ -44,9 +44,14 @@ namespace mainmouse{
     glm::vec3 dummyskew;
     glm::vec4 dummyperspective;
 
+    /* Version AVANT LE TANGIBLE */
+    //static const glm::mat4 projMatrix = glm::perspective(120.0f, float(WIDTH)/HEIGHT, 50.0f, 2500.0f);
+    //glm::mat4 viewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, -700));
+    
+    /*Version TANGIBLE*/
+    static const glm::mat4 projMatrix = glm::perspective(45.0f, float(WIDTH)/HEIGHT, 50.0f, 2500.0f);
+    glm::mat4 viewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, -500));
 
-    static const glm::mat4 projMatrix = glm::perspective(120.0f, float(WIDTH)/HEIGHT, 50.0f, 2500.0f);
-    glm::mat4 viewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, -700));
     //glm::mat4 translationMatrix = glm::mat4(1.0f);
     glm::mat4 startModelMatrix;
     glm::mat4 modelMatrix = glm::mat4(1.0f);
@@ -357,6 +362,7 @@ void render()
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
+    //glTranslatef(0,-120,0);
     glPushMatrix();
 #ifdef ROT_SHOEMAKE_VT
         glMultMatrixf(glm::value_ptr(viewMatrix * modelMatrix * rotationZMatrix * arcball.getTransformation() * glm::inverse(rotationZMatrix)));
@@ -443,7 +449,8 @@ void render()
             nextTrialTodo ++ ;
             nbOfTrialsDone ++;
             LogAndReset();
-            cout << "Appuyez sur la touche entrée pour la test suivant" << endl ;
+            cout << "Appuyez sur la touche entrée pour le test suivant/Press enter to get to the following trial" << endl ;
+            cout << "#####Trial number " << get<0>(targets[nextTrialTodo]) << endl ;
             getline(cin,a);
             initSDL();
                 

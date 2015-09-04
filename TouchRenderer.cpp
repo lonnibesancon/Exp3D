@@ -258,7 +258,7 @@ void TouchRenderer::update(long id, double x, double y){
         distance = computeDistanceBtwnFingers();
         float zTranslation = 1/firstDistance * (1-firstDistance/distance);
         zTranslation *= ZOOMSPEED ;
-        cout << zTranslation << endl ;
+        //cout << zTranslation << endl ;
         objectPos.z = 1/firstDistance * (1-firstDistance/distance);
         objectPos.z *= ZOOMSPEED ;
 

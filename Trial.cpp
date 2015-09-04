@@ -198,8 +198,14 @@ void Trial::logMatrix(glm::mat4 mat){
 
 	double rotationDifference = 2*std::acos(rot.w) ;
 	rotationDifference = 180*rotationDifference/M_PI ;
-	cout << "Rot difference = " << rotationDifference<< endl ;
 	
+	if(std::isnan(rotationDifference)){
+		cout << "Rotation Difference is NAN" << endl ;
+		if(std::isnan(rot.w)){
+			cout << "W is NAN" << endl ;
+		}
+	}
+
 	glm::mat4 diffprev ;
 	glm::quat diffquat ;
 	float diffangle ;

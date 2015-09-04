@@ -1,5 +1,5 @@
 #define PI 				3.141592654f
-#define NBOFTRIALS 		20
+#define NBOFTRIALS 		15
 
 #ifdef __APPLE__
 	#define WIDTH 			1080 

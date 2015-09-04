@@ -57,8 +57,16 @@ namespace maintouch{
     SDL_Surface* screen ;
 
 
-    static const glm::mat4 projMatrix = glm::perspective(120.0f, float(WIDTH)/HEIGHT, 50.0f, 2500.0f);
-    glm::mat4 viewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, -700));
+
+    /* Version AVANT LE TANGIBLE */
+    //static const glm::mat4 projMatrix = glm::perspective(120.0f, float(WIDTH)/HEIGHT, 50.0f, 2500.0f);
+    //glm::mat4 viewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, -700));
+    
+    /*Version TANGIBLE*/
+    static const glm::mat4 projMatrix = glm::perspective(45.0f, float(WIDTH)/HEIGHT, 50.0f, 2500.0f);
+    glm::mat4 viewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, -500));
+
+
     glm::mat4 modelMatrix = glm::mat4(1.0f);
     glm::mat4 transformationMatrix = glm::mat4(1.0f);
 
@@ -147,7 +155,7 @@ namespace maintouch{
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
 
-        //printMatrix();
+        //glTranslatef(0,-120,0);
         glPushMatrix();
             glMultMatrixf(glm::value_ptr(touchrenderer->getMultMatrix()));
             glEnable(GL_DEPTH_TEST);
@@ -203,7 +211,7 @@ namespace maintouch{
             cout << "Appuyez sur la touche entrée pour la test suivant" << endl ;
             getline(cin,a);
             initSDL() ;
-            touchlistener = new TouchListener(touchrenderer);
+            //touchlistener = new TouchListener(touchrenderer);
             t = new Trial(get<1>(trialTargets[nextTrialTodo]),get<0>(trialTargets[nextTrialTodo]), path,SDL_GetTicks(), subjectID, TOUCHCONDITION,nextTrialTodo);
             touchrenderer->trial = t ;
         }
@@ -219,6 +227,7 @@ namespace maintouch{
         subjectID = atoi(argv[1]);
         nextTrialTodo = nbTrialsDone;
         path = p;
+        string a ;
         
 
         cout << "Size of trial targets = " << trialTargets.size() << endl ;
@@ -239,6 +248,9 @@ namespace maintouch{
             }
             nextTrialTodo ++ ;
             LogAndReset();
+            cout << "Appuyez sur la touche entrée pour le test suivant/Press enter to get to the following trial" << endl ;
+            cout << "#####Trial number " << get<0>(targets[nextTrialTodo]) << endl ;
+            initSDL();
         }
 
         delete(touchlistener);

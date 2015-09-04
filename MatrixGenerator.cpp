@@ -10,15 +10,35 @@ using namespace std ;
 
 
 
-float maxTranslationRight = 210 ;
-float maxTranslationUp = 170 ;
-float maxTranslationForward = 300 ;
-float minTranslationRight = -210 ;
-float minTranslationUp = -170 ;
-float minTranslationForward = -300 ;
+float maxTranslationRight = 300 ;
+float maxTranslationUp = 350 ;
+float maxTranslationForward = 380 ;
+float minTranslationRight = -217 ;
+float minTranslationUp = 40 ;
+float minTranslationForward = 30 ;
 float maxRotation = 2  ;
 float minRotation = - 2 ;
-int seed = 8 ;
+int seed = 15169 ;
+
+
+string tostring(glm::vec3 v){
+    string s = "";
+    s +=std::to_string(v[0])+","+to_string(v[1])+","+to_string(v[2]) ;   // On ajoute pas de ";" parce qu'il y en a déjà dans la fonction getMatrixHistory
+    return s ;
+}
+
+
+string tostring(glm::mat4 mat){
+    string s = "";
+    for(int i = 0 ; i < 3 ; i ++){
+        glm::vec4 currentvec = mat[i];
+        s +=to_string(currentvec[0])+","+to_string(currentvec[1])+","+to_string(currentvec[2])+","+to_string(currentvec[3])+"," ;   //On doit ajouter un ";" pour chaque vec4 sauf le dernier qui en aura par la fonction getMatrixHistory();
+    }
+    glm::vec4 currentvec = mat[3];
+    s +=to_string(currentvec[0])+","+to_string(currentvec[1])+","+to_string(currentvec[2])+","+to_string(currentvec[3]) ;
+    return s ;
+}
+
 
 glm::mat4 id(1.0f);
 
@@ -37,26 +57,6 @@ glm::mat4 generateRandomModelMatrix(){
 
     return targetModel ;
 
-
-    
-
-}
-
-string tostring(glm::mat4 mat){
-    string s = "";
-    for(int i = 0 ; i < 3 ; i ++){
-        glm::vec4 currentvec = mat[i];
-        s +=to_string(currentvec[0])+","+to_string(currentvec[1])+","+to_string(currentvec[2])+","+to_string(currentvec[3])+"," ;   //On doit ajouter un ";" pour chaque vec4 sauf le dernier qui en aura par la fonction getMatrixHistory();
-    }
-    glm::vec4 currentvec = mat[3];
-    s +=to_string(currentvec[0])+","+to_string(currentvec[1])+","+to_string(currentvec[2])+","+to_string(currentvec[3]) ;
-    return s ;
-}
-
-string tostring(glm::vec3 v){
-    string s = "";
-    s +=to_string(v[0])+","+to_string(v[1])+","+to_string(v[2]) ;   // On ajoute pas de ";" parce qu'il y en a déjà dans la fonction getMatrixHistory
-    return s ;
 }
 
 int main(){
@@ -66,3 +66,6 @@ int main(){
     }
     return 0 ;
 }
+
+
+
