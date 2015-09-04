@@ -45,6 +45,7 @@ std::vector <std::tuple<int,glm::mat4>> trialTargetsMouse ;
 std::vector <std::tuple<int,glm::mat4>> trialTargetsTouch ;
 std::vector <std::tuple<int,glm::mat4>> trialTargetsTangible ;
 string path ;
+std::string lang ;
 ofstream* outfile ;
 
 using namespace std;
@@ -105,16 +106,19 @@ vector<int> getPermutation(char* argv[]){
 
 void getPermutation(char* argv[], int condition){
     int subjectID = atoi(argv[1]);
-    int seed = subjectID * condition ;
+    int seed = subjectID * condition * 40 ;
     cout << "SEED = " << seed << endl ;
     srand(seed);
     switch(condition){
         case MOUSECONDITION:
             for (int i=0; i<(NBOFTRIALS); i++) {
                 int r = i + (rand() % (NBOFTRIALS-i)); // Random remaining position.
-                tuple<int,glm::mat4> temp = trialTargetsMouse[i]; 
-                trialTargetsMouse[i] = trialTargetsMouse[r]; 
-                trialTargetsMouse[r] = temp;
+                if( i != 0 && r != 0){
+                    tuple<int,glm::mat4> temp = trialTargetsMouse[i]; 
+                    trialTargetsMouse[i] = trialTargetsMouse[r]; 
+                    trialTargetsMouse[r] = temp;
+                }
+                
             }
 
             for(int i=0;i<NBOFTRIALS;i++){
@@ -126,9 +130,11 @@ void getPermutation(char* argv[], int condition){
         case TOUCHCONDITION:
             for (int i=0; i<(NBOFTRIALS); i++) {
                 int r = i + (rand() % (NBOFTRIALS-i)); // Random remaining position.
-                tuple<int,glm::mat4> temp = trialTargetsTouch[i]; 
-                trialTargetsTouch[i] = trialTargetsTouch[r]; 
-                trialTargetsTouch[r] = temp;
+                if( i != 0 && r != 0){
+                    tuple<int,glm::mat4> temp = trialTargetsTouch[i]; 
+                    trialTargetsTouch[i] = trialTargetsTouch[r]; 
+                    trialTargetsTouch[r] = temp;
+                }
             }
 
             for(int i=0;i<NBOFTRIALS;i++){
@@ -140,9 +146,11 @@ void getPermutation(char* argv[], int condition){
         case TANGIBLECONDITION:
             for (int i=0; i<(NBOFTRIALS); i++) {
                 int r = i + (rand() % (NBOFTRIALS-i)); // Random remaining position.
-                tuple<int,glm::mat4> temp = trialTargetsTangible[i]; 
-                trialTargetsTangible[i] = trialTargetsTangible[r]; 
-                trialTargetsTangible[r] = temp;
+                if( i != 0 && r != 0){
+                    tuple<int,glm::mat4> temp = trialTargetsTangible[i]; 
+                    trialTargetsTangible[i] = trialTargetsTangible[r]; 
+                    trialTargetsTangible[r] = temp;
+                }
             }
 
             for(int i=0;i<NBOFTRIALS;i++){
@@ -368,8 +376,14 @@ int main(int argc, char *argv[])
 
     glutInit(&argc, argv);
 
-	if(argc < 2){
-        cerr << "Please enter subject ID!!\n" ;
+	if(argc < 3){
+        cerr << "Please enter subject ID and language!!\n" ;
+        return -1 ;
+    }
+    lang = argv[2];
+    cout << "Lang = " << lang << endl ;
+    if(lang != "eng" && lang != "fr"){
+        cerr << "Please enter a valid language" << endl ;
         return -1 ;
     }
     path = "./results/"+string(argv[1]) ;
