@@ -433,7 +433,8 @@ void render()
 
         string a ;
 
-
+        cout << "Debut de la condition souris + clavier / Beginning of the mouse+keyboard condition" << endl << "Appuez sur entree" << endl ;
+        getline(cin,a);
         initSDL();
 
 

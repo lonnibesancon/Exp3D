@@ -47,6 +47,9 @@ std::vector <std::tuple<int,glm::mat4>> trialTargetsTangible ;
 string path ;
 std::string lang ;
 ofstream* outfile ;
+int subId ;
+
+std::string localURL = "/home/lonni/Questionnaire/" ;
 
 using namespace std;
 
@@ -386,6 +389,7 @@ int main(int argc, char *argv[])
         cerr << "Please enter a valid language" << endl ;
         return -1 ;
     }
+    subId = atoi(argv[1]);
     path = "./results/"+string(argv[1]) ;
     sequenceOrder = getPermutation(argv);
     loadTargets();
@@ -395,7 +399,17 @@ int main(int argc, char *argv[])
         getPermutation(argv, TOUCHCONDITION);
         getPermutation(argv, TANGIBLECONDITION);
     	createSubjectFileInfo(argv[1], sequenceOrder);
+        //First questionnaire
+        if(lang=="fr") system(("google-chrome "+localURL+"initialFr.html?id="+to_string(subId)).data());
+        else if(lang=="eng") system(("google-chrome "+localURL+"initial.html?id="+to_string(subId)).c_str());
+        cout << "URL == " << ("google-chrome "+localURL+"initialFr.html?id="+to_string(subId)).data() <<endl ;
+        
+        cout << "Si le questionnaire est rempli, appuyez sur entree" << endl ;
+        getline(cin,a);
+
+
         launchCondition(sequenceOrder[0], argc, argv);
+
         cout << "********************************************************************************************************************************" << endl 
             << "Cette partie est terminée, merci de remplir le questionnaire correspondant" << endl 
             << "********************************************************************************************************************************" << endl ;
@@ -415,7 +429,8 @@ int main(int argc, char *argv[])
         cout << "********************************************************************************************************************************" << endl 
             << "Cette partie est terminée, merci de remplir le questionnaire correspondant" << endl 
             << "********************************************************************************************************************************" << endl ;
-        
+        if(lang=="fr") system(("google-chrome "+localURL+"TLXFr.html?id="+to_string(subId)+"&condition=tangible").c_str());
+        else if(lang=="eng") system(("google-chrome "+localURL+"TLXFr.html?id="+to_string(subId)+"&condition=tangible").c_str());
         cout << "Si le questionnaire est rempli, appuyez sur entree" << endl ;
         getline(cin,a);
     }

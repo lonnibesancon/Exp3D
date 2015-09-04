@@ -8,7 +8,7 @@ else
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
 CXXFLAGS += -ggdb -I ~/vrpn/
-LDFLAGS := -lGL -lGLU -lglut -lSDL -lSDL_net -lpthread -lboost_system -lboost_filesystem -L ~/vrpn/build/ -lvrpn -lpthread
+LDFLAGS := -lGL -lGLU -lglut -lSDL -lSDL_net -lpthread -lboost_system -lboost_filesystem -L ~/vrpn/build/ -lvrpn -lpthread -L/usr/lib/x86_64-linux-gnu -lcurl
 endif
 ifeq ($(UNAME_S),Darwin)
 CXXFLAGS += -D_GNU_SOURCE=1 -D_THREAD_SAFE -I/Library/Frameworks/SDL.framework/Headers/ -I /usr/local/include

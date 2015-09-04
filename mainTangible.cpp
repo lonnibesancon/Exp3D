@@ -383,7 +383,8 @@ namespace maintangible{
 		nextTrialTodo = nbOfTrialsDone;
 		string a ;
 
-
+		cout << "Appelez l'experimentateur quand cette expérience commence/ Call the experimenter" << endl
+		getlin(cin,a);
 		initSDL();
 		initNet();
 		std::atexit(SDLNet_Quit);
