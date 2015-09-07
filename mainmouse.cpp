@@ -284,7 +284,7 @@ namespace mainmouse{
 #ifdef ROT_SHOEMAKE_VT
                             arcball.drag(-(curPos-glm::vec2(center.x, center.y)));
 #else
-                            center = glm::project(glm::vec3(0,0,0), viewMatrix*modelMatrix, projMatrix, glm::vec4(-1, -1, 2, 2));
+                            center = glm::project(glm::vec3(0,-120,0), viewMatrix*modelMatrix, projMatrix, glm::vec4(-1, -1, 2, 2));
                             //cout << "X " << curPos.x << " Y " << curPos.y << endl ;
                             trackball(curPos-glm::vec2(center.x, center.y), trackballPrevPos-glm::vec2(center.x, center.y));
                             trackballPrevPos = curPos;
@@ -292,7 +292,7 @@ namespace mainmouse{
 #endif
                         } else {
                             // From: vtkInteractorStyleTrackballCamera.cxx
-                            center = glm::project(glm::vec3(0,0,0), viewMatrix*modelMatrix, projMatrix, glm::vec4(-1, -1, 2, 2));
+                            center = glm::project(glm::vec3(0,-120,0), viewMatrix*modelMatrix, projMatrix, glm::vec4(-1, -1, 2, 2));
                             float newAngle = std::atan2(curPos.y-center.y, curPos.x-center.x);
                             float oldAngle = std::atan2(lastScreenPos.y-center.y, lastScreenPos.x-center.x);
                             rotationZMatrix = glm::rotate(rotationZMatrix, newAngle-oldAngle, glm::mat3(modelMatrix)*glm::vec3(0,0,1));
@@ -364,6 +364,7 @@ void render()
     glLoadIdentity();
 
     //glTranslatef(0,-120,0);
+    glTranslatef(0,-120,0);
     glPushMatrix();
 #ifdef ROT_SHOEMAKE_VT
         glMultMatrixf(glm::value_ptr(viewMatrix * modelMatrix * rotationZMatrix * arcball.getTransformation() * glm::inverse(rotationZMatrix)));
@@ -414,7 +415,7 @@ void render()
         SDL_WM_SetCaption("Mouse Interaction!", nullptr);
         SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
         cout << "4" << endl ;
-        if (!(screen = SDL_SetVideoMode(WIDTH, HEIGHT, 32, SDL_FULLSCREEN))) {
+        if (!(screen = SDL_SetVideoMode(WIDTH, HEIGHT, 32, SDL_OPENGL | SDL_FULLSCREEN))) {
             std::cerr << "SDL_SetVideoMode() failed: " << SDL_GetError() << '\n';
             return EXIT_FAILURE;
         }
