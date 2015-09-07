@@ -73,6 +73,8 @@ private:
 	glm::vec2 startOffset;
 	glm::vec3 center ;
 
+	glm::vec3 tmp;
+
 	glm::vec3 unprojStartPos ;
 	glm::vec3 unprojCurPos ;
 	float firstDistance ;
@@ -80,6 +82,7 @@ private:
 
 	int nbOfFingers ;
 	float zPosition ;
+	float startObjZ;
 
 
 	int getIndexOfFingerById(long id);

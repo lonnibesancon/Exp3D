@@ -55,6 +55,7 @@ namespace mainmouse{
     //glm::mat4 translationMatrix = glm::mat4(1.0f);
     glm::mat4 startModelMatrix;
     glm::mat4 modelMatrix = glm::mat4(1.0f);
+
     glm::quat rotation = glm::quat();
 
     glm::mat4 rotationZMatrix = glm::mat4();
@@ -168,6 +169,7 @@ namespace mainmouse{
 
     void reset(){
         modelMatrix = glm::mat4(1.0f);
+        modelMatrix = glm::translate(modelMatrix,glm::vec3(0.0,120.0,0.0));
         //translationMatrix = glm::mat4(1.0f);
         rotation = glm::quat();
         trackballPrevPos = glm::vec2();
@@ -415,7 +417,7 @@ void render()
         SDL_WM_SetCaption("Mouse Interaction!", nullptr);
         SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
         cout << "4" << endl ;
-        if (!(screen = SDL_SetVideoMode(WIDTH, HEIGHT, 32, SDL_OPENGL | SDL_FULLSCREEN))) {
+        if (!(screen = SDL_SetVideoMode(WIDTH, HEIGHT, 32, SDL_OPENGL ))) {
             std::cerr << "SDL_SetVideoMode() failed: " << SDL_GetError() << '\n';
             return EXIT_FAILURE;
         }
@@ -430,6 +432,8 @@ void render()
         trialTargets = targets ;
         subjectID = atoi(argv[1]);
         nextTrialTodo = nbOfTrialsDone;
+
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(0,120,0));      // To match the tangible condition
 
         // Not valid on ubuntu systems        glutInit(&argc, argv);
 

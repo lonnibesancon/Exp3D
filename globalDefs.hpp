@@ -5,8 +5,8 @@
 	#define WIDTH 			1080 
 	#define HEIGHT 			720
 #else
-	#define WIDTH 			1920 
-	#define HEIGHT 			1080
+	#define WIDTH 			800
+	#define HEIGHT 			600
 #endif
 
 #define LEFT            1

@@ -179,7 +179,7 @@ namespace maintouch{
 
 
     int initSDL(){
-        SDL_ShowCursor(SDL_DISABLE);
+
         if (SDL_Init(SDL_INIT_VIDEO) < 0) {
             std::cerr << "SDL_Init() failed: " << SDL_GetError() << '\n';
             return EXIT_FAILURE;
@@ -190,12 +190,13 @@ namespace maintouch{
         SDL_WM_SetCaption("Touch Interaction!", nullptr);
         SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-        if (!(screen = SDL_SetVideoMode(WIDTH, HEIGHT, 32, SDL_OPENGL /*| SDL_FULLSCREEN*/))) {
+        if (!(screen = SDL_SetVideoMode(WIDTH, HEIGHT, 32, SDL_OPENGL ))) {
             std::cerr << "SDL_SetVideoMode() failed: " << SDL_GetError() << '\n';
             return EXIT_FAILURE;
         }
 
         glViewport(0, 0, WIDTH, HEIGHT);
+                SDL_ShowCursor(SDL_DISABLE);
     }
 
 
@@ -242,7 +243,7 @@ namespace maintouch{
         initSDL();
 
         t = new Trial(get<1>(trialTargets[nextTrialTodo]),get<0>(trialTargets[nextTrialTodo]), path,SDL_GetTicks(),subjectID, TOUCHCONDITION,nextTrialTodo);
-        touchrenderer = new TouchRenderer(transformationMatrix, WIDTH, HEIGHT, projMatrix, viewMatrix, t);
+        touchrenderer = new TouchRenderer(transformationMatrix/*glm::translate(transformationMatrix, glm::vec3(0,120.0,0))*/, WIDTH, HEIGHT, projMatrix, viewMatrix, t);
         touchlistener = new TouchListener(touchrenderer);
 
         while(nextTrialTodo != NBOFTRIALS){ 

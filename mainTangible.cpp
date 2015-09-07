@@ -360,7 +360,7 @@ namespace maintangible{
         SDL_WM_SetCaption("Tangible Interaction!", nullptr);
         SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-        if (!(screen = SDL_SetVideoMode(WIDTH, HEIGHT, 32, SDL_OPENGL && SDL_FULLSCREEN))) {
+        if (!(screen = SDL_SetVideoMode(WIDTH, HEIGHT, 32, SDL_OPENGL))) {
             std::cerr << "SDL_SetVideoMode() failed: " << SDL_GetError() << '\n';
             return EXIT_FAILURE;
         }

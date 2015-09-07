@@ -49,7 +49,7 @@ std::string lang ;
 ofstream* outfile ;
 int subId ;
 
-std::string localURL = "/home/lonni/Questionnaire/" ;
+std::string localURL = "file:///home/lonni/Questionnaire/" ;
 
 using namespace std;
 
@@ -400,7 +400,7 @@ int main(int argc, char *argv[])
         getPermutation(argv, TANGIBLECONDITION);
     	createSubjectFileInfo(argv[1], sequenceOrder);
         //First questionnaire
-        if(lang=="fr") system(("firefox '"+localURL+"initialFr.html%23id="+to_string(subId)+"'").data());
+        if(lang=="fr") system(("firefox '"+localURL+"initialFr.html#id="+to_string(subId)+"'").c_str());
         else if(lang=="eng") system(("google-chrome "+localURL+"initial.html?id="+to_string(subId)).c_str());
         cout << "URL == " << ("google-chrome "+localURL+"initialFr.html?id="+to_string(subId)).data() <<endl ;
         

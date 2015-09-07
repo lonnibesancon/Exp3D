@@ -18,6 +18,7 @@ TouchRenderer::TouchRenderer(glm::mat4 model, unsigned int W, unsigned int H, gl
 	nbOfTouches = 0 ;
 	rotation = glm::quat();
 	trial = t ;
+	startObjZ = 0;
 	//start = std::clock();
 }
 
@@ -40,6 +41,7 @@ void TouchRenderer::reset(){
 	unprojStartPos = glm::vec3();
 	unprojCurPos = glm::vec3();
 	center = glm::vec3() ;
+	startObjZ = 0;
 }
 
 void TouchRenderer::logAndResetTouchInfo(){
@@ -163,6 +165,7 @@ void TouchRenderer::add(long id, double x, double y){
 		startOffset = mouseToScreenCoords(xavg, yavg) - startScreenPos;
 		startScreenPosTwoFingers = mouseToScreenCoords(xavg, yavg);
 		firstDistance = computeDistanceBtwnFingers();
+		startObjZ = (viewMatrix * modelMatrix)[3][2];
 		
 		//originalVector = glm::vec2(touchpoints.at(0).curX,touchpoints.at(0).curY)-glm::vec2(touchpoints.at(1).curX,touchpoints.at(1).curY);
 		originalVector = getVector(touchpoints[0],touchpoints[1]);
@@ -229,7 +232,7 @@ void TouchRenderer::update(long id, double x, double y){
 		curPos = mouseToScreenCoords(xavg, yavg) - startOffset;
 		//cout << "startScreenPos = " << glm::to_string(objectPos) << endl ;
 
-		const float objZ = (viewMatrix * modelMatrix)[3][2];
+		//const float objZ = (viewMatrix * modelMatrix)[3][2];
      
 		/*Handles Rotation*/
 
@@ -248,9 +251,10 @@ void TouchRenderer::update(long id, double x, double y){
         //objectPos = (unprojCurPos - unprojStartPos);
         
         //unprojStartPos = unproject(startScreenPosTwoFingers,objZ);
-        unprojStartPos = unproject(startScreenPos, objZ);
-        unprojCurPos = unproject(curPos, objZ);
+        unprojStartPos = unproject(startScreenPos, startObjZ);
+        unprojCurPos = unproject(curPos, startObjZ);
         objectPos = (unprojCurPos - unprojStartPos);
+        //cout << objZ /*<< "   " << glm::to_string(unprojStartPos) << "   " << glm::to_string(unprojCurPos)*/ << '\n';
         //modelMatrix = glm::translate(glm::mat4(), startObjectPos+objectPos);
         
         //What's done for the mouse
@@ -260,8 +264,8 @@ void TouchRenderer::update(long id, double x, double y){
         /*Handles Translation on z*/
         
         distance = computeDistanceBtwnFingers();
-        float zTranslation = 1/firstDistance * (1-firstDistance/distance);
-        zTranslation *= ZOOMSPEED ;
+        //float zTranslation = 1/firstDistance * (1-firstDistance/distance);
+        //zTranslation *= ZOOMSPEED ;
         //cout << zTranslation << endl ;
         objectPos.z = 1/firstDistance * (1-firstDistance/distance);
         objectPos.z *= ZOOMSPEED ;
@@ -270,7 +274,7 @@ void TouchRenderer::update(long id, double x, double y){
 
         //cout << "OBJECTPOS.Z = " << objectPos.z << endl ; 
         //if(zPosition < MAXBEFORECLIPPINGZ && zTranslation < objectPos.z){
-        //	cout << "Je suis ici" << endl ,
+        //	cout << "Je suis ici" << endl ;
         //	objectPos.z = 1 ;
         //}
         //else{
@@ -283,7 +287,7 @@ void TouchRenderer::update(long id, double x, double y){
 
 
 void TouchRenderer::update(){
-	// modelMatrix = glm::translate(startModelMatrix, objectPos) * glm::rotate(startModelMatrix,objectAngle, glm::vec3(0,0,1));
+	// modelMatrix = glm::translate(startModelMatrix, objectPos) * glm::rotate(startModelMatrix,objectAngle, glm::vec23(0,0,1));
 	// modelMatrix = glm::translate(startModelMatrix, objectPos) * glm::mat4_cast(rotation);
 	modelMatrix = glm::translate(glm::mat4(), startObjectPos+objectPos) * glm::mat4_cast(rotation);
 	//modelMatrix = glm::translate(glm::mat4(), glm::mat3(glm::transpose(modelMatrix)) * (startObjectPos+unprojCurPos - unprojStartPos)) * glm::mat4_cast(rotation);
