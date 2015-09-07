@@ -88,6 +88,8 @@ private:
 	std::string tostring(glm::vec3 v);
 
 	std::string getActionTypeString(int);
+	float safeAcos(float x);
+	double safeAcosDouble(float x);
 
 	std::vector<std::tuple<int,int,int,int,int,int,int,int,int,int,bool>> nbTime ;
 	std::vector<std::tuple<double,int,double>> historyTime ;																	//int for the action type, double for the timestamp of the starting time of the action, double for the duration of the action

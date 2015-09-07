@@ -122,13 +122,17 @@ void Trial::measureTime(int c){
 		nbTime.push_back(tuple<int,int,int,int,int,int,int,int,int,int,bool>(-1,-1,-1,-1,-1,-1,nbOfOneFinger,nbOfTwoFingers,nbOfMoreFingers,totalNumberOfTouch,false));
 	}
 	else if(interactionMode == TANGIBLECONDITION){
-		if(c == TANGIBLEVISIBLE){
-			historyTime.push_back(tuple<double,int,double>(timestamp,currentMode,duration));
-			nbTime.push_back(tuple<int,int,int,int,int,int,int,int,int,int,bool>(-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,true));
-		}
-		else{
-			historyTime.push_back(tuple<double,int,double>(timestamp,currentMode,duration));
-			nbTime.push_back(tuple<int,int,int,int,int,int,int,int,int,int,bool>(-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,false));
+		if(c != currentMode){		// On ne veut mesure que lorsqu'il y a un changement d'evenement
+
+			if(c == TANGIBLEVISIBLE){
+				historyTime.push_back(tuple<double,int,double>(timestamp,currentMode,duration));
+				nbTime.push_back(tuple<int,int,int,int,int,int,int,int,int,int,bool>(-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,true));
+			}
+			else{
+				historyTime.push_back(tuple<double,int,double>(timestamp,currentMode,duration));
+				nbTime.push_back(tuple<int,int,int,int,int,int,int,int,int,int,bool>(-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,false));
+			}
+
 		}
 	}
 	currentMode = c ;
@@ -141,6 +145,19 @@ void Trial::restartPressed(){
 	historyTime.push_back(tuple<double,int,double>(timestamp,RESTART,0));
 	nbOfRestarts ++ ;
 }	
+
+float Trial::safeAcos(float x){
+	if(x < -1.0) return acos(-1.0);
+	else if(x > 1.0) return acos(1.0);
+	else return acos(x);
+}
+
+double Trial::safeAcosDouble(float x){
+	if(x < -1.0) return acos(-1.0);
+	else if(x > 1.0) return acos(1.0);
+	else return acos(x);
+}
+
 namespace maintangible{
 	extern bool tangibleVisible;
 }
@@ -196,7 +213,7 @@ void Trial::logMatrix(glm::mat4 mat){
 	//													<<endl ;
 	
 
-	double rotationDifference = 2*std::acos(rot.w) ;
+	double rotationDifference = 2*safeAcosDouble(rot.w) ;
 	rotationDifference = 180*rotationDifference/M_PI ;
 	
 	if(std::isnan(rotationDifference)){
@@ -214,9 +231,16 @@ void Trial::logMatrix(glm::mat4 mat){
 	if(!first){
 		diffprev = glm::inverse(matriceprecedente) * mat ;
 		diffquat = glm::quat_cast(diffprev);
-		diffangle = 2*std::acos(diffquat.w);
+
+		diffangle = 2*safeAcos(diffquat.w);
 		diffeucl = diffprev * glm::vec4(0,0,0,1);;
 		dist = glm::length(glm::vec3(diffeucl));
+		if(std::isnan(diffangle)){
+			cout<<"NAN diffangle W = " << diffquat.w << endl ; 
+		}
+		if (std::isnan(diffquat.w)){
+			cout << "NAN W ; W =" << diffquat.w << endl ;
+		}
 		if(maintangible::tangibleVisible == false){
 			dist = 0 ;
 		}
