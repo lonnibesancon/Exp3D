@@ -169,6 +169,7 @@ namespace mainmouse{
 
     void reset(){
         modelMatrix = glm::mat4(1.0f);
+
         modelMatrix = glm::translate(modelMatrix,glm::vec3(0.0,120.0,0.0));
         //translationMatrix = glm::mat4(1.0f);
         rotation = glm::quat();
@@ -432,8 +433,7 @@ void render()
         trialTargets = targets ;
         subjectID = atoi(argv[1]);
         nextTrialTodo = nbOfTrialsDone;
-
-        modelMatrix = glm::translate(modelMatrix, glm::vec3(0,120,0));      // To match the tangible condition
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(0,120,0));  
 
         // Not valid on ubuntu systems        glutInit(&argc, argv);
 

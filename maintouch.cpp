@@ -160,7 +160,7 @@ namespace maintouch{
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
 
-        //glTranslatef(0,-120,0);
+        glTranslatef(0,-120,0);
         glPushMatrix();
             glMultMatrixf(glm::value_ptr(touchrenderer->getMultMatrix()));
             glEnable(GL_DEPTH_TEST);
@@ -237,13 +237,14 @@ namespace maintouch{
         string a ;
         cout << endl << endl << endl << endl << endl << endl << endl ; 
         cout << "Debut de la condition multitouch / Beginning of the multitouch condition" << endl << "Appuez sur entree" << endl ;
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(0,120,0));  
         getline(cin, a);
         //cout << "Size of trial targets = " << trialTargets.size() << endl ;
         
         initSDL();
 
         t = new Trial(get<1>(trialTargets[nextTrialTodo]),get<0>(trialTargets[nextTrialTodo]), path,SDL_GetTicks(),subjectID, TOUCHCONDITION,nextTrialTodo);
-        touchrenderer = new TouchRenderer(transformationMatrix/*glm::translate(transformationMatrix, glm::vec3(0,120.0,0))*/, WIDTH, HEIGHT, projMatrix, viewMatrix, t);
+        touchrenderer = new TouchRenderer(transformationMatrix, WIDTH, HEIGHT, projMatrix, viewMatrix, t);
         touchlistener = new TouchListener(touchrenderer);
 
         while(nextTrialTodo != NBOFTRIALS){ 

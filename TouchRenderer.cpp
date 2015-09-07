@@ -8,6 +8,7 @@ using namespace std ;
 TouchRenderer::TouchRenderer(glm::mat4 model, unsigned int W, unsigned int H, glm::mat4 projM, glm::mat4 viewM, Trial* t)
 {
 	modelMatrix = model ;
+	modelMatrix = glm::translate(modelMatrix, glm::vec3(0,120,0));
 	projMatrix = projM ;
 	viewMatrix = viewM ;
 	arcball = new CPM_ARC_BALL_NS::ArcBall(glm::vec3(0,0,100), 1.0f);
@@ -19,17 +20,19 @@ TouchRenderer::TouchRenderer(glm::mat4 model, unsigned int W, unsigned int H, gl
 	rotation = glm::quat();
 	trial = t ;
 	startObjZ = 0;
+	startObjectPos = glm::vec3 (modelMatrix * glm::vec4(0,0,0,1));
 	//start = std::clock();
 }
 
 void TouchRenderer::reset(){
 	modelMatrix = glm::mat4(1.0f);
+	modelMatrix = glm::translate(modelMatrix, glm::vec3(0,120,0));
 	startModelMatrix = glm::mat4(1.0f);;
 	startScreenPos = glm::vec2();
 	startScreenPosTwoFingers = glm::vec2();
 	prevScreenPos = glm::vec2();
 	startRotation = glm::quat();
-	startObjectPos = glm::vec3();
+	startObjectPos = glm::vec3 (modelMatrix * glm::vec4(0,0,0,1));
 	startOffset = glm::vec2();
 	originalVector = glm::vec2();
 	newVector = glm::vec2();
@@ -52,12 +55,13 @@ void TouchRenderer::logAndResetTouchInfo(){
 
 	//Reset position 
 	modelMatrix = glm::mat4(1.0f);
-	startModelMatrix = glm::mat4(1.0f);;
+	startModelMatrix = glm::mat4(1.0f);
+	modelMatrix = glm::translate(modelMatrix, glm::vec3(0,120,0));
 	startScreenPos = glm::vec2();
 	startScreenPosTwoFingers = glm::vec2();
 	prevScreenPos = glm::vec2();
 	startRotation = glm::quat();
-	startObjectPos = glm::vec3();
+	startObjectPos = glm::vec3 (modelMatrix * glm::vec4(0,0,0,1));
 	startOffset = glm::vec2();
 	originalVector = glm::vec2();
 	newVector = glm::vec2();
@@ -165,7 +169,7 @@ void TouchRenderer::add(long id, double x, double y){
 		startOffset = mouseToScreenCoords(xavg, yavg) - startScreenPos;
 		startScreenPosTwoFingers = mouseToScreenCoords(xavg, yavg);
 		firstDistance = computeDistanceBtwnFingers();
-		startObjZ = (viewMatrix * modelMatrix)[3][2];
+		startObjZ = (viewMatrix * modelMatrix * glm::translate(glm::mat4(), glm::vec3(0,-120,0)))[3][2];
 		
 		//originalVector = glm::vec2(touchpoints.at(0).curX,touchpoints.at(0).curY)-glm::vec2(touchpoints.at(1).curX,touchpoints.at(1).curY);
 		originalVector = getVector(touchpoints[0],touchpoints[1]);
@@ -209,7 +213,6 @@ void TouchRenderer::remove(long id){
 	}
 }
 void TouchRenderer::update(long id, double x, double y){
-
 	int index = getIndexOfFingerById(id);
 	touchpoints.at(index).update(x,y);
 	glm::vec2 curPos;
@@ -289,7 +292,7 @@ void TouchRenderer::update(long id, double x, double y){
 void TouchRenderer::update(){
 	// modelMatrix = glm::translate(startModelMatrix, objectPos) * glm::rotate(startModelMatrix,objectAngle, glm::vec23(0,0,1));
 	// modelMatrix = glm::translate(startModelMatrix, objectPos) * glm::mat4_cast(rotation);
-	modelMatrix = glm::translate(glm::mat4(), startObjectPos+objectPos) * glm::mat4_cast(rotation);
+	modelMatrix = glm::translate(glm::mat4(), startObjectPos+objectPos) * glm::mat4_cast(rotation) ;
 	//modelMatrix = glm::translate(glm::mat4(), glm::mat3(glm::transpose(modelMatrix)) * (startObjectPos+unprojCurPos - unprojStartPos)) * glm::mat4_cast(rotation);
 	
 	zPosition = modelMatrix[3][2];
