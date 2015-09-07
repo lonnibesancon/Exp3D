@@ -108,7 +108,7 @@ namespace maintangible{
 				}
 
 				case SDL_KEYDOWN: {
-					if (event.key.keysym.sym == SDLK_ESCAPE) {
+					if (event.key.keysym.sym == SDLK_SPACE) {
 						return false;
 					} 
 					if (event.key.keysym.sym == SDLK_a) {
@@ -349,6 +349,7 @@ namespace maintangible{
 
 
 	int initSDL(){
+		SDL_ShowCursor(SDL_DISABLE);
         if (SDL_Init(SDL_INIT_VIDEO) < 0) {
             std::cerr << "SDL_Init() failed: " << SDL_GetError() << '\n';
             return EXIT_FAILURE;
@@ -359,7 +360,7 @@ namespace maintangible{
         SDL_WM_SetCaption("Tangible Interaction!", nullptr);
         SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-        if (!(screen = SDL_SetVideoMode(WIDTH, HEIGHT, 32, SDL_OPENGL))) {
+        if (!(screen = SDL_SetVideoMode(WIDTH, HEIGHT, 32, SDL_OPENGL && SDL_FULLSCREEN))) {
             std::cerr << "SDL_SetVideoMode() failed: " << SDL_GetError() << '\n';
             return EXIT_FAILURE;
         }
@@ -382,9 +383,9 @@ namespace maintangible{
 
 		nextTrialTodo = nbOfTrialsDone;
 		string a ;
-
-		cout << "Appelez l'experimentateur quand cette expérience commence/ Call the experimenter" << endl
-		getlin(cin,a);
+		cout << endl << endl << endl << endl << endl << endl << endl ;
+		cout << "Appelez l'experimentateur quand cette expérience commence/ Call the experimenter" << endl ;
+		getline(cin,a);
 		initSDL();
 		initNet();
 		std::atexit(SDLNet_Quit);
@@ -408,7 +409,7 @@ namespace maintangible{
 
 		std::string str;
 		while(nextTrialTodo != NBOFTRIALS){            //Loop through trials 
-			while (!waitForKey(SDLK_SPACE)) {
+			while (!waitForKey(SDLK_RETURN)) {
 				//cout << "TAngible visible " << tangibleVisible << endl ;
 				render(false);
 				tracker->mainloop();

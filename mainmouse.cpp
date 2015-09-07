@@ -201,7 +201,8 @@ namespace mainmouse{
                 }
 
                 case SDL_KEYDOWN: {
-                    if (event.key.keysym.sym == SDLK_ESCAPE) {
+                    //if (event.key.keysym.sym == SDLK_ESCAPE) {
+                    if(event.key.keysym.sym == SDLK_SPACE){
                         //somethingWasDone = true ;
                         return false;
                     } else if ((event.key.keysym.sym == SDLK_LSHIFT) || (event.key.keysym.sym == SDLK_RSHIFT)) {
@@ -413,7 +414,7 @@ void render()
         SDL_WM_SetCaption("Mouse Interaction!", nullptr);
         SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
         cout << "4" << endl ;
-        if (!(screen = SDL_SetVideoMode(WIDTH, HEIGHT, 32, SDL_OPENGL))) {
+        if (!(screen = SDL_SetVideoMode(WIDTH, HEIGHT, 32, SDL_FULLSCREEN))) {
             std::cerr << "SDL_SetVideoMode() failed: " << SDL_GetError() << '\n';
             return EXIT_FAILURE;
         }
@@ -432,7 +433,7 @@ void render()
         // Not valid on ubuntu systems        glutInit(&argc, argv);
 
         string a ;
-
+        cout << endl << endl << endl << endl << endl << endl << endl ;
         cout << "Debut de la condition souris + clavier / Beginning of the mouse+keyboard condition" << endl << "Appuez sur entree" << endl ;
         getline(cin,a);
         initSDL();

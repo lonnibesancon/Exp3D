@@ -109,7 +109,7 @@ namespace maintouch{
                 }
 
                 case SDL_KEYDOWN: {
-                    if (event.key.keysym.sym == SDLK_ESCAPE) {
+                    /*if (event.key.keysym.sym == SDLK_ESCAPE) {
                         std::vector<string> v = touchrenderer->GetHistory();
                         for(std::vector<tuple<int, double>>::size_type i = 0; i!=v.size(); i++) {
                             cout << v.at(i);
@@ -119,7 +119,12 @@ namespace maintouch{
                             cout << to_string(w.at(i)) << endl ;
                         }
                         return false;
-                    }
+                    }*/
+                    //if (event.key.keysym.sym == SDLK_ESCAPE) {
+                    if(event.key.keysym.sym == SDLK_SPACE){     //Validation
+                        //somethingWasDone = true ;
+                        return false;
+                    } 
                     if(event.key.keysym.sym == SDLK_r){
                         t->restartPressed();
                         touchrenderer->reset();
@@ -174,6 +179,7 @@ namespace maintouch{
 
 
     int initSDL(){
+        SDL_ShowCursor(SDL_DISABLE);
         if (SDL_Init(SDL_INIT_VIDEO) < 0) {
             std::cerr << "SDL_Init() failed: " << SDL_GetError() << '\n';
             return EXIT_FAILURE;
@@ -184,7 +190,7 @@ namespace maintouch{
         SDL_WM_SetCaption("Touch Interaction!", nullptr);
         SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-        if (!(screen = SDL_SetVideoMode(WIDTH, HEIGHT, 32, SDL_OPENGL))) {
+        if (!(screen = SDL_SetVideoMode(WIDTH, HEIGHT, 32, SDL_OPENGL | SDL_FULLSCREEN))) {
             std::cerr << "SDL_SetVideoMode() failed: " << SDL_GetError() << '\n';
             return EXIT_FAILURE;
         }
@@ -208,7 +214,7 @@ namespace maintouch{
         if(nextTrialTodo < NBOFTRIALS){
             //delete(touchlistener);
             //usleep(1000);
-            cout << "Appuyez sur la touche entrée pour la test suivant" << endl ;
+            cout << "Appuyez sur la touche entrée pour le test suivant/Press enter for the following trial" << endl ;
             getline(cin,a);
             initSDL() ;
             //touchlistener = new TouchListener(touchrenderer);
@@ -228,7 +234,8 @@ namespace maintouch{
         nextTrialTodo = nbTrialsDone;
         path = p;
         string a ;
-        cout << "Debut de la condition souris + clavier / Beginning of the mouse+keyboard condition" << endl << "Appuez sur entree" << endl ;
+        cout << endl << endl << endl << endl << endl << endl << endl ; 
+        cout << "Debut de la condition multitouch / Beginning of the multitouch condition" << endl << "Appuez sur entree" << endl ;
         getline(cin, a);
         //cout << "Size of trial targets = " << trialTargets.size() << endl ;
         
